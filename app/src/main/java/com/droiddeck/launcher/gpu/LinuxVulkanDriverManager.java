@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.droiddeck.launcher.R;
 import com.droiddeck.launcher.core.FileUtils;
+import com.droiddeck.launcher.core.TarZst;
 
 import org.json.JSONObject;
 
@@ -28,6 +29,12 @@ public class LinuxVulkanDriverManager {
     public static final String LIB_NAME = "libvulkan_freedreno.so";
     public static final String ICD_NAME = "icd.json";
     public static final String META_NAME = "meta.json";
+    /** Reserved id of the bundled Vortek forwarder (brief 003); imports never get it. */
+    public static final String VORTEK_ID = "vortek";
+    public static final String VORTEK_LIB = "libvulkan_vortek.so";
+    public static final String VORTEK_ASSET = "graphics_driver/vortek-client.tzst";
+    static final String VORTEK_API = "1.3.0";
+    private static final String STAMP_NAME = ".asset-stamp";
 
     private final Context context;
     private final File rootDir;
@@ -45,7 +52,11 @@ public class LinuxVulkanDriverManager {
     public boolean isInstalled(String id) {
         if (id == null || id.isEmpty() || id.contains("/") || id.contains("..")) return false;
         File dir = getDriverDir(id);
-        return new File(dir, LIB_NAME).isFile() && new File(dir, ICD_NAME).isFile();
+        return new File(dir, libraryName(id)).isFile() && new File(dir, ICD_NAME).isFile();
+    }
+
+    static String libraryName(String id) {
+        return VORTEK_ID.equals(id) ? VORTEK_LIB : LIB_NAME;
     }
 
     public String getIcdPath(String id) {
@@ -56,7 +67,10 @@ public class LinuxVulkanDriverManager {
         ArrayList<String> ids = new ArrayList<>();
         File[] dirs = rootDir.listFiles();
         if (dirs == null) return ids;
-        for (File d : dirs) if (d.isDirectory() && isInstalled(d.getName())) ids.add(d.getName());
+        for (File d : dirs) {
+            // The bundled forwarder is selected by SessionPrefs.maliForwarder, not offered as an import.
+            if (d.isDirectory() && !VORTEK_ID.equals(d.getName()) && isInstalled(d.getName())) ids.add(d.getName());
+        }
         Collections.sort(ids);
         return ids;
     }
@@ -164,13 +178,8 @@ public class LinuxVulkanDriverManager {
             String id = uniqueId(sanitizeId(name));
             File dir = getDriverDir(id);
 
-            JSONObject icd = new JSONObject();
-            icd.put("file_format_version", "1.0.0");
-            JSONObject icdBody = new JSONObject();
-            icdBody.put("library_path", new File(dir, LIB_NAME).getAbsolutePath());
-            icdBody.put("api_version", "1.1.274");
-            icd.put("ICD", icdBody);
-            if (!FileUtils.writeString(new File(tmpDir, ICD_NAME), icd.toString(2))) throw new IOException("cannot write icd.json");
+            String api = zipMeta != null ? zipMeta.optString("apiVersion", "") : "";
+            writeIcd(tmpDir, new File(dir, LIB_NAME), icdApiVersion(api));
 
             JSONObject meta = new JSONObject();
             meta.put("schemaVersion", 1);
@@ -192,10 +201,75 @@ public class LinuxVulkanDriverManager {
     }
 
     private String uniqueId(String base) {
+        return uniqueId(base, id -> getDriverDir(id).exists());
+    }
+
+    /** Never returns {@link #VORTEK_ID}, even when that directory does not exist yet. */
+    static String uniqueId(String base, java.util.function.Predicate<String> taken) {
+        if (VORTEK_ID.equals(base)) base = base + "-imported";
         String id = base;
         int n = 2;
-        while (getDriverDir(id).exists()) id = base + "-" + (n++);
+        while (VORTEK_ID.equals(id) || taken.test(id)) id = base + "-" + (n++);
         return id;
+    }
+
+    /** api_version for an imported ICD: meta.json "apiVersion" when it is a 1.x.y, else the old default. */
+    static String icdApiVersion(String fromMeta) {
+        return fromMeta != null && fromMeta.matches("1\\.[0-4]\\.\\d+") ? fromMeta : "1.1.274";
+    }
+
+    private static void writeIcd(File dir, File library, String apiVersion) throws IOException, org.json.JSONException {
+        JSONObject icd = new JSONObject();
+        icd.put("file_format_version", "1.0.0");
+        JSONObject icdBody = new JSONObject();
+        icdBody.put("library_path", library.getAbsolutePath());
+        icdBody.put("api_version", apiVersion);
+        icd.put("ICD", icdBody);
+        if (!FileUtils.writeString(new File(dir, ICD_NAME), icd.toString(2))) throw new IOException("cannot write icd.json");
+    }
+
+    /**
+     * Installs the bundled Vortek client (built from source, tools/vortek) into
+     * getDriverDir(VORTEK_ID) once per APK update and writes its icd.json (api 1.3.0).
+     */
+    public synchronized File ensureVortek() throws IOException {
+        File dir = getDriverDir(VORTEK_ID);
+        String stamp = assetStamp();
+        File stampFile = new File(dir, STAMP_NAME);
+        if (isInstalled(VORTEK_ID) && stampFile.isFile() && stamp.equals(FileUtils.readString(stampFile))) return dir;
+        File tmpDir = newStagingDir();
+        boolean keep = false;
+        try {
+            if (!TarZst.extractAsset(context, VORTEK_ASSET, tmpDir)) throw new IOException("cannot unpack " + VORTEK_ASSET);
+            File so = new File(tmpDir, VORTEK_LIB);
+            if (!isAarch64Elf(so)) throw new IOException(VORTEK_ASSET + " has no aarch64 " + VORTEK_LIB);
+            writeIcd(tmpDir, new File(dir, VORTEK_LIB), VORTEK_API);
+            JSONObject meta = new JSONObject();
+            meta.put("schemaVersion", 1);
+            meta.put("kind", "linux-vulkan-icd");
+            meta.put("name", "Vortek (Mali forwarder)");
+            meta.put("libc", "glibc");
+            meta.put("bundled", true);
+            if (!FileUtils.writeString(new File(tmpDir, META_NAME), meta.toString(2))) throw new IOException("cannot write meta.json");
+            if (!FileUtils.writeString(new File(tmpDir, STAMP_NAME), stamp)) throw new IOException("cannot write stamp");
+            FileUtils.delete(dir);
+            if (!tmpDir.renameTo(dir)) throw new IOException("cannot move into " + dir);
+            keep = true;
+            Log.i(TAG, "installed bundled Vortek client -> " + dir);
+            return dir;
+        } catch (org.json.JSONException e) {
+            throw new IOException("manifest write failed: " + e.getMessage());
+        } finally {
+            if (!keep) FileUtils.delete(tmpDir);
+        }
+    }
+
+    private String assetStamp() {
+        try {
+            return String.valueOf(context.getPackageManager().getPackageInfo(context.getPackageName(), 0).lastUpdateTime);
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     static String sanitizeId(String name) {

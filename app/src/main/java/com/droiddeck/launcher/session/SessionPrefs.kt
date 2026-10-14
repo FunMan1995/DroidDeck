@@ -374,6 +374,13 @@ object SessionPrefs {
     fun mangoapp(context: Context): Boolean = prefs(context).getBoolean("mangoapp", true)
     fun setMangoapp(context: Context, on: Boolean) { prefs(context).edit().putBoolean("mangoapp", on).apply() }
 
+    /** Opt-in Vortek forwarder on Mali (brief 003). Off by default until device runs are OK'd. */
+    fun maliForwarder(context: Context): Boolean = prefs(context).getBoolean("maliForwarder", false)
+
+    fun setMaliForwarder(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean("maliForwarder", on).apply()
+    }
+
     fun zinkLazy(context: Context): Boolean = prefs(context).getBoolean("zinkLazy", true)
 
     fun setZinkLazy(context: Context, on: Boolean) {
