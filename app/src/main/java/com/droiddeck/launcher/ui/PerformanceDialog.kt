@@ -74,6 +74,11 @@ fun PerformancePage(
         lede = stringResource(R.string.perf_lede),
         onBack = onDismiss,
     ) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        val smoothNote = remember { com.droiddeck.launcher.session.PerfMode.smoothDisplayNote(context) }
+        if (smoothNote != null) {
+            Text(smoothNote, fontSize = 13.sp, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
+        }
         SettingsGroup(stringResource(R.string.perf_client_cores_group)) {
             ToggleRow(
                 host, "override", stringResource(R.string.perf_override),

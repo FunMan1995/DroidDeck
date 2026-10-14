@@ -49,7 +49,7 @@ class PerfHud(context: Context) {
             val now = SystemClock.elapsedRealtime()
             val dt = (now - lastTick).coerceAtLeast(1L) / 1000f
             lastTick = now
-            text = line(frames.getAndSet(0) / dt)
+            text = line(frames.getAndSet(0) / dt) + smoothNote
             handler.postDelayed(this, 1000)
         }
     }
@@ -58,9 +58,13 @@ class PerfHud(context: Context) {
         if (enabled) start() else stop()
     }
 
+    /** Brief 005 §3: say why the panel is at 60 when "Smooth display" is off. */
+    private var smoothNote = ""
+
     fun start() {
         if (!enabled || running) return
         running = true
+        smoothNote = PerfMode.smoothDisplayNote(context)?.let { "  ·  $it" } ?: ""
         lastTick = SystemClock.elapsedRealtime()
         frames.set(0)
         WaylandCompositor.setGameListener(listener)

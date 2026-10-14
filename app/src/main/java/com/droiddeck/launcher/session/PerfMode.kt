@@ -49,6 +49,7 @@ object PerfMode {
             }
         } else "game mode needs Android 12"
 
+        smoothDisplayNote(a)?.let { parts += it }
         return parts.joinToString(" · ")
     }
 
@@ -68,6 +69,15 @@ object PerfMode {
     /** True when the system "Smooth display" setting caps the panel below its fastest mode (shown in HUD/perf dialog). */
     fun smoothDisplayOff(peakCap: Float, fastestModeHz: Float): Boolean =
         peakCap.isFinite() && peakCap + 0.5f < fastestModeHz
+
+    /** Localised "Smooth display is off: capped at N Hz", or null when the setting doesn't limit the panel. */
+    fun smoothDisplayNote(context: Context): String? = try {
+        val cap = peakRefreshCap(context)
+        @Suppress("DEPRECATION")
+        val display = (context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager).defaultDisplay
+        val fastest = display.supportedModes.maxOfOrNull { it.refreshRate } ?: 0f
+        if (smoothDisplayOff(cap, fastest)) context.getString(com.droiddeck.launcher.R.string.perf_smooth_display_off, Math.round(cap)) else null
+    } catch (t: Throwable) { Log.w(TAG, "smooth display", t); null }
 
     fun cadenceFits(hz: Float, fpsLimit: Int): Boolean {
         if (fpsLimit <= 0) return true
