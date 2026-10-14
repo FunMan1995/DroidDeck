@@ -410,6 +410,19 @@ object SessionPrefs {
         prefs(context).edit().putBoolean("logs", on).apply()
     }
 
+    /** Thermal guard (brief 004): lowers the FPS cap / pauses frame generation when hot. Default on for komodo. */
+    fun thermalGuardEnabled(context: Context): Boolean =
+        prefs(context).getBoolean("thermalGuard", thermalGuardDefault(android.os.Build.DEVICE))
+
+    internal fun thermalGuardDefault(device: String?): Boolean = device == "komodo"
+
+    fun setThermalGuardEnabled(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean("thermalGuard", on).apply()
+    }
+
+    /** Experimental, no UI (brief 004 §3): add guest threads to the compositor's ADPF hint session. */
+    fun adpfGuestThreads(context: Context): Boolean = prefs(context).getBoolean("adpfGuestThreads", false)
+
     fun storageDiagnosticsEnabled(context: Context): Boolean =
         prefs(context).getBoolean("storageDiagnostics", false)
 
