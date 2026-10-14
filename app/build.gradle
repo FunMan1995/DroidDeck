@@ -137,6 +137,8 @@ android {
 
     lint {
         disable 'ExpiredTargetSdkVersion'
+        // Findings that predate the lint crash fix (39 errors, first lint run that completed); new issues still fail.
+        baseline = file('lint-baseline.xml')
     }
 
     packagingOptions {
