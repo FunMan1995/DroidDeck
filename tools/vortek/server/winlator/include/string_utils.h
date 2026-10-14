@@ -37,7 +37,7 @@
     } \
     while (0)
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(VORTEK_HOST_TEST) /* DroidDeck: host harness */
 #include <jni.h>
 
 static inline ArrayList* jstringArrayToCharArray(JNIEnv* env, jobjectArray stringArray) {

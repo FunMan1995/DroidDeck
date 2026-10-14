@@ -1,7 +1,9 @@
 #define HEADER_SIZE 8
 #define DEVICE_NAME "Vortek (%s)"
 #define ENABLE_VALIDATION_LAYER 0 // FIXME set to 0 and remove libVkLayer from jniLibs
+#ifndef DEBUG_MODE
 #define DEBUG_MODE 0 // FIXME set to 0
+#endif
 #define MEMORY_POOL_MAX_SIZE 65536
 #define SERVER_RING_BUFFER_SIZE 4194304
 #define CLIENT_RING_BUFFER_SIZE 262144
@@ -11,7 +13,7 @@
 
 #include "winlator.h"
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(VORTEK_HOST_TEST) /* DroidDeck: x86_64 host harness */
 #define VT_SERVER 1
 #define VK_NO_PROTOTYPES 1
 #endif

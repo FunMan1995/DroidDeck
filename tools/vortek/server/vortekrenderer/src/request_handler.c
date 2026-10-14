@@ -3,6 +3,9 @@
 #include "vk_context.h"
 #include "vulkan_helper.h"
 #include "sysvshared_memory.h"
+#ifdef VORTEK_HOST_TEST
+#include <sys/eventfd.h>
+#endif
 
 #define MSG_DEBUG_UNIMPLEMENTED_FUNC "%s not implemented yet\n"
 
@@ -198,6 +201,13 @@ void vt_handle_vkCreateDevice(VkContext* context) {
 
     VkDevice device;
     VkResult result = vulkanWrapper.vkCreateDevice(physicalDevice, &createInfo, NULL, &device);
+#ifdef VORTEK_HOST_TEST
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "vortek-host: vkCreateDevice = %d; extensions:", result);
+        for (uint32_t i = 0; i < createInfo.enabledExtensionCount; i++) fprintf(stderr, " %s", createInfo.ppEnabledExtensionNames[i]);
+        fprintf(stderr, "\n");
+    }
+#endif
     if (result == VK_SUCCESS) initVulkanDevice(context, physicalDevice, device);
     if (result == VK_SUCCESS) dd_createDummyIndexBuffer(context, device); /* DroidDeck */
 
@@ -529,7 +539,9 @@ void vt_handle_vkCreateFence(VkContext* context) {
     exportFenceInfo.sType = VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO;
     exportFenceInfo.handleTypes = VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT;
     exportFenceInfo.pNext = createInfo.pNext;
+#ifndef VORTEK_HOST_TEST
     createInfo.pNext = &exportFenceInfo;
+#endif /* DroidDeck host harness: lavapipe cannot export SYNC_FD fences (see vt_handle_vkWaitForFences) */
 
     VkFence fence;
     VkResult result = vulkanWrapper.vkCreateFence(device, &createInfo, NULL, &fence);
@@ -586,6 +598,18 @@ void vt_handle_vkWaitForFences(VkContext* context) {
     VkFence fences[fenceCount];
     vt_unserialize_vkWaitForFences(VK_NULL_HANDLE, NULL, fences, NULL, NULL, context->inputBuffer, &context->memoryPool);
 
+#ifdef VORTEK_HOST_TEST
+    /* DroidDeck host harness: no SYNC_FD export on lavapipe. Wait here, then hand the client one
+     * already-signalled eventfd so its poll() path still runs. Android builds keep the fd path. */
+    if (timeout != 0) {
+        VkResult result = vulkanWrapper.vkWaitForFences(device, fenceCount, fences, waitAll, timeout);
+        int fd = eventfd(1, EFD_CLOEXEC);
+        if (result == VK_TIMEOUT) result = VK_SUCCESS; /* client reports its own timeout */
+        send_fds(context->clientFd, &fd, 1, &result, sizeof(VkResult));
+        CLOSEFD(fd);
+        return;
+    }
+#endif
     if (timeout != 0) {
         VkResult result = VK_SUCCESS;
         int fds[fenceCount];

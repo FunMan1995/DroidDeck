@@ -1,0 +1,93 @@
+diff -ruN a/client/src/vulkan_calls.c b/client/src/vulkan_calls.c
+--- a/client/src/vulkan_calls.c	2026-10-14 00:44:07.000000000 -0700
++++ b/client/src/vulkan_calls.c	2026-10-14 01:04:17.839915297 -0700
+@@ -248,7 +248,22 @@
+     VT_SEND_CHECKED(REQUEST_CODE_VK_ENUMERATE_DEVICE_EXTENSION_PROPERTIES, VT_RETURN);
+     VT_RECV_CHECKED(VT_RETURN);
+ 
+-    vt_unserialize_vkEnumerateDeviceExtensionProperties(NULL, NULL, pPropertyCount, pProperties, inputBuffer, &globalMemoryPool);
++    /* DroidDeck: the renderer ignores the caller's capacity, so unserialize into a scratch array
++     * and copy at most *pPropertyCount entries (VK_INCOMPLETE when truncated). */
++    uint32_t capacity = pProperties ? *pPropertyCount : 0;
++    uint32_t serverCount = 0;
++    vt_unserialize_vkEnumerateDeviceExtensionProperties(NULL, NULL, &serverCount, NULL, inputBuffer, &globalMemoryPool);
++    if (pProperties && serverCount > 0) {
++        VkExtensionProperties* all = calloc(serverCount, sizeof(VkExtensionProperties));
++        uint32_t n = serverCount;
++        vt_unserialize_vkEnumerateDeviceExtensionProperties(NULL, NULL, &n, all, inputBuffer, &globalMemoryPool);
++        uint32_t copy = n < capacity ? n : capacity;
++        memcpy(pProperties, all, copy * sizeof(VkExtensionProperties));
++        free(all);
++        *pPropertyCount = copy;
++        if (result == VK_SUCCESS && copy < n) result = VK_INCOMPLETE;
++    }
++    else *pPropertyCount = serverCount;
+     VT_CALL_UNLOCK();
+     return (VkResult)result;
+ }
+diff -ruN a/server/vortekrenderer/include/vortek.h b/server/vortekrenderer/include/vortek.h
+--- a/server/vortekrenderer/include/vortek.h	2026-10-14 00:44:07.000000000 -0700
++++ b/server/vortekrenderer/include/vortek.h	2026-10-14 01:04:17.835915297 -0700
+@@ -11,7 +11,7 @@
+ 
+ #include "winlator.h"
+ 
+-#ifdef __ANDROID__
++#if defined(__ANDROID__) || defined(VORTEK_HOST_TEST) /* DroidDeck: x86_64 host harness */
+ #define VT_SERVER 1
+ #define VK_NO_PROTOTYPES 1
+ #endif
+diff -ruN a/server/vortekrenderer/src/request_handler.c b/server/vortekrenderer/src/request_handler.c
+--- a/server/vortekrenderer/src/request_handler.c	2026-10-14 00:44:07.000000000 -0700
++++ b/server/vortekrenderer/src/request_handler.c	2026-10-14 01:04:17.835915297 -0700
+@@ -2,6 +2,9 @@
+ #include "vk_context.h"
+ #include "vulkan_helper.h"
+ #include "sysvshared_memory.h"
++#ifdef VORTEK_HOST_TEST
++#include <sys/eventfd.h>
++#endif
+ 
+ #define MSG_DEBUG_UNIMPLEMENTED_FUNC "%s not implemented yet\n"
+ 
+@@ -495,7 +498,9 @@
+     exportFenceInfo.sType = VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO;
+     exportFenceInfo.handleTypes = VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT;
+     exportFenceInfo.pNext = createInfo.pNext;
++#ifndef VORTEK_HOST_TEST
+     createInfo.pNext = &exportFenceInfo;
++#endif /* DroidDeck host harness: lavapipe cannot export SYNC_FD fences (see vt_handle_vkWaitForFences) */
+ 
+     VkFence fence;
+     VkResult result = vulkanWrapper.vkCreateFence(device, &createInfo, NULL, &fence);
+@@ -552,6 +557,18 @@
+     VkFence fences[fenceCount];
+     vt_unserialize_vkWaitForFences(VK_NULL_HANDLE, NULL, fences, NULL, NULL, context->inputBuffer, &context->memoryPool);
+ 
++#ifdef VORTEK_HOST_TEST
++    /* DroidDeck host harness: no SYNC_FD export on lavapipe. Wait here, then hand the client one
++     * already-signalled eventfd so its poll() path still runs. Android builds keep the fd path. */
++    if (timeout != 0) {
++        VkResult result = vulkanWrapper.vkWaitForFences(device, fenceCount, fences, waitAll, timeout);
++        int fd = eventfd(1, EFD_CLOEXEC);
++        if (result == VK_TIMEOUT) result = VK_SUCCESS; /* client reports its own timeout */
++        send_fds(context->clientFd, &fd, 1, &result, sizeof(VkResult));
++        CLOSEFD(fd);
++        return;
++    }
++#endif
+     if (timeout != 0) {
+         VkResult result = VK_SUCCESS;
+         int fds[fenceCount];
+diff -ruN a/server/winlator/include/string_utils.h b/server/winlator/include/string_utils.h
+--- a/server/winlator/include/string_utils.h	2026-10-14 00:44:07.000000000 -0700
++++ b/server/winlator/include/string_utils.h	2026-10-14 01:04:17.835915297 -0700
+@@ -37,7 +37,7 @@
+     } \
+     while (0)
+ 
+-#ifdef __ANDROID__
++#if defined(__ANDROID__) || defined(VORTEK_HOST_TEST) /* DroidDeck: host harness */
+ #include <jni.h>
+ 
+ static inline ArrayList* jstringArrayToCharArray(JNIEnv* env, jobjectArray stringArray) {
