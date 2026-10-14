@@ -33,6 +33,7 @@ extern volatile unsigned g_zero_copy_last;
 extern volatile int g_ubwc;
 extern volatile int g_no_render_node;
 extern volatile int g_output_refresh_mhz;
+#include "adpf.h"
 extern volatile int g_output_w, g_output_h;
 
 #define TAG "DroidDeckWayland"
@@ -629,4 +630,26 @@ Java_com_droiddeck_launcher_wayland_WaylandCompositor_nativeRaisePriority(JNIEnv
     errno = 0;
     int after = getpriority(PRIO_PROCESS, (id_t)tid);
     return after == -1 && errno != 0 ? 100 : after;
+}
+
+/* Brief 004 §3, experimental: try to add proot guest tids to the compositor's ADPF session. */
+JNIEXPORT jint JNICALL
+Java_com_droiddeck_launcher_wayland_WaylandCompositor_nativeAdpfAddThreads(JNIEnv *env, jclass clazz, jintArray tids) {
+    (void)clazz;
+    if (!tids) return -EINVAL;
+    const jsize n = (*env)->GetArrayLength(env, tids);
+    if (n <= 0) return -EINVAL;
+    jint *t = (*env)->GetIntArrayElements(env, tids, NULL);
+    if (!t) return -ENOMEM;
+    pid_t buf[64];
+    const size_t m = n > 64 ? 64 : (size_t)n;
+    for (size_t i = 0; i < m; i++) buf[i] = (pid_t)t[i];
+    (*env)->ReleaseIntArrayElements(env, tids, t, JNI_ABORT);
+    return adpf_add_threads(buf, m);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_droiddeck_launcher_wayland_WaylandCompositor_nativeAdpfAvailable(JNIEnv *env, jclass clazz) {
+    (void)env; (void)clazz;
+    return adpf_available() ? JNI_TRUE : JNI_FALSE;
 }

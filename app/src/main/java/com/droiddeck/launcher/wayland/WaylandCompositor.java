@@ -165,6 +165,12 @@ public final class WaylandCompositor {
 
     public static native int nativeCompositorTid();
 
+    /** ADPF (brief 004 §3): true when APerformanceHint resolved (Android 13+). */
+    public static native boolean nativeAdpfAvailable();
+
+    /** Experimental: add guest tids to the compositor's hint session; 0 or -errno (compositor-only then). */
+    public static native int nativeAdpfAddThreads(int[] tids);
+
     public static native void nativeSetHideShell(boolean hide);
 
     public static native void nativeSetOutputRefreshRate(float hz);

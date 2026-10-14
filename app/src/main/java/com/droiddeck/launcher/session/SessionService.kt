@@ -466,6 +466,7 @@ class SessionService : Service() {
         sessionPid = pid
         if (pid > 1) {
             raiseTracer(pid, gen)
+            if (SessionPrefs.adpfGuestThreads(this)) tryAdpfGuestThreads(pid)
             SessionEvents.guestStarted(pid)
         } else {
             SessionEvents.record("guest.start_failed", mapOf("pid" to pid))
@@ -641,6 +642,18 @@ class SessionService : Service() {
         guest.add("FAKE_EVDEV_LOG=1")
         guest.add("FAKE_EVDEV_LOG_FILE=" + File(sessionDir, "pad.log").path)
         SessionState.fakeInputDir = fakeInputDir
+    }
+
+    /** Brief 004 §3 [UV]: whether ADPF accepts proot guest tids is unknown, so this is opt-in and best effort. */
+    private fun tryAdpfGuestThreads(pid: Int) {
+        Thread({
+            try { Thread.sleep(15_000) } catch (e: InterruptedException) { return@Thread }
+            val tids = File("/proc/$pid/task").list()?.mapNotNull { it.toIntOrNull() }.orEmpty()
+            if (tids.isEmpty() || !CompositorHost.isStarted) return@Thread
+            val r = runCatching { WaylandCompositor.nativeAdpfAddThreads(tids.toIntArray()) }
+            Log.i(TAG, "adpf: guest threads of pid $pid (${tids.size}): " +
+                r.fold({ if (it == 0) "added" else "refused ($it), compositor-only" }, { "failed ($it), compositor-only" }))
+        }, "adpf-guest").start()
     }
 
     private fun thermalSink() = object : ThermalComponent.Sink {

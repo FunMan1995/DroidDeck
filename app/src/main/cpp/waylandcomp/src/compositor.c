@@ -31,6 +31,7 @@
 #include <pthread.h>
 #include "effects_chain.h"
 #include "cardboard.h"
+#include "adpf.h"
 #include "droiddeck_ext.h"
 #include "droiddeck_color.h"
 #include "compositor_internal.h"
@@ -1962,6 +1963,7 @@ static void render_scene(void) {
     if (rendered && copy) g_perf.copy_scenes++;
     g_perf.scenes++;
     const int64_t scene_ns = now_ns() - t_scene;
+    if (rendered) adpf_frame(scene_ns, (int64_t)nominal_refresh_ns());
     g_perf.scene_ns += scene_ns;
     if (scene_ns > g_perf.scene_max_ns) g_perf.scene_max_ns = scene_ns;
 }
