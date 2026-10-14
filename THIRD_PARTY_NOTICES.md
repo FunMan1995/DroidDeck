@@ -27,3 +27,43 @@ DroidDeck is licensed under GPL-3.0. It bundles the third-party components below
 - Stubs: `GalaxyCommunication.exe` and `update-permissions.exe` are built from `dummy-service/communication.c` and `dummy-service/permissions.c` at the same commit (currently taken from the v0.3.2 release asset `dummy-service.zip`)
 - Sub-component:
   - gog_protocols: https://github.com/Yepoleb/gog_protocols, commit `923e8a0008603365d29002db611559190da5bf99`, license CC0-1.0 (`.proto` files compiled into comet)
+
+## gamescope
+- Version: 3.16.29, with DroidDeck patches (see `tools/gamescope/PATCHES.md`)
+- License: BSD-2-Clause, full text in `licenses/gamescope-BSD-2-Clause.txt`
+- Source: https://github.com/ValveSoftware/gamescope/archive/refs/tags/3.16.29.tar.gz (tag `3.16.29`); patched build: https://github.com/Droid-Deck/DroidDeck-Components/releases/tag/gamescope-3.16.29-p10 (asset `gamescope.tzst`, sha256 `e8e2433a…`)
+- Bundled files: `assets/linuxfs/usr/local/bin/gamescope`
+
+## uruntime
+- Version: v0.8.1 (asset `uruntime-appimage-lite-aarch64`, sha256 `8485ae20…`)
+- License: MIT, full text in `licenses/uruntime-MIT.txt`
+- Source: https://github.com/VHSgunzo/uruntime, tag `v0.8.1`
+- Bundled files: `assets/linuxfs/usr/local/lib/droiddeck/uruntime`
+
+## MangoHud (mangoapp) and its libraries
+Taken unchanged from SteamOS aarch64 packages (`tools/mangoapp/packages.txt`); bundled under `assets/linuxfs/usr/local/lib/mangoapp/`.
+- MangoHud: package `mangohud-20260902.1-1` (https://holo-packages.steamos.cloud/archlinux-deckard-hotfixes/release/0.4.x/mangohud-20260902.1-1-aarch64.pkg.tar.zst), license MIT, upstream https://github.com/flightlessmango/MangoHud (exact upstream tag/commit for this SteamOS build not yet pinned)
+- fmt 10.2.0: license MIT, source https://github.com/fmtlib/fmt/archive/refs/tags/10.2.0.tar.gz
+- spdlog 1.13.0: license MIT, source https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.tar.gz
+- glfw 3.4: license Zlib, source https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz
+- libtraceevent 1.8.2: license LGPL-2.1-only (library; GPL-2.0-only for tools not shipped), full texts in `licenses/LGPL-2.1.txt` and `licenses/GPL-2.0.txt`, source https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/snapshot/libtraceevent-1.8.2.tar.gz
+
+## PRoot and talloc
+Built from source by `tools/proot/build.sh` with the patches in `tools/proot/patches`; bundled as `jniLibs/arm64-v8a/libproot.so` and `libproot-loader.so`.
+- PRoot (Termux fork): commit `4dba3afbf3a63af89b4d9c1a59bf2bda10f4d10f`, license GPL-2.0-or-later, full text in `licenses/GPL-2.0.txt`, source https://github.com/termux/proot/archive/4dba3afbf3a63af89b4d9c1a59bf2bda10f4d10f.tar.gz (sha256 `de94f648…`)
+- talloc 2.4.3: license LGPL-3.0-or-later, full text in `licenses/LGPL-3.0.txt`, source https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz (sha256 `dc46c40b…`)
+
+## msitools set and 7-Zip
+Arch Linux ARM aarch64 builds, unchanged (`tools/msitools/packages.txt`, mirrored at https://github.com/Droid-Deck/DroidDeck/releases/tag/msitools-0.106-r1); bundled under `assets/linuxfs/usr/local/lib/droiddeck-msitools/`. PKGBUILD revisions are the Arch packaging tags (Arch Linux ARM builds these unmodified).
+- msitools 0.106 (`msiinfo`, `libmsi-1.0.so.0`): GPL-2.0-or-later / LGPL-2.1-or-later; source https://download.gnome.org/sources/msitools/0.106/msitools-0.106.tar.xz; PKGBUILD `0.106-3` https://gitlab.archlinux.org/archlinux/packaging/packages/msitools/-/raw/0.106-3/PKGBUILD
+- libgsf 1.14.60 (`libgsf-1.so.114`): LGPL-2.1-only; source https://download.gnome.org/sources/libgsf/1.14/libgsf-1.14.60.tar.xz; PKGBUILD `1.14.60-1` https://gitlab.archlinux.org/archlinux/packaging/packages/libgsf/-/raw/1.14.60-1/PKGBUILD
+- gcab 1.6 (`libgcab-1.0.so.0`): LGPL-2.1-or-later; source https://download.gnome.org/sources/gcab/1.6/gcab-1.6.tar.xz; PKGBUILD `1.6-2` https://gitlab.archlinux.org/archlinux/packaging/packages/gcab/-/raw/1.6-2/PKGBUILD
+- cabextract 1.11: GPL-3.0-or-later (per the tarball's COPYING); source https://www.cabextract.org.uk/cabextract-1.11.tar.gz; PKGBUILD `1.11-3` https://gitlab.archlinux.org/archlinux/packaging/packages/cabextract/-/raw/1.11-3/PKGBUILD
+- 7-Zip 26.04 (`7z`, `7z.so`): LGPL-2.1-or-later AND LicenseRef-UnRAR AND BSD-3-Clause AND BSD-2-Clause, texts in `licenses/7zip-License.txt` and `licenses/7zip-unRarLicense.txt`; source https://www.7-zip.org/a/7z2604-src.tar.xz; PKGBUILD `26.04-1` https://gitlab.archlinux.org/archlinux/packaging/packages/7zip/-/raw/26.04-1/PKGBUILD
+- License texts: `licenses/GPL-2.0.txt`, `licenses/GPL-3.0.txt`, `licenses/LGPL-2.1.txt`
+
+## PulseAudio
+- Version: 13.0, built from source by `tools/build_local.sh`
+- License: LGPL-2.1-or-later, full text in `licenses/LGPL-2.1.txt`
+- Source: https://github.com/pulseaudio/pulseaudio/archive/refs/tags/v13.0.tar.gz (tag `v13.0`, sha256 `bd7980bc9bd44bd3b3363545dabd19476ebf4d6bb6d2527e7d179256394a6758`)
+- Bundled files: `assets/pulseaudio.tzst`
