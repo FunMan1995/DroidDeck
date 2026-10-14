@@ -54,6 +54,8 @@ fi
 export ANDROID_HOME="${sdk_dir}"
 export ANDROID_SDK_ROOT="${sdk_dir}"
 export JAVA_HOME="${java_dir}"
+# apksigner and the other build-tools wrappers need java on PATH; JAVA_HOME alone is not enough.
+export PATH="${JAVA_HOME}/bin:${PATH}"
 export NDK="${sdk_dir}/ndk/${ndk_version}"
 
 staging_dir=$(mktemp -d "${TMPDIR:-/tmp}/droiddeck-build.XXXXXX")
@@ -70,6 +72,20 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 python3 "${repo_root}/tools/docker_preflight.py" "${image_name}"
+
+# Ownership guard: a run killed during a root container step (kill skips the EXIT trap) leaves
+# root-owned files that make the next rm -rf / Gradle step fail. Hand them back to this user first.
+foreign=$(find "${repo_root}" -xdev \( -name .git -o -name .gradle \) -prune -o ! -uid "$(id -u)" -print -quit 2>/dev/null || true)
+if [[ -n "${foreign}" ]]; then
+    echo "build_local: files not owned by $(id -un) (first: ${foreign#"${repo_root}/"}); restoring ownership via Docker" >&2
+    docker run --rm --platform linux/amd64 -v "${repo_root}:/src" public.ecr.aws/docker/library/debian:bullseye \
+        find /src -xdev \( -name .git -o -name .gradle \) -prune -o ! -uid "$(id -u)" -exec chown -h "$(id -u):$(id -g)" {} +
+    left=$(find "${repo_root}" -xdev \( -name .git -o -name .gradle \) -prune -o ! -uid "$(id -u)" -print -quit 2>/dev/null || true)
+    if [[ -n "${left}" ]]; then
+        echo "build_local: still not owned by $(id -un): ${left}" >&2
+        exit 1
+    fi
+fi
 rm -rf -- "${linuxfs_dir}"
 mkdir -p "${linuxfs_dir}"
 
@@ -305,7 +321,8 @@ python3 tools/quest/build-driver.py "${NDK}"
 bash tools/vortek/build-client.sh
 bash tools/comet/build-local.sh
 python3 tools/release/runtime_inputs.py record
-./gradlew "${gradle_task}" --console=plain -PndkVersion="${ndk_version}" ${gradle_rust_arg}
+# Kotlin compiles inside the Gradle JVM (one -Xmx cap); a separate Kotlin daemon OOMed at 1 GB in Lab.
+./gradlew "${gradle_task}" --console=plain -Pkotlin.compiler.execution.strategy=in-process -PndkVersion="${ndk_version}" ${gradle_rust_arg}
 python3 tools/release/check_session_assets.py "app/build/outputs/apk/${build_variant}/app-${build_variant}.apk"
 python3 tools/release/runtime_inputs.py apk "app/build/outputs/apk/${build_variant}/app-${build_variant}.apk"
 
