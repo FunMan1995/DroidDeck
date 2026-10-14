@@ -1,0 +1,7 @@
+# Upstream pins for the vendored Vortek sources (LGPL-2.1). Do not use vortek-2.1.tzst.
+VORTEK_CLIENT_REPO=https://github.com/brunodev85/vortek
+VORTEK_CLIENT_COMMIT=b1730c5def9b575672e671aee11d79ae7adc63d1
+VORTEK_SERVER_REPO=https://github.com/brunodev85/winlator-app
+VORTEK_SERVER_COMMIT=3981d86efa4f333b2a34a7da8b6521476cd8c8b9
+VORTEK_SERVER_SUBDIR=app/src/main/cpp/vortekrenderer
+VORTEK_COMPAT_SUBDIR=app/src/main/cpp/winlator

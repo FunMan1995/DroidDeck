@@ -81,3 +81,11 @@ Bundled under `assets/graphics_driver/`; each pack carries a `SOURCE.txt`. Drive
 - `adrenotools-turnip25.1.0` (`vulkan.ad07xx.so`, sha256 `af0d6bb3…`): Mesa 25.0.0-devel, upstream commit https://gitlab.freedesktop.org/mesa/mesa/-/commit/365cd04375baeb8c607c1a49e85e9a364e193a08 (the pack is named 25.1.0, the build reports 25.0.0-devel); obtained byte-identical from https://downloads.gamenative.app/graphics_driver/adrenotools-turnip25.1.0.tzst, original builder unknown
 - `adrenotools-turnip25.1.0-quest1`: the same `vulkan.ad07xx.so` as `turnip25.1.0`, plus the Quest adapter; built by `tools/quest/build-driver.py`
 - `adrenotools-turnip26.3.0-a6xx` and `adrenotools-turnip26.3.0-quest2` (`libvulkan_freedreno.so`): Banners-Turnip `v26.3.0-20261012-r2`, https://github.com/The412Banner/Banners-Turnip/releases/download/v26.3.0-20261012-r2/Turnip-v26.3.0-20261012-r2.zip (sha256 `bb1b2c51…`), Mesa commit https://gitlab.freedesktop.org/mesa/mesa/-/commit/a0ff50acf0e1d152f54949490fa41558d2e0f7a4; quest2 adds the Quest adapter; both built by `tools/quest/build-driver.py`
+
+## Vortek (Vulkan forwarding driver, Mali prototype)
+Built from source; the prebuilt `vortek-2.1.tzst` is not used. Sources vendored under `tools/vortek/` (pins in `tools/vortek/PINS`).
+- Vortek client (`libvulkan_vortek.so`): https://github.com/brunodev85/vortek @ `b1730c5def9b575672e671aee11d79ae7adc63d1`
+- Vortek renderer (`libvortekrenderer.so`): https://github.com/brunodev85/winlator-app @ `3981d86efa4f333b2a34a7da8b6521476cd8c8b9`, `app/src/main/cpp/vortekrenderer`, plus helper sources from `app/src/main/cpp/winlator` at the same commit
+- Copyright (c) brunodev85 and contributors. License: LGPL-2.1, full text in `licenses/LGPL-2.1.txt` and `tools/vortek/LICENSE`
+- Modified by DroidDeck; changes in `tools/vortek/patches` (dated). Corresponding source: the URLs above plus those patches
+- Bundled Vulkan headers (`include/vulkan`, `include/vk_video`): Khronos, Apache-2.0 / MIT
