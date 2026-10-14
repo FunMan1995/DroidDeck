@@ -11,9 +11,12 @@ src="$here/app/src/main/cpp/waylandcomp/src"
 "$bin/aarch64-linux-android26-clang" -c -Wall -Werror -Werror=unguarded-availability -I"$src" "$src/adpf.c" -o /dev/null
 echo "adpf.c: compiles for android26 (no direct APerformanceHint use)"
 if [[ $# -ge 1 ]]; then
-    if "$bin/llvm-nm" -D --undefined-only "$1" | grep -q APerformanceHint_; then
+    # Capture first: with pipefail, grep -q closing the pipe early fails the producer (SIGPIPE).
+    undefined=$("$bin/llvm-nm" -D --undefined-only "$1")
+    names=$("$bin/llvm-strings" "$1")
+    if grep -q APerformanceHint_ <<<"$undefined"; then
         echo "FAIL: $1 imports APerformanceHint_* directly" >&2; exit 1
     fi
-    "$bin/llvm-strings" "$1" | grep -q APerformanceHint_createSession || { echo "FAIL: dlsym name missing from $1" >&2; exit 1; }
+    grep -q APerformanceHint_createSession <<<"$names" || { echo "FAIL: dlsym name missing from $1" >&2; exit 1; }
     echo "$(basename "$1"): APerformanceHint_* resolved via dlsym only"
 fi
