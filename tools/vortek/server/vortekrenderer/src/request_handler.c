@@ -42,6 +42,7 @@ void vt_handle_vkCreateInstance(VkContext* context) {
     VkInstance instance;
     VkResult result = vulkanWrapper.vkCreateInstance(&createInfo, NULL, &instance);
     if (result == VK_SUCCESS) initVulkanInstance(context, instance, createInfo.pApplicationInfo);
+    if (result == VK_SUCCESS) dd_trackHandle((void**)context->ddLiveInstances, instance); /* DroidDeck */
 
     VT_SERIALIZE_CMD(VkInstance, instance);
     vt_send(context->clientRing, result, outputBuffer, bufferSize);
@@ -59,6 +60,7 @@ void vt_handle_vkDestroyInstance(VkContext* context) {
     }
 #endif
 
+    dd_untrackHandle((void**)context->ddLiveInstances, instance); /* DroidDeck */
     vulkanWrapper.vkDestroyInstance(instance, NULL);
 }
 
@@ -210,6 +212,7 @@ void vt_handle_vkCreateDevice(VkContext* context) {
 #endif
     if (result == VK_SUCCESS) initVulkanDevice(context, physicalDevice, device);
     if (result == VK_SUCCESS) dd_createDummyIndexBuffer(context, device); /* DroidDeck */
+    if (result == VK_SUCCESS) dd_trackHandle((void**)context->ddLiveDevices, device); /* DroidDeck */
 
     VT_SERIALIZE_CMD(VkDevice, device);
     vt_send(context->clientRing, result, outputBuffer, bufferSize);
@@ -221,6 +224,7 @@ void vt_handle_vkDestroyDevice(VkContext* context) {
     vt_unserialize_vkDestroyDevice((VkDevice)&deviceId, NULL, context->inputBuffer, &context->memoryPool);
     VkDevice device = VkObject_fromId(deviceId);
     dd_destroyDummyIndexBuffer(context, device); /* DroidDeck */
+    dd_untrackHandle((void**)context->ddLiveDevices, device); /* DroidDeck */
 
     vulkanWrapper.vkDestroyDevice(device, NULL);
 }

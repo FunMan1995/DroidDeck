@@ -19,6 +19,11 @@ typedef struct VkContext {
 
     bool hasExternalMemoryFd;
     bool hasExternalMemoryDMABuf;
+    /* DroidDeck: instances/devices the client still owns, destroyed when it disconnects without
+     * cleaning up (each leaked instance kept a driver memfd and memory alive; brief 003 run (f)). */
+#define DD_MAX_LIVE_HANDLES 16
+    VkInstance ddLiveInstances[DD_MAX_LIVE_HANDLES];
+    VkDevice ddLiveDevices[DD_MAX_LIVE_HANDLES];
     bool opaqueFdDedicatedOnly; /* DroidDeck: driver requires dedicated allocations for exported opaque-fd memory */
 
 #if ENABLE_VALIDATION_LAYER
@@ -63,5 +68,13 @@ typedef struct ExtraDataRequest {
 extern VkContext* createVkContext(JNIEnv *env, jobject obj, int clientFd, jobject options);
 extern void destroyVkContext(JNIEnv *env, VkContext* context);
 extern bool handleExtraDataRequest(VkContext* context, uint16_t requestId, int requestLength);
+
+/* DroidDeck: live-handle tracking (see VkContext.ddLiveInstances). */
+static inline void dd_trackHandle(void** slots, void* h) {
+    for (int i = 0; i < DD_MAX_LIVE_HANDLES; i++) if (!slots[i]) { slots[i] = h; return; }
+}
+static inline void dd_untrackHandle(void** slots, void* h) {
+    for (int i = 0; i < DD_MAX_LIVE_HANDLES; i++) if (slots[i] == h) slots[i] = NULL;
+}
 
 #endif

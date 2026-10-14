@@ -4,6 +4,7 @@
 #include "sysvshared_memory.h"
 #include "string_utils.h"
 #include "jni_utils.h"
+#include "droiddeck_shims.h" /* DroidDeck */
 
 static void loadJMethods(JMethods* jmethods) {
     JNIEnv* env;
@@ -144,6 +145,23 @@ void destroyVkContext(JNIEnv* env, VkContext* context) {
         context->requestHandlerThread = 0;
         RingBuffer_free(context->serverRing);
         RingBuffer_free(context->clientRing);
+    }
+
+    /* DroidDeck: the client exited (or crashed) without destroying everything; release what it left
+     * so the server process doesn't accumulate driver memory and fds across sessions. Child objects
+     * of a device are reclaimed by the driver with it. */
+    for (int i = 0; i < DD_MAX_LIVE_HANDLES; i++) {
+        VkDevice device = context->ddLiveDevices[i];
+        if (!device) continue;
+        vulkanWrapper.vkDeviceWaitIdle(device);
+        dd_destroyDummyIndexBuffer(context, device);
+        vulkanWrapper.vkDestroyDevice(device, NULL);
+        context->ddLiveDevices[i] = VK_NULL_HANDLE;
+    }
+    for (int i = 0; i < DD_MAX_LIVE_HANDLES; i++) {
+        if (!context->ddLiveInstances[i]) continue;
+        vulkanWrapper.vkDestroyInstance(context->ddLiveInstances[i], NULL);
+        context->ddLiveInstances[i] = VK_NULL_HANDLE;
     }
 
     if (context->jmethods.obj) {
