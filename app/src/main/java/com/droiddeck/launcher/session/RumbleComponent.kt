@@ -101,9 +101,9 @@ class RumbleComponent : SessionPart() {
 
     private fun target(slot: Int): Motors? {
         val id = PadBridge.controllerForSlot(slot)
-        if (id != PadBridge.NO_CONTROLLER && !controllers.containsKey(id))
-            controllers[id] = try { controllerMotors(id) } catch (e: Exception) { null }
-        return pick(id != PadBridge.NO_CONTROLLER, controllers[id], phone)
+        if (id == PadBridge.NO_CONTROLLER) return phone
+        if (!controllers.containsKey(id)) controllers[id] = try { controllerMotors(id) } catch (e: Exception) { null }
+        return controllers[id] ?: phone
     }
 
     private fun cancelAll() {
@@ -151,14 +151,6 @@ class RumbleComponent : SessionPart() {
         private const val TAG = "SessionService"
         const val NAME = "droiddeck-rumble"
         const val MIN_GAP_MS = 50L
-
-        /**
-         * Brief 007 §4: rumble goes to the pad's own motors (VibratorManager, API 31). The phone vibrator
-         * is used only when no physical pad drives the slot (on-screen controls); a pad without motors
-         * gets no rumble rather than buzzing the phone in the player's hands.
-         */
-        internal fun <T> pick(padDrivesSlot: Boolean, padMotors: T?, phone: T?): T? =
-            if (padDrivesSlot) padMotors else phone
 
         private fun oneShot(vibrator: Vibrator, strength: Int, ms: Long): VibrationEffect {
             val amplitude = if (vibrator.hasAmplitudeControl()) (strength * 255L / 65535L).toInt().coerceIn(1, 255)
