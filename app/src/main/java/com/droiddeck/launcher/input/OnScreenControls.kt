@@ -200,12 +200,18 @@ class OnScreenControls(
         relayout()
     }
 
+    /** Camera-hole rects (brief 005 §4); controls are nudged off them. */
+    private var holes: List<IntArray> = emptyList()
+
     override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {
         val fresh = if (Build.VERSION.SDK_INT >= 28) {
             val cutout = insets.displayCutout
             Rect(cutout?.safeInsetLeft ?: 0, cutout?.safeInsetTop ?: 0, cutout?.safeInsetRight ?: 0, cutout?.safeInsetBottom ?: 0)
         } else Rect()
-        if (fresh != safe) { safe = fresh; relayout() }
+        val freshHoles = CutoutAvoid.holes(insets)
+        val holesChanged = freshHoles.map { it.toList() } != holes.map { it.toList() }
+        holes = freshHoles
+        if (fresh != safe || holesChanged) { safe = fresh; relayout() }
         return super.onApplyWindowInsets(insets)
     }
 
@@ -229,6 +235,11 @@ class OnScreenControls(
             }
         }
         groups.forEach { clamp(it) }
+        if (holes.isNotEmpty()) groups.forEach { group ->
+            val (x, y) = centre(group); val e = extent(group)
+            val (nx, ny) = CutoutAvoid.nudge(x, y, e, e, holes, width, height, dp(4f))
+            if (nx != x || ny != y) put(group, nx, ny)
+        }
         invalidate()
     }
 

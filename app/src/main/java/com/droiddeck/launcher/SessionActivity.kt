@@ -2429,7 +2429,11 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
         if (Build.VERSION.SDK_INT >= 28) {
             window.attributes = window.attributes.apply {
-                layoutInDisplayCutoutMode = if (Build.VERSION.SDK_INT >= 30)
+                // Game surface stays under the hole (ALWAYS) unless "avoid camera" asks for a letterbox
+                // by the cutout's safe inset (NEVER keeps the window out of the cutout area).
+                layoutInDisplayCutoutMode = if (SessionPrefs.avoidCamera(this@SessionActivity))
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+                else if (Build.VERSION.SDK_INT >= 30)
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
                 else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             }

@@ -151,6 +151,7 @@ class MainActivity : ComponentActivity() {
     private var showPhantomGate by mutableStateOf(false)
     private var directAudio by mutableStateOf(false)
     private var stretch16x9 by mutableStateOf(false)
+    private var avoidCamera by mutableStateOf(false)
     private var orientation by mutableStateOf(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
     private var launcherFullscreen by mutableStateOf(true)
     private var animationsEnabled by mutableStateOf(true)
@@ -1225,6 +1226,9 @@ class MainActivity : ComponentActivity() {
         }, "remove-pkg").start()
     }
 
+    private fun hasCameraCutout(): Boolean = Build.VERSION.SDK_INT >= 30 &&
+        display?.cutout?.boundingRects?.isNotEmpty() == true
+
     @Composable
     private fun ModeSheetHost(mode: String, tab: String, extras: com.droiddeck.launcher.ui.SheetExtras) {
         if (settingsMode != mode) return
@@ -1249,6 +1253,7 @@ class MainActivity : ComponentActivity() {
                 backActionsInverted = backActionsInverted,
                 directAudio = if (mode == SessionService.MODE_STEAM) directAudio else null,
                 stretch16x9 = if (mode == SessionService.MODE_STEAM) stretch16x9 else null,
+                avoidCamera = if (hasCameraCutout()) avoidCamera else null,
                 mic = if (mode == SessionService.MODE_STEAM) mic else null,
                 gameStorage = if (mode == SessionService.MODE_STEAM) gameStorage else null,
                 storageOptions = storageOptions,
@@ -1310,6 +1315,7 @@ class MainActivity : ComponentActivity() {
                 },
                 onDirectAudio = { on -> SessionPrefs.setDirectAudio(this, on); directAudio = on },
                 onStretch16x9 = { on -> SessionPrefs.setStretch16x9(this, on); stretch16x9 = on },
+                onAvoidCamera = { on -> SessionPrefs.setAvoidCamera(this, on); avoidCamera = on },
                 onMic = { on ->
                     SessionPrefs.setMicEnabled(this, on)
                     mic = on
@@ -1473,6 +1479,7 @@ class MainActivity : ComponentActivity() {
         backActionsInverted = SessionPrefs.backActionsInverted(this)
         directAudio = SessionPrefs.directAudio(this)
         stretch16x9 = SessionPrefs.stretch16x9(this)
+        avoidCamera = SessionPrefs.avoidCamera(this)
         mic = SessionPrefs.micEnabled(this)
         refreshWifiDiscovery()
         gameStorage = SessionPrefs.gameStorage(this)

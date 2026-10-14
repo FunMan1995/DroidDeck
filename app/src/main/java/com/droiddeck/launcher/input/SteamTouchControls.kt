@@ -229,8 +229,30 @@ class SteamTouchControls(
         else -> 30f
     }
 
-    private fun cx(e: Element) = e.x * width
-    private fun cy(e: Element) = e.y * height
+    private fun cx(e: Element) = placed(e).first
+    private fun cy(e: Element) = placed(e).second
+
+    /** Brief 005 §4: element centres nudged off the camera hole; cleared on size/inset change. */
+    private var holes: List<IntArray> = emptyList()
+    private val placedCache = HashMap<Element, Pair<Float, Float>>()
+    private fun placed(e: Element): Pair<Float, Float> {
+        if (holes.isEmpty()) return e.x * width to e.y * height
+        if (placedCache.size > 256) placedCache.clear()
+        return placedCache.getOrPut(e) {
+            CutoutAvoid.nudge(e.x * width, e.y * height, radius(e), radiusY(e), holes, width, height, 4f * resources.displayMetrics.density)
+        }
+    }
+
+    override fun onApplyWindowInsets(insets: android.view.WindowInsets): android.view.WindowInsets {
+        val fresh = CutoutAvoid.holes(insets)
+        if (fresh.map { it.toList() } != holes.map { it.toList() }) { holes = fresh; placedCache.clear(); invalidate() }
+        return super.onApplyWindowInsets(insets)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        placedCache.clear()
+    }
 
     private fun reach(e: Element, x: Float, y: Float) = hypot((x - cx(e)) / radius(e), (y - cy(e)) / radiusY(e))
 

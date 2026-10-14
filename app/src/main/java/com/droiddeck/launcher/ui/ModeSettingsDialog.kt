@@ -80,6 +80,7 @@ class ModeSettings(
     val forceSsbs: Boolean = false,
     val syncBackend: String? = null,
     val stretch16x9: Boolean? = null,
+    val avoidCamera: Boolean? = null,
     val steamRepairQueued: Boolean = false,
     val mangoapp: Boolean = true,
     val steamController: String? = null,
@@ -124,6 +125,7 @@ class ModeSettingsActions(
     val onForceSsbs: (Boolean) -> Unit = {},
     val onSyncBackend: (String) -> Unit = {},
     val onStretch16x9: (Boolean) -> Unit = {},
+    val onAvoidCamera: (Boolean) -> Unit = {},
     val onSteamRepair: () -> Unit = {},
     val onMangoapp: (Boolean) -> Unit = {},
     val onSteamController: (String) -> Unit = {},
@@ -178,6 +180,11 @@ fun ModeSheetRows(s: ModeSettings, a: ModeSettingsActions, tab: String, extras: 
                     listOf(false to stringResource(R.string.display_preserve), true to stringResource(R.string.display_stretch)),
                     s.stretch16x9 && canStretch, enabled = canStretch, onPick = a.onStretch16x9)
             }
+            if (s.avoidCamera != null) ToggleRow(
+                host, "avoidCamera", stringResource(R.string.display_avoid_camera),
+                stringResource(R.string.display_avoid_camera_desc), s.avoidCamera,
+                onChange = a.onAvoidCamera,
+            )
         }
         SettingsGroup(stringResource(R.string.display_image_scaling)) {
             ChoiceRow(

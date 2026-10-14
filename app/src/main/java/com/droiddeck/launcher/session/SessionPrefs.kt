@@ -197,6 +197,13 @@ object SessionPrefs {
 
     fun stretch16x9(context: Context): Boolean = prefs(context).getBoolean("stretch16x9", false)
 
+    /** Brief 005 §4 (optional, default off): letterbox the session by the camera cutout's safe inset. */
+    fun avoidCamera(context: Context): Boolean = prefs(context).getBoolean("avoidCamera", false)
+
+    fun setAvoidCamera(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean("avoidCamera", on).apply()
+    }
+
     fun setStretch16x9(context: Context, on: Boolean) {
         prefs(context).edit().putBoolean("stretch16x9", on).apply()
     }
