@@ -4,6 +4,39 @@ export HOME=${HOME:-/root}
 mode=${1:-desktop}
 shift || true
 step() { echo "== STEP $(date -u +%H:%M:%S) $*"; }
+# >>> gamescope_args (tools/tests/test_gamescope_args.sh extracts and runs this block)
+# Builds the gamescope command line for $mode from BL_WIDTH/BL_HEIGHT/BL_REFRESH/BL_FPS/...
+# into the global array "args"; sets width/height/nested.
+gamescope_args() {
+  width=${BL_WIDTH:-1280}
+  height=${BL_HEIGHT:-720}
+  nested=$width
+  if [ "${BL_FOLLOW_OUTPUT:-0}" = 1 ]; then
+    echo "== gamescope: the output follows the screen (${width}x${height} to start)"
+  elif [ "$mode" = steam ] && [ "${BL_GAMESCOPE_STRETCH_16X9:-0}" = 1 ]; then
+    wide=$(( (height * 16 + 4) / 9 / 2 * 2 ))
+    if [ "$wide" -gt "$width" ]; then
+      nested=$wide
+      echo "== gamescope: games at ${nested}x${height} stretched to the ${width}x${height} output"
+    fi
+  fi
+  args=(--backend wayland --expose-wayland -f -W "$width" -H "$height" -w "$nested" -h "$height")
+  [ "$nested" != "$width" ] && args+=(-S stretch) && export BL_STRETCHED=1
+  if [ "${BL_FPS:-0}" -gt 0 ]; then
+    args+=(-r "$BL_FPS")
+  elif [ "${BL_REFRESH:-0}" -gt 0 ]; then
+    args+=(-r "$BL_REFRESH")
+  fi
+  [ "$mode" = steam ] && [ "${BL_STEAM_UI:-}" != desktop ] && args+=(-e)
+  if [ "$mode" = steam ] && [ "${BL_XWAYLAND_COUNT:-2}" -gt 1 ]; then
+    args+=(--xwayland-count "${BL_XWAYLAND_COUNT:-2}")
+    export STEAM_MULTIPLE_XWAYLANDS=1
+  fi
+  [ "$mode" = steam ] && args+=(--default-touch-mode 4)
+  [ "${BL_HDR:-0}" = 1 ] && args+=(--hdr-enabled)
+  [ -n "${BL_GAMESCOPE_ARGS:-}" ] && read -r -a _bl_extra <<<"$BL_GAMESCOPE_ARGS" && args+=("${_bl_extra[@]}")
+}
+# <<< gamescope_args
 if [ -n "${BL_LOG:-}" ] && [ -z "${BL_INSIDE:-}" ]; then
   mkdir -p "$(dirname "$BL_LOG")" 2>/dev/null
   if [ "$(stat -c %s "$BL_LOG" 2>/dev/null || echo 0)" -gt 8388608 ]; then
@@ -184,33 +217,7 @@ if [ -z "${BL_INSIDE:-}" ]; then
     fi
     exec /usr/local/bin/droiddeck-desktop
   fi
-  width=${BL_WIDTH:-1280}
-  height=${BL_HEIGHT:-720}
-  nested=$width
-  if [ "${BL_FOLLOW_OUTPUT:-0}" = 1 ]; then
-    echo "== gamescope: the output follows the screen (${width}x${height} to start)"
-  elif [ "$mode" = steam ] && [ "${BL_GAMESCOPE_STRETCH_16X9:-0}" = 1 ]; then
-    wide=$(( (height * 16 + 4) / 9 / 2 * 2 ))
-    if [ "$wide" -gt "$width" ]; then
-      nested=$wide
-      echo "== gamescope: games at ${nested}x${height} stretched to the ${width}x${height} output"
-    fi
-  fi
-  args=(--backend wayland --expose-wayland -f -W "$width" -H "$height" -w "$nested" -h "$height")
-  [ "$nested" != "$width" ] && args+=(-S stretch) && export BL_STRETCHED=1
-  if [ "${BL_FPS:-0}" -gt 0 ]; then
-    args+=(-r "$BL_FPS")
-  elif [ "${BL_REFRESH:-0}" -gt 0 ]; then
-    args+=(-r "$BL_REFRESH")
-  fi
-  [ "$mode" = steam ] && [ "${BL_STEAM_UI:-}" != desktop ] && args+=(-e)
-  if [ "$mode" = steam ] && [ "${BL_XWAYLAND_COUNT:-2}" -gt 1 ]; then
-    args+=(--xwayland-count "${BL_XWAYLAND_COUNT:-2}")
-    export STEAM_MULTIPLE_XWAYLANDS=1
-  fi
-  [ "$mode" = steam ] && args+=(--default-touch-mode 4)
-  [ "${BL_HDR:-0}" = 1 ] && args+=(--hdr-enabled)
-  [ -n "${BL_GAMESCOPE_ARGS:-}" ] && read -r -a _bl_extra <<<"$BL_GAMESCOPE_ARGS" && args+=("${_bl_extra[@]}")
+  gamescope_args
   if [ "$mode" = steam ] && [ "${BL_MANGOAPP:-1}" = 1 ] \
      && [ "${BL_STEAM_UI:-}" != desktop ] && command -v mangoapp >/dev/null 2>&1; then
     MANGOHUD_CONFIGFILE=/tmp/droiddeck-mangohud.conf
