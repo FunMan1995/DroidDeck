@@ -374,6 +374,8 @@ VkResult vt_call_vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSiz
 
     MappedMemory* mappedMemory = memoryObject->tag;
     if (mappedMemory->data) {
+        /* DroidDeck: a repeat map must still return the pointer (upstream left *ppData unset). */
+        *ppData = (char*)mappedMemory->data + offset;
         VT_CALL_UNLOCK();
         return VK_SUCCESS;
     }
@@ -382,16 +384,17 @@ VkResult vt_call_vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSiz
     VT_SEND_CHECKED(REQUEST_CODE_VK_MAP_MEMORY, VT_RETURN);
     
     int fd, result, numFds;
-    recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
+recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
     if (numFds == 1) {
-        if (size == VK_WHOLE_SIZE) size = mappedMemory->allocationSize;
-        mappedMemory->size = size;
-        
-        void* data = mmap(NULL, size, PROT_WRITE | PROT_READ, MAP_SHARED, fd, offset);
+        /* DroidDeck: map the whole allocation and offset the pointer; mmap() needs a page-aligned
+         * offset, while Vulkan allows any offset. */
+        (void)size;
+        mappedMemory->size = mappedMemory->allocationSize;
+        void* data = mmap(NULL, mappedMemory->size, PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
+        CLOSEFD(fd);
         if (data != MAP_FAILED) {
-            CLOSEFD(fd);
             mappedMemory->data = data;
-            *ppData = data;
+            *ppData = (char*)data + offset;
         }
         else result = VK_ERROR_MEMORY_MAP_FAILED;
     }
@@ -3161,7 +3164,7 @@ VkResult vt_call_vkMapMemory2KHR(VkDevice device, const VkMemoryMapInfoKHR* pMem
     VT_SEND_CHECKED(REQUEST_CODE_VK_MAP_MEMORY, VT_RETURN);
 
     int fd, result, numFds;
-    recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
+recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
     if (numFds == 1) {
         mappedMemory->size = pMemoryMapInfo->size;
         if (mappedMemory->size == VK_WHOLE_SIZE) mappedMemory->size = mappedMemory->allocationSize;
