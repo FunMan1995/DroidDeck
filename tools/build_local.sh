@@ -347,7 +347,14 @@ stores_check=()
 python3 tools/release/check_android_libraries.py "${apk}" --readelf "${readelf_path}" "${stores_check[@]}"
 git diff --exit-code -- app/src/main/rust/stores/Cargo.lock
 
-build_tools=$(find "${sdk_dir}/build-tools" -mindepth 1 -maxdepth 1 -type d -print | sort -V | tail -1)
+# Prefer the pinned build-tools (37.0.0) for zipalign/apksigner; apksigner is not under $JAVA_HOME/bin.
+build_tools_version=${BUILD_TOOLS_VERSION:-37.0.0}
+build_tools="${sdk_dir}/build-tools/${build_tools_version}"
+if [[ ! -x "${build_tools}/apksigner" ]]; then
+    build_tools=$(find "${sdk_dir}/build-tools" -mindepth 1 -maxdepth 1 -type d -print | sort -V | tail -1)
+fi
+export PATH="${build_tools}:${PATH}"
+echo "build-tools for zipalign/apksigner: ${build_tools}"
 if [[ ! -x "${build_tools}/zipalign" || ! -x "${build_tools}/apksigner" ]]; then
     echo "Android build-tools with zipalign/apksigner are required under ${sdk_dir}/build-tools." >&2
     exit 1
