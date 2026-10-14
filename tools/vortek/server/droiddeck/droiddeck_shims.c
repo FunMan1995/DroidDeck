@@ -2,10 +2,12 @@
  * DroidDeck batch-1 feature shims for the Vortek renderer (brief 003 §3).
  * Part of the DroidDeck build of the Vortek renderer, LGPL-2.1 (tools/vortek/LICENSE).
  */
+#include "texture_decoder.h"
 #include <stdatomic.h>
 #include "droiddeck_shims.h"
 #include "vk_context.h"
 #include "vulkan_helper.h"
+#include "texture_decoder.h"
 
 static atomic_bool loggedPolygonMode = false;
 
@@ -156,4 +158,14 @@ bool dd_relaxRobustBufferAccess2(VkPhysicalDevice physicalDevice, VkDeviceCreate
     if (enabled && features.features.robustBufferAccess) enabled->robustBufferAccess = VK_TRUE;
     println("vortek: robustBufferAccess2 not supported by the driver; using robustBufferAccess (v1) for this device");
     return true;
+}
+
+/* DroidDeck: the texture decoder owns a command pool/buffer and fence on the device it was created
+ * for; release them before that device goes away (VUID-vkDestroyDevice-device-05137, and a
+ * use-after-free in TextureDecoder_destroy when it ran after vkDestroyDevice). */
+void dd_destroyTextureDecoderFor(VkContext* context, VkDevice device) {
+    if (context->textureDecoder && context->textureDecoder->device == device) {
+        TextureDecoder_destroy(context->textureDecoder);
+        context->textureDecoder = NULL;
+    }
 }

@@ -22,6 +22,7 @@ extern void dd_stripExtensions(struct VkContext* context, char*** names, uint32_
 /* maintenance6 allows a NULL index buffer (reads as zero); bound to a zeroed dummy instead. */
 extern void dd_createDummyIndexBuffer(struct VkContext* context, VkDevice device);
 extern void dd_destroyDummyIndexBuffer(struct VkContext* context, VkDevice device);
+extern void dd_destroyTextureDecoderFor(struct VkContext* context, VkDevice device);
 #define DD_DUMMY_INDEX_BUFFER_SIZE 65536
 
 /* 3.3 Advertise VK_KHR_load_store_op_none when only the EXT exists; enable it as the EXT. */

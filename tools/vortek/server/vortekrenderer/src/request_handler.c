@@ -224,6 +224,7 @@ void vt_handle_vkDestroyDevice(VkContext* context) {
     vt_unserialize_vkDestroyDevice((VkDevice)&deviceId, NULL, context->inputBuffer, &context->memoryPool);
     VkDevice device = VkObject_fromId(deviceId);
     dd_destroyDummyIndexBuffer(context, device); /* DroidDeck */
+    dd_destroyTextureDecoderFor(context, device); /* DroidDeck */
     dd_untrackHandle((void**)context->ddLiveDevices, device); /* DroidDeck */
 
     vulkanWrapper.vkDestroyDevice(device, NULL);

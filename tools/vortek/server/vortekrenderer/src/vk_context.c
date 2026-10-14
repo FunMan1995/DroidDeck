@@ -155,6 +155,7 @@ void destroyVkContext(JNIEnv* env, VkContext* context) {
         if (!device) continue;
         vulkanWrapper.vkDeviceWaitIdle(device);
         dd_destroyDummyIndexBuffer(context, device);
+        dd_destroyTextureDecoderFor(context, device);
         vulkanWrapper.vkDestroyDevice(device, NULL);
         context->ddLiveDevices[i] = VK_NULL_HANDLE;
     }
