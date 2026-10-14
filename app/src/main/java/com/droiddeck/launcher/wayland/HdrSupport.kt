@@ -31,8 +31,7 @@ object HdrSupport {
         val caps = try { display.hdrCapabilities } catch (e: Exception) { null }
         val types = caps?.supportedHdrTypes ?: IntArray(0)
         val formats = types.joinToString(", ") { typeName(it) }
-        val ratioAvailable = Build.VERSION.SDK_INT >= 34 && try { display.isHdrSdrRatioAvailable } catch (e: Exception) { false }
-        val ratio = if (ratioAvailable) try { display.hdrSdrRatio } catch (e: Exception) { -1f } else -1f
+        val (ratioAvailable, ratio) = sdrRatio(Build.VERSION.SDK_INT, { display.isHdrSdrRatioAvailable }, { display.hdrSdrRatio })
         val hdr10 = types.contains(Display.HdrCapabilities.HDR_TYPE_HDR10)
         return HdrProbe(
             hdr10 = hdr10,
@@ -46,6 +45,25 @@ object HdrSupport {
             name = display.name ?: "display",
             reason = reason(context, hdr10, formats),
         )
+    }
+
+    /** The API 34 HDR/SDR ratio path; any failure reads as unavailable (-1). */
+    internal fun sdrRatio(sdk: Int, available: () -> Boolean, ratio: () -> Float): Pair<Boolean, Float> {
+        val ok = sdk >= 34 && try { available() } catch (e: Exception) { false }
+        val value = if (ok) try { ratio() } catch (e: Exception) { -1f } else -1f
+        return ok to value
+    }
+
+    /** One-line probe summary for the session log (brief 005 §5: tags komodo, HDR stays opt-in). */
+    fun logLine(probe: HdrProbe, device: String?, model: String?, wanted: Boolean): String {
+        val tag = if (device == "komodo") "komodo (Pixel 9 Pro XL)" else "${device ?: "?"} (${model ?: "?"})"
+        return String.format(java.util.Locale.US,
+            "hdr probe on %s: display %d \"%s\" formats [%s] hdr10=%b lum max %.0f avg %.0f min %.3f sdrRatio %s%s; requested=%b%s",
+            tag, probe.displayId, probe.name, probe.formats, probe.hdr10,
+            probe.maxLuminance, probe.maxAverageLuminance, probe.minLuminance,
+            if (probe.ratioAvailable) "available" else "unavailable",
+            if (probe.ratioAvailable) String.format(java.util.Locale.US, " (%.2f)", probe.ratio) else "",
+            wanted, probe.reason?.let { " (off: $it)" } ?: "")
     }
 
     private fun reason(context: Context, hdr10: Boolean, formats: String): String? = when {

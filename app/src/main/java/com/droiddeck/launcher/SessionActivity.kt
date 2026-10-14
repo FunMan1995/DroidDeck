@@ -1252,6 +1252,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
                 probe.ratioAvailable, probe.ratio, Build.VERSION.SDK_INT,
             )
             val wanted = SessionPrefs.hdr(this, mode)
+            Log.i(TAG, HdrSupport.logLine(probe, Build.DEVICE, Build.MODEL, wanted))
             val on = wanted && probe.reason == null
             SessionState.hdr = on
             if (on) {
