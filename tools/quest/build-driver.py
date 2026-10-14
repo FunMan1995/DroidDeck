@@ -106,6 +106,13 @@ def build(ndk, output=OUTPUT):
             '-ldl', '-llog', '-o', str(wrapper),
         ], check=True)
         subprocess.run([str(llvm / 'llvm-strip'), '--strip-unneeded', str(wrapper)], check=True)
+        source = (b'Mesa Turnip vulkan.ad07xx.so, unchanged from adrenotools-turnip25.1.0.tzst\n'
+                  b'Mesa version: 25.0.0-devel (git-365cd04375); '
+                  b'upstream commit 365cd04375baeb8c607c1a49e85e9a364e193a08\n'
+                  + f'Driver SHA256 {hashlib.sha256(driver).hexdigest()}\n'.encode()
+                  + f'Source pack SHA256 {hashlib.sha256(original.read_bytes()).hexdigest()}\n'.encode()
+                  + b'Quest adapter: DroidDeck tools/quest (GPL-3.0-or-later)\n'
+                  b'License: MIT (Mesa driver); GPL-3.0-or-later (adapter)\n')
         metadata = json.dumps({
             'libraryName': 'libquest_turnip.so',
             'name': 'Turnip Adreno 7xx - Quest GPUOBJ experimental',
@@ -115,7 +122,8 @@ def build(ndk, output=OUTPUT):
         stream = io.BytesIO()
         with tarfile.open(fileobj=stream, mode='w', format=tarfile.USTAR_FORMAT) as archive:
             for name, content in [('meta.json', metadata), ('libquest_turnip.so', wrapper.read_bytes()),
-                                  ('vulkan.ad07xx.so', driver)]:
+                                  ('vulkan.ad07xx.so', driver),
+                                  ('SOURCE.txt', source)]:
                 entry = tarfile.TarInfo(name)
                 entry.size = len(content)
                 entry.mode = 0o644
