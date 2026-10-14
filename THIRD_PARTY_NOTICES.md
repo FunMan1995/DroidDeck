@@ -19,3 +19,11 @@ DroidDeck is licensed under GPL-3.0. It bundles the third-party components below
   - `valve-experimental-11.0-20261001-arm64-…-r1`: https://github.com/ValveSoftware/Proton tag `experimental-11.0-20261001`, commit `70b7e109e8fc0783a509805f3d1bc090b55dac3f`, wine `6d211aabd1d325c9990a5fd7a81b9db37caae12d`
   - `valve-proton-11.0-2c-arm64-…-r1`: https://github.com/ValveSoftware/Proton tag `proton-11.0-2c`, commit `5b89db940e0ebe3a137a6009a3589232fe084c09`, wine `dc26e61847081a1b5cb0733dc30feba6ee575482`
 - Bundled files: `assets/droiddeck-esync/`
+
+## comet
+- Credit: comet by imLinguin (https://github.com/imLinguin/comet)
+- License: Apache-2.0, comet's LICENSE is shipped alongside the bundled files (no NOTICE file upstream)
+- Source: https://github.com/imLinguin/comet, tag `v0.3.2`, commit `3d7488ee72f83b7e8462a70fd4c4638d6da71360` (built from source with `tools/comet/droiddeck.patch` applied)
+- Stubs: `GalaxyCommunication.exe` and `update-permissions.exe` are built from `dummy-service/communication.c` and `dummy-service/permissions.c` at the same commit (currently taken from the v0.3.2 release asset `dummy-service.zip`)
+- Sub-component:
+  - gog_protocols: https://github.com/Yepoleb/gog_protocols, commit `923e8a0008603365d29002db611559190da5bf99`, license CC0-1.0 (`.proto` files compiled into comet)
