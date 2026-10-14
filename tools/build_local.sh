@@ -45,11 +45,8 @@ if [[ -f "${repo_root}/tools/gamescope/release.env" \
     exit 1
 fi
 
-ndk_version=${DROIDDECK_NDK_VERSION:-}
-if [[ -z "${ndk_version}" ]]; then
-    ndk_path=$(find "${sdk_dir}/ndk" -mindepth 2 -maxdepth 2 -name source.properties -print | xargs -n1 dirname | sort -V | tail -1)
-    ndk_version=${ndk_path##*/}
-fi
+# Pinned NDK; auto-detecting the newest entry under ndk/ can pick a non-NDK directory.
+ndk_version=${DROIDDECK_NDK_VERSION:-27.3.13750724}
 if [[ -z "${ndk_version}" || ! -d "${sdk_dir}/ndk/${ndk_version}" ]]; then
     echo "No Android NDK found under ${sdk_dir}/ndk; set DROIDDECK_NDK_VERSION." >&2
     exit 1
