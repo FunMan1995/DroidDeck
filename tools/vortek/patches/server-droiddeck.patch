@@ -1,6 +1,38 @@
 DroidDeck changes to the vendored Vortek server (LGPL-2.1), generated 2026-10-14
 Base: pristine import 9694fec01242005e334732eed048c7edd7561d85 (tools/vortek/PINS)
 
+diff --git a/tools/vortek/server/vortekrenderer/include/vk_context.h b/tools/vortek/server/vortekrenderer/include/vk_context.h
+index 6112461b..d1b92b22 100644
+--- a/tools/vortek/server/vortekrenderer/include/vk_context.h
++++ b/tools/vortek/server/vortekrenderer/include/vk_context.h
+@@ -46,6 +46,9 @@ typedef struct VkContext {
+     char* engineName;
+     uint32_t engineVersion;
+     VkDriverId driverID;
++
++    /* DroidDeck batch-1 shims (tools/vortek/server/droiddeck/droiddeck_shims.c) */
++    bool emulateFillModeNonSolid;
+ } VkContext;
+ 
+ typedef struct ExtraDataRequest {
+diff --git a/tools/vortek/server/vortekrenderer/src/async_pipeline_creator.c b/tools/vortek/server/vortekrenderer/src/async_pipeline_creator.c
+index 41f9ab98..73304530 100644
+--- a/tools/vortek/server/vortekrenderer/src/async_pipeline_creator.c
++++ b/tools/vortek/server/vortekrenderer/src/async_pipeline_creator.c
+@@ -1,4 +1,5 @@
+ #include "async_pipeline_creator.h"
++#include "droiddeck_shims.h"
+ #include "vortek_serializer.h"
+ #include "vulkan_helper.h"
+ 
+@@ -67,6 +68,7 @@ void AsyncPipelineCreator_create(VkContext* context, PipelineType type) {
+ 
+         VkGraphicsPipelineCreateInfo* createInfos = calloc(pipelineCreateRequest->pipelineCount, sizeof(VkGraphicsPipelineCreateInfo));
+         vt_unserialize_vkCreateGraphicsPipelines(VK_NULL_HANDLE, VK_NULL_HANDLE, NULL, createInfos, NULL, NULL, context->inputBuffer, &pipelineCreateRequest->memoryPool);
++        if (context->emulateFillModeNonSolid) dd_clampGraphicsPipelinePolygonModes(createInfos, pipelineCreateRequest->pipelineCount); /* DroidDeck */
+         pipelineCreateRequest->pipelineInfos = createInfos;
+     }
+     else if (type == PIPELINE_TYPE_COMPUTE) {
 diff --git a/tools/vortek/server/vortekrenderer/src/main.c b/tools/vortek/server/vortekrenderer/src/main.c
 index 92187853..939162d0 100644
 --- a/tools/vortek/server/vortekrenderer/src/main.c
@@ -75,3 +107,53 @@ index 92187853..939162d0 100644
                                                                                           jobject obj,
                                                                                           jlong contextPtr,
                                                                                           int requestId,
+diff --git a/tools/vortek/server/vortekrenderer/src/request_handler.c b/tools/vortek/server/vortekrenderer/src/request_handler.c
+index 0e4b6e5f..2c520241 100644
+--- a/tools/vortek/server/vortekrenderer/src/request_handler.c
++++ b/tools/vortek/server/vortekrenderer/src/request_handler.c
+@@ -1,4 +1,5 @@
+ #include "request_handler.h"
++#include "droiddeck_shims.h"
+ #include "vk_context.h"
+ #include "vulkan_helper.h"
+ #include "sysvshared_memory.h"
+@@ -157,6 +158,11 @@ void vt_handle_vkCreateDevice(VkContext* context) {
+     vt_unserialize_vkCreateDevice((VkPhysicalDevice)&physicalDeviceId, &createInfo, NULL, NULL, context->inputBuffer, &context->memoryPool);
+     VkPhysicalDevice physicalDevice = VkObject_fromId(physicalDeviceId);
+ 
++    /* DroidDeck: checkDeviceFeatures() advertises fillModeNonSolid; emulate it when the driver lacks it. */
++    VkPhysicalDeviceFeatures supportedFeatures = {0};
++    vulkanWrapper.vkGetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
++    context->emulateFillModeNonSolid = !supportedFeatures.fillModeNonSolid;
++
+     disableUnsupportedDeviceFeatures(physicalDevice, &createInfo);
+ 
+     const char* extraExtensions[] = {"VK_KHR_get_memory_requirements2", "VK_KHR_dedicated_allocation", "VK_KHR_external_memory", "VK_KHR_external_memory_fd", "VK_KHR_external_fence", "VK_KHR_external_fence_fd", "VK_ANDROID_external_memory_android_hardware_buffer", "VK_EXT_queue_family_foreign"};
+@@ -3080,6 +3086,7 @@ void vt_handle_vkCmdSetPolygonModeEXT(VkContext* context) {
+ 
+     vt_unserialize_vkCmdSetPolygonModeEXT((VkCommandBuffer)&commandBufferId, &polygonMode, context->inputBuffer, &context->memoryPool);
+     VkCommandBuffer commandBuffer = VkObject_fromId(commandBufferId);
++    if (context->emulateFillModeNonSolid) polygonMode = dd_clampPolygonMode(polygonMode); /* DroidDeck */
+ 
+     vulkanWrapper.vkCmdSetPolygonMode(commandBuffer, polygonMode);
+ }
+diff --git a/tools/vortek/server/winlator/include/native_handle.h b/tools/vortek/server/winlator/include/native_handle.h
+new file mode 100644
+index 00000000..dd52485a
+--- /dev/null
++++ b/tools/vortek/server/winlator/include/native_handle.h
+@@ -0,0 +1,13 @@
++#ifndef NATIVE_HANDLE_H
++#define NATIVE_HANDLE_H
++
++typedef struct native_handle {
++    int version;
++    int numFds;
++    int numInts;
++    int data[0];
++} native_handle_t;
++
++typedef const native_handle_t* buffer_handle_t;
++
++#endif
+\ No newline at end of file

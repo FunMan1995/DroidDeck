@@ -17,7 +17,8 @@ set(VT_SRC
         ${VT_ROOT}/winlator/src/arrays.c
         ${VT_ROOT}/winlator/src/ring_buffer.c
         ${VT_ROOT}/winlator/src/sysvshared_memory.c
-        ${CMAKE_CURRENT_LIST_DIR}/ahb_compat.c)
+        ${CMAKE_CURRENT_LIST_DIR}/ahb_compat.c
+        ${CMAKE_CURRENT_LIST_DIR}/droiddeck_shims.c)
 if(VORTEK_NO_XWINDOW)
     list(APPEND VT_SRC ${CMAKE_CURRENT_LIST_DIR}/xwindow_swapchain_stub.c)
 else()
@@ -25,7 +26,7 @@ else()
 endif()
 
 add_library(vortekrenderer SHARED ${VT_SRC})
-target_include_directories(vortekrenderer PRIVATE ${VT_ROOT}/vortekrenderer/include ${VT_ROOT}/winlator/include)
+target_include_directories(vortekrenderer PRIVATE ${VT_ROOT}/vortekrenderer/include ${VT_ROOT}/winlator/include ${CMAKE_CURRENT_LIST_DIR})
 target_compile_options(vortekrenderer PRIVATE -O2 -Wno-unused-function -Wimplicit-function-declaration -w)
 target_compile_definitions(vortekrenderer PRIVATE VK_USE_PLATFORM_ANDROID_KHR)
 target_link_libraries(vortekrenderer log android nativewindow)
