@@ -28,6 +28,32 @@ static AHardwareBuffer* allocateHardwareBuffer(int size) {
     return hardwareBuffer;
 }
 
+#ifdef VORTEK_HOST_TEST
+#include <sys/mman.h>
+#include <sys/stat.h>
+/* Host harness only: Mesa's os_malloc_aligned_fd() (lavapipe) puts a header in front of the data in
+ * the exported memfd, so fd offset 0 is not the start of the memory as it is with Android dma-buf/ion.
+ * Find the data offset by writing a token through the driver's mapping and looking for it in the fd. */
+static uint32_t hostFindFdDataOffset(VkDevice device, VkDeviceMemory memory, int fd) {
+    struct stat st;
+    if (fstat(fd, &st) != 0 || st.st_size <= 0) return 0;
+    uint8_t* p = NULL;
+    if (vulkanWrapper.vkMapMemory(device, memory, 0, VK_WHOLE_SIZE, 0, (void**)&p) != VK_SUCCESS || !p) return 0;
+    uint8_t* q = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    uint32_t offset = 0;
+    if (q != MAP_FAILED) {
+        uint64_t saved, token = 0x564f5254454b4844ull ^ (uintptr_t)p;
+        memcpy(&saved, p, 8); memcpy(p, &token, 8);
+        for (off_t o = 0; o + 8 <= st.st_size; o += 4096)
+            if (memcmp(q + o, &token, 8) == 0) { offset = (uint32_t)o; break; }
+        memcpy(p, &saved, 8);
+        munmap(q, st.st_size);
+    }
+    vulkanWrapper.vkUnmapMemory(device, memory);
+    return offset;
+}
+#endif
+
 ResourceMemory* ResourceMemory_allocate(VkContext* context, VkDevice device, VkMemoryAllocateInfo* memoryInfo) {
     uint64_t maxAllocationSize = (VkDeviceSize)context->maxDeviceMemory << 20;
     if (maxAllocationSize == 0) maxAllocationSize = deviceMemoryInfo.maxAllocationSize;
@@ -107,6 +133,9 @@ ResourceMemory* ResourceMemory_allocate(VkContext* context, VkDevice device, VkM
             result = vulkanWrapper.vkGetMemoryFd(device, &getFdInfo, &fd);
             if (result != VK_SUCCESS || fd <= 0) goto error;
             resourceMemory->fd = fd;
+#ifdef VORTEK_HOST_TEST
+            resourceMemory->hostFdOffset = hostFindFdDataOffset(device, resourceMemory->memory, fd);
+#endif
         }
         else {
             if ((getMemoryPropertyFlags(memoryInfo->memoryTypeIndex) & VK_MEMORY_PROPERTY_HOST_CACHED_BIT)) {

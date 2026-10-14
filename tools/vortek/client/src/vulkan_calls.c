@@ -384,13 +384,22 @@ VkResult vt_call_vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSiz
     VT_SEND_CHECKED(REQUEST_CODE_VK_MAP_MEMORY, VT_RETURN);
     
     int fd, result, numFds;
-recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
+#ifdef VORTEK_HOST_TEST
+    /* host harness: the server also reports where the data starts in lavapipe's memfd */
+    struct { int result; uint32_t offset; } reply = {VK_ERROR_MEMORY_MAP_FAILED, 0};
+    recv_fds(serverFd, &fd, &numFds, &reply, sizeof(reply));
+    result = reply.result;
+    const off_t hostFdOffset = reply.offset;
+#else
+    recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
+    const off_t hostFdOffset = 0;
+#endif
     if (numFds == 1) {
         /* DroidDeck: map the whole allocation and offset the pointer; mmap() needs a page-aligned
          * offset, while Vulkan allows any offset. */
         (void)size;
         mappedMemory->size = mappedMemory->allocationSize;
-        void* data = mmap(NULL, mappedMemory->size, PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
+        void* data = mmap(NULL, mappedMemory->size, PROT_WRITE | PROT_READ, MAP_SHARED, fd, hostFdOffset);
         CLOSEFD(fd);
         if (data != MAP_FAILED) {
             mappedMemory->data = data;
@@ -3164,7 +3173,16 @@ VkResult vt_call_vkMapMemory2KHR(VkDevice device, const VkMemoryMapInfoKHR* pMem
     VT_SEND_CHECKED(REQUEST_CODE_VK_MAP_MEMORY, VT_RETURN);
 
     int fd, result, numFds;
-recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
+#ifdef VORTEK_HOST_TEST
+    /* host harness: the server also reports where the data starts in lavapipe's memfd */
+    struct { int result; uint32_t offset; } reply = {VK_ERROR_MEMORY_MAP_FAILED, 0};
+    recv_fds(serverFd, &fd, &numFds, &reply, sizeof(reply));
+    result = reply.result;
+    const off_t hostFdOffset = reply.offset;
+#else
+    recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
+    const off_t hostFdOffset = 0;
+#endif
     if (numFds == 1) {
         mappedMemory->size = pMemoryMapInfo->size;
         if (mappedMemory->size == VK_WHOLE_SIZE) mappedMemory->size = mappedMemory->allocationSize;
@@ -3172,7 +3190,7 @@ recv_fds(serverFd, &fd, &numFds, &result, sizeof(VkResult));
         VkMemoryMapPlacedInfoEXT* placedInfo = findNextVkStructure(pMemoryMapInfo->pNext, VK_STRUCTURE_TYPE_MEMORY_MAP_PLACED_INFO_EXT);
         void* placedAddr = placedInfo ? placedInfo->pPlacedAddress : NULL;
 
-        void* data = mmap(placedAddr, mappedMemory->size, PROT_WRITE | PROT_READ, MAP_SHARED | (placedAddr ? MAP_FIXED : 0), fd, pMemoryMapInfo->offset);
+        void* data = mmap(placedAddr, mappedMemory->size, PROT_WRITE | PROT_READ, MAP_SHARED | (placedAddr ? MAP_FIXED : 0), fd, hostFdOffset + pMemoryMapInfo->offset);
         if (data != MAP_FAILED) {
             CLOSEFD(fd);
             mappedMemory->data = data;

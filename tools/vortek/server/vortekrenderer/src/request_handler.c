@@ -363,7 +363,12 @@ void vt_handle_vkMapMemory(VkContext* context) {
     ResourceMemory* resourceMemory = VkObject_fromId(memoryId);
 
     VkResult result = resourceMemory->fd != -1 ? VK_SUCCESS : VK_ERROR_MEMORY_MAP_FAILED;
+#ifdef VORTEK_HOST_TEST
+    struct { VkResult result; uint32_t offset; } reply = {result, resourceMemory->hostFdOffset};
+    send_fds(context->clientFd, &resourceMemory->fd, 1, &reply, sizeof(reply));
+#else
     send_fds(context->clientFd, &resourceMemory->fd, 1, &result, sizeof(VkResult));
+#endif
 }
 
 void vt_handle_vkUnmapMemory(VkContext* context) {

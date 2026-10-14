@@ -18,6 +18,9 @@ typedef struct ResourceMemory {
     VkBuffer buffer;
     VkDeviceMemory memory;
     VkDeviceSize allocationSize;
+#ifdef VORTEK_HOST_TEST
+    uint32_t hostFdOffset; /* lavapipe's exported memfd starts with a Mesa header page; data lives here */
+#endif
 } ResourceMemory;
 
 extern ResourceMemory* ResourceMemory_allocate(VkContext* context, VkDevice device, VkMemoryAllocateInfo* memoryInfo);

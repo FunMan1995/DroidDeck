@@ -81,7 +81,7 @@ int main(void) {
 
     /* Color target, 64x64, LOAD_OP_NONE_KHR. */
     VkImageCreateInfo ii = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, NULL, 0, VK_IMAGE_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, {64, 64, 1}, 1, 1,
-                            VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, NULL, VK_IMAGE_LAYOUT_UNDEFINED};
+                            VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, NULL, VK_IMAGE_LAYOUT_UNDEFINED};
     VkImage img; CHECK(vkCreateImage(dev, &ii, NULL, &img));
     VkMemoryRequirements req; vkGetImageMemoryRequirements(dev, img, &req);
     VkMemoryAllocateInfo mai = {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, NULL, req.size, memType(pd, req.memoryTypeBits, 0)};
@@ -138,7 +138,7 @@ int main(void) {
     VkPipeline pipe; CHECK(vkCreateGraphicsPipelines(dev, VK_NULL_HANDLE, 1, &gpi, NULL, &pipe));
     printf("ok   VK_POLYGON_MODE_LINE pipeline created\n");
 
-    VkCommandPoolCreateInfo cpi = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, NULL, 0, 0};
+    VkCommandPoolCreateInfo cpi = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, NULL, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, 0};
     VkCommandPool cpool; CHECK(vkCreateCommandPool(dev, &cpi, NULL, &cpool));
     VkCommandBufferAllocateInfo cai = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, NULL, cpool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1};
     VkCommandBuffer cmd; CHECK(vkAllocateCommandBuffers(dev, &cai, &cmd));
@@ -168,6 +168,45 @@ int main(void) {
     CHECK(vkQueueSubmit(q, 1, &si, fence));
     CHECK(vkWaitForFences(dev, 1, &fence, VK_TRUE, 10ull * 1000 * 1000 * 1000));
     printf("ok   draw with bindDescriptorSets2 (GRAPHICS|COMPUTE), pushConstants2, NULL index buffer\n");
+
+    /* Data path: client-mapped writes reach the GPU, GPU results reach the client mapping, and the
+     * draw above actually produced pixels (vkcube showed only the clear color through Vortek). */
+    {
+        const uint32_t n = 64 * 64;
+        VkBuffer src, dst; VkDeviceMemory smem, dmem;
+        VkBufferCreateInfo xb = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, NULL, 0, n * 4, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT};
+        CHECK(vkCreateBuffer(dev, &xb, NULL, &src)); CHECK(vkCreateBuffer(dev, &xb, NULL, &dst));
+        vkGetBufferMemoryRequirements(dev, src, &req);
+        VkMemoryAllocateInfo xm = {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, NULL, req.size, memType(pd, req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)};
+        CHECK(vkAllocateMemory(dev, &xm, NULL, &smem)); CHECK(vkAllocateMemory(dev, &xm, NULL, &dmem));
+        CHECK(vkBindBufferMemory(dev, src, smem, 0)); CHECK(vkBindBufferMemory(dev, dst, dmem, 0));
+        uint32_t* sp; CHECK(vkMapMemory(dev, smem, 0, VK_WHOLE_SIZE, 0, (void**)&sp));
+        for (uint32_t i = 0; i < n; i++) sp[i] = 0xA5000000u | i;
+        uint32_t* sp2 = NULL; CHECK(vkMapMemory(dev, smem, 0, VK_WHOLE_SIZE, 0, (void**)&sp2)); /* repeat map */
+        EXPECT(sp2 == sp, "repeat vkMapMemory returns the same pointer");
+        uint32_t* dp; CHECK(vkMapMemory(dev, dmem, 0, VK_WHOLE_SIZE, 0, (void**)&dp)); memset(dp, 0, n * 4);
+        CHECK(vkResetCommandBuffer(cmd, 0)); CHECK(vkBeginCommandBuffer(cmd, &cbi));
+        VkBufferCopy bc = {0, 0, n * 4}; vkCmdCopyBuffer(cmd, src, dst, 1, &bc);
+        CHECK(vkEndCommandBuffer(cmd)); CHECK(vkResetFences(dev, 1, &fence));
+        CHECK(vkQueueSubmit(q, 1, &si, fence)); CHECK(vkWaitForFences(dev, 1, &fence, VK_TRUE, 10ull * 1000 * 1000 * 1000));
+        uint32_t bad = 0; for (uint32_t i = 0; i < n; i++) bad += dp[i] != (0xA5000000u | i);
+        EXPECT(bad == 0, "client-written buffer copied by the GPU reads back in the client");
+        if (bad) fprintf(stderr, "     %u/%u words differ, dp[0]=%08x dp[1]=%08x\n", bad, n, dp[0], dp[1]);
+        memset(dp, 0, n * 4);
+        CHECK(vkResetCommandBuffer(cmd, 0)); CHECK(vkBeginCommandBuffer(cmd, &cbi));
+        VkImageMemoryBarrier toSrc = {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, NULL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, img, {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}};
+        vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, NULL, 0, NULL, 1, &toSrc);
+        VkBufferImageCopy ic = {0, 0, 0, {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1}, {0, 0, 0}, {64, 64, 1}};
+        vkCmdCopyImageToBuffer(cmd, img, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dst, 1, &ic);
+        CHECK(vkEndCommandBuffer(cmd)); CHECK(vkResetFences(dev, 1, &fence));
+        CHECK(vkQueueSubmit(q, 1, &si, fence)); CHECK(vkWaitForFences(dev, 1, &fence, VK_TRUE, 10ull * 1000 * 1000 * 1000));
+        uint32_t lit = 0; for (uint32_t i = 0; i < n; i++) lit += dp[i] != 0;
+        EXPECT(lit > 0, "the draw produced pixels (image -> buffer readback)");
+        fprintf(stderr, "     %u/%u pixels written by the draw\n", lit, n);
+        vkUnmapMemory(dev, smem); vkUnmapMemory(dev, dmem);
+        vkDestroyBuffer(dev, src, NULL); vkDestroyBuffer(dev, dst, NULL); vkFreeMemory(dev, smem, NULL); vkFreeMemory(dev, dmem, NULL);
+    }
 
     vkDestroyFence(dev, fence, NULL);
     vkDestroyCommandPool(dev, cpool, NULL);

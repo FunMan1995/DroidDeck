@@ -30,7 +30,7 @@ gcc -std=gnu11 -O1 -g -w -Wno-error=incompatible-pointer-types -Wno-error=int-co
 # Client: the guest ICD built for x86_64.
 cli=(src/main.c src/vulkan_calls.c src/vk_object.c src/vk_object_pool.c src/arrays.c src/descriptor_update_template.c src/ring_buffer.c)
 for f in src/droiddeck_shims.c src/dd_present.c; do [[ -f "$v/client/$f" ]] && cli+=("$f"); done
-(cd "$v/client" && gcc -shared -fPIC -O1 -g -w -DVK_USE_PLATFORM_XLIB_KHR -Iinclude -idirafter "$hdrs" -idirafter "$x11" \
+(cd "$v/client" && gcc -shared -fPIC -O1 -g -w -DVORTEK_HOST_TEST -DVK_USE_PLATFORM_XLIB_KHR -Iinclude -idirafter "$hdrs" -idirafter "$x11" \
     "${cli[@]}" -o "$out/libvulkan_vortek.so" -lpthread)
 printf '{"file_format_version":"1.0.0","ICD":{"api_version":"1.3.0","library_path":"%s/libvulkan_vortek.so"}}\n' "$out" > "$out/vortek_icd.x86_64.json"
 
