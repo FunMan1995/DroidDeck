@@ -1531,10 +1531,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
 
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        when (event.keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_MUTE ->
-                return super.dispatchKeyEvent(event)
-        }
+        if (PadBridge.isSystemVolumeKey(event.keyCode)) return super.dispatchKeyEvent(event)
         if (pipUi) return true
         val fromController = PadBridge.isControllerKeyEvent(event)
         if (fromController && event.action == KeyEvent.ACTION_DOWN) {

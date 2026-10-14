@@ -141,7 +141,14 @@ public final class PadBridge {
         return false;
     }
 
+    /** Volume keys always stay system volume (never mapped to the guest pad), whatever device sends them. */
+    public static boolean isSystemVolumeKey(int keyCode) {
+        return keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+                || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE;
+    }
+
     public static boolean isControllerKeyEvent(KeyEvent event) {
+        if (isSystemVolumeKey(event.getKeyCode())) return false;
         InputDevice device = event.getDevice();
         if (device == null || device.isVirtual()) return false;
         if (KeyEvent.isGamepadButton(event.getKeyCode())) {
@@ -269,12 +276,22 @@ public final class PadBridge {
         scheduleStats();
         pad.leftX = axis(event, MotionEvent.AXIS_X);
         pad.leftY = axis(event, MotionEvent.AXIS_Y);
-        pad.rightX = axis(event, MotionEvent.AXIS_Z);
-        pad.rightY = axis(event, MotionEvent.AXIS_RZ);
-        float lt = event.getAxisValue(MotionEvent.AXIS_LTRIGGER);
-        float rt = event.getAxisValue(MotionEvent.AXIS_RTRIGGER);
-        if (lt == 0f) lt = event.getAxisValue(MotionEvent.AXIS_BRAKE);
-        if (rt == 0f) rt = event.getAxisValue(MotionEvent.AXIS_GAS);
+        float lt, rt;
+        float[] sony = sonyLayout(event.getDevice());
+        if (sony != null) {
+            // DualSense/DS4 through Generic.kl: right stick on RX/RY, analog triggers on Z/RZ.
+            pad.rightX = axis(event, MotionEvent.AXIS_RX);
+            pad.rightY = axis(event, MotionEvent.AXIS_RY);
+            lt = PadProfiles.INSTANCE.trigger(event.getAxisValue(MotionEvent.AXIS_Z), sony[0]);
+            rt = PadProfiles.INSTANCE.trigger(event.getAxisValue(MotionEvent.AXIS_RZ), sony[1]);
+        } else {
+            pad.rightX = axis(event, MotionEvent.AXIS_Z);
+            pad.rightY = axis(event, MotionEvent.AXIS_RZ);
+            lt = event.getAxisValue(MotionEvent.AXIS_LTRIGGER);
+            rt = event.getAxisValue(MotionEvent.AXIS_RTRIGGER);
+            if (lt == 0f) lt = event.getAxisValue(MotionEvent.AXIS_BRAKE);
+            if (rt == 0f) rt = event.getAxisValue(MotionEvent.AXIS_GAS);
+        }
         pad.leftTrigger = lt;
         pad.rightTrigger = rt;
         float hatX = event.getAxisValue(MotionEvent.AXIS_HAT_X);
@@ -335,6 +352,7 @@ public final class PadBridge {
         for (int slot = 0; slot < SLOTS; slot++) {
             if (owners[slot] == deviceId) free(slot);
         }
+        sonyLayouts.remove(deviceId);
     }
 
     private static boolean nativeQam() {
@@ -493,6 +511,32 @@ public final class PadBridge {
         if (qam) effectiveState.press(PadState.QAM, true);
         if (qamSyntheticAPressed) effectiveState.press(PadState.A, true);
         writer.writePad(effectiveState);
+    }
+
+    private static final float[] NOT_SONY = new float[0];
+    private final java.util.Map<Integer, float[]> sonyLayouts = new java.util.HashMap<>();
+
+    /** {zMin, rzMin} when this device is a Sony pad on the Generic.kl layout, else null (cached per device id). */
+    private float[] sonyLayout(InputDevice device) {
+        float[] cached = sonyLayouts.get(device.getId());
+        if (cached == null) {
+            cached = sonyLayoutOf(device);
+            sonyLayouts.put(device.getId(), cached);
+            if (cached != NOT_SONY) Log.i(TAG, "\"" + device.getName() + "\": Sony Generic.kl layout (right stick RX/RY, triggers Z/RZ)");
+        }
+        return cached == NOT_SONY ? null : cached;
+    }
+
+    static float[] sonyLayoutOf(InputDevice device) {
+        InputDevice.MotionRange z = device.getMotionRange(MotionEvent.AXIS_Z, InputDevice.SOURCE_JOYSTICK);
+        InputDevice.MotionRange rz = device.getMotionRange(MotionEvent.AXIS_RZ, InputDevice.SOURCE_JOYSTICK);
+        boolean generic = PadProfiles.INSTANCE.sonyGenericLayout(device.getVendorId(),
+                device.getMotionRange(MotionEvent.AXIS_RX, InputDevice.SOURCE_JOYSTICK) != null,
+                device.getMotionRange(MotionEvent.AXIS_RY, InputDevice.SOURCE_JOYSTICK) != null,
+                device.getMotionRange(MotionEvent.AXIS_LTRIGGER, InputDevice.SOURCE_JOYSTICK) != null,
+                device.getMotionRange(MotionEvent.AXIS_BRAKE, InputDevice.SOURCE_JOYSTICK) != null);
+        if (!generic || z == null || rz == null) return NOT_SONY;
+        return new float[] {z.getMin(), rz.getMin()};
     }
 
     private static float axis(MotionEvent event, int axis) {
