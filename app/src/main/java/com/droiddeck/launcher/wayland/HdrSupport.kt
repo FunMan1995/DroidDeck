@@ -31,7 +31,9 @@ object HdrSupport {
         val caps = try { display.hdrCapabilities } catch (e: Exception) { null }
         val types = caps?.supportedHdrTypes ?: IntArray(0)
         val formats = types.joinToString(", ") { typeName(it) }
-        val (ratioAvailable, ratio) = sdrRatio(Build.VERSION.SDK_INT, { display.isHdrSdrRatioAvailable }, { display.hdrSdrRatio })
+        val (ratioAvailable, ratio) = sdrRatio(Build.VERSION.SDK_INT,
+            { Build.VERSION.SDK_INT >= 34 && display.isHdrSdrRatioAvailable },
+            { if (Build.VERSION.SDK_INT >= 34) display.hdrSdrRatio else -1f })
         val hdr10 = types.contains(Display.HdrCapabilities.HDR_TYPE_HDR10)
         return HdrProbe(
             hdr10 = hdr10,
