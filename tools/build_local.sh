@@ -243,14 +243,11 @@ install -m644 "${repo_root}/tools/mangoapp/mangoapp" "${linuxfs_dir}/usr/local/b
 
 pa_source=${DROIDDECK_PA13_SOURCE_DIR:-"${staging_dir}/pulseaudio-13.0"}
 if [[ -z "${DROIDDECK_PA13_SOURCE_DIR:-}" ]]; then
-    pa_tarball="${cache_dir}/pulseaudio-13.0.tar.gz"
-    if [[ ! -s "${pa_tarball}" ]] || ! tar -tzf "${pa_tarball}" >/dev/null 2>&1; then
-        curl -fsSL -o "${pa_tarball}.part" \
-            https://github.com/pulseaudio/pulseaudio/archive/refs/tags/v13.0.tar.gz
-        mv "${pa_tarball}.part" "${pa_tarball}"
-    fi
+    # Official release tarball, the same file and sha256 as THIRD_PARTY_NOTICES.md.
+    pa_tarball=$(cached 961b23ca1acfd28f2bc87414c27bb40e12436efcf2158d29721b1e89f3f28057 pulseaudio-13.0.tar.xz \
+        bash -c 'curl -fsSL --retry 3 -o "$out" "$0"' https://freedesktop.org/software/pulseaudio/releases/pulseaudio-13.0.tar.xz)
     mkdir -p "${pa_source}"
-    tar -xzf "${pa_tarball}" -C "${pa_source}" --strip-components=1
+    tar -xJf "${pa_tarball}" -C "${pa_source}" --strip-components=1
 fi
 if [[ ! -f "${pa_source}/src/pulse/version.h.in" ]]; then
     echo "PulseAudio 13.0 source not found at ${pa_source}; set DROIDDECK_PA13_SOURCE_DIR." >&2

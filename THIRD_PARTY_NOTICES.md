@@ -65,7 +65,7 @@ Arch Linux ARM aarch64 builds, unchanged (`tools/msitools/packages.txt`, mirrore
 ## PulseAudio
 - Version: 13.0, built from source by `tools/build_local.sh`
 - License: LGPL-2.1-or-later, full text in `licenses/LGPL-2.1.txt`
-- Source: https://freedesktop.org/software/pulseaudio/releases/pulseaudio-13.0.tar.xz (release tarball for tag `v13.0`, sha256 `961b23ca1acfd28f2bc87414c27bb40e12436efcf2158d29721b1e89f3f28057`)
+- Source: https://freedesktop.org/software/pulseaudio/releases/pulseaudio-13.0.tar.xz (release tarball for tag `v13.0`, sha256 `961b23ca1acfd28f2bc87414c27bb40e12436efcf2158d29721b1e89f3f28057`); downloaded and sha256-checked by `tools/build_local.sh`
 - Bundled files: `assets/pulseaudio.tzst`
 
 ## libsndfile and libltdl (PulseAudio dependencies)
