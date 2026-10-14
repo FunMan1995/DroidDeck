@@ -164,6 +164,7 @@ void vt_handle_vkCreateDevice(VkContext* context) {
     context->emulateFillModeNonSolid = !supportedFeatures.fillModeNonSolid;
 
     disableUnsupportedDeviceFeatures(physicalDevice, &createInfo);
+    dd_relaxRobustBufferAccess2(physicalDevice, &createInfo); /* DroidDeck batch 2 */
 
     const char* extraExtensions[] = {"VK_KHR_get_memory_requirements2", "VK_KHR_dedicated_allocation", "VK_KHR_external_memory", "VK_KHR_external_memory_fd", "VK_KHR_external_fence", "VK_KHR_external_fence_fd", "VK_ANDROID_external_memory_android_hardware_buffer", "VK_EXT_queue_family_foreign"};
     injectExtensions(context, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount,
@@ -2121,6 +2122,7 @@ void vt_handle_vkGetPhysicalDeviceFeatures2(VkContext* context) {
 
     vulkanWrapper.vkGetPhysicalDeviceFeatures2(physicalDevice, &features);
     checkDeviceFeatures(&features.features, features.pNext);
+    dd_advertiseRobustBufferAccess2(features.pNext); /* DroidDeck batch 2 */
 
     VT_SERIALIZE_CMD(VkPhysicalDeviceFeatures2, &features);
     vt_send(context->clientRing, 0, outputBuffer, bufferSize);

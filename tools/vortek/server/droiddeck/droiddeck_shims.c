@@ -129,3 +129,31 @@ void dd_rewriteLoadStoreOpNone(struct VkContext* context, VkPhysicalDevice physi
     out[khr] = (char*)DD_LSON_EXT;
     *names = out;
 }
+
+/* Batch 2, robustBufferAccess2 relaxed (brief 003 Q3 ruling): advertise it, and when the driver
+ * lacks it enable v1 robustBufferAccess instead. No SPIR-V bounds-check injection, so out-of-bounds
+ * reads can return driver-defined values instead of zero: a known stability risk. */
+void dd_advertiseRobustBufferAccess2(void* pNext) {
+    VkPhysicalDeviceRobustness2FeaturesEXT* r2 = findNextVkStructure(pNext, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT);
+    if (r2) r2->robustBufferAccess2 = VK_TRUE;
+}
+
+bool dd_relaxRobustBufferAccess2(VkPhysicalDevice physicalDevice, VkDeviceCreateInfo* createInfo) {
+    VkPhysicalDeviceRobustness2FeaturesEXT* r2 = findNextVkStructure((void*)createInfo->pNext, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT);
+    if (!r2 || !r2->robustBufferAccess2) return false;
+
+    VkPhysicalDeviceRobustness2FeaturesEXT real = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
+    VkPhysicalDeviceFeatures2 features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, &real};
+    if (physicalDevice) vulkanWrapper.vkGetPhysicalDeviceFeatures2(physicalDevice, &features);
+    if (real.robustBufferAccess2) return false;
+
+    r2->robustBufferAccess2 = VK_FALSE;
+    VkPhysicalDeviceFeatures* enabled = (VkPhysicalDeviceFeatures*)createInfo->pEnabledFeatures;
+    if (!enabled) {
+        VkPhysicalDeviceFeatures2* f2 = findNextVkStructure((void*)createInfo->pNext, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2);
+        if (f2) enabled = &f2->features;
+    }
+    if (enabled && features.features.robustBufferAccess) enabled->robustBufferAccess = VK_TRUE;
+    println("vortek: robustBufferAccess2 not supported by the driver; using robustBufferAccess (v1) for this device");
+    return true;
+}

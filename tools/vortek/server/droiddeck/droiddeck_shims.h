@@ -28,4 +28,9 @@ extern void dd_destroyDummyIndexBuffer(struct VkContext* context, VkDevice devic
 extern void dd_aliasLoadStoreOpNone(struct VkContext* context, VkExtensionProperties** props, uint32_t* count);
 extern void dd_rewriteLoadStoreOpNone(struct VkContext* context, VkPhysicalDevice physicalDevice, char*** names, uint32_t* count);
 
+/* Batch 2: robustBufferAccess2 advertised, relaxed to v1 robustBufferAccess at vkCreateDevice
+ * (logged once per device). Returns true when it relaxed the request. */
+extern void dd_advertiseRobustBufferAccess2(void* pNext);
+extern bool dd_relaxRobustBufferAccess2(VkPhysicalDevice physicalDevice, VkDeviceCreateInfo* createInfo);
+
 #endif
