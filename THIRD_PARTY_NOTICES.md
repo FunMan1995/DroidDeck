@@ -67,3 +67,9 @@ Arch Linux ARM aarch64 builds, unchanged (`tools/msitools/packages.txt`, mirrore
 - License: LGPL-2.1-or-later, full text in `licenses/LGPL-2.1.txt`
 - Source: https://github.com/pulseaudio/pulseaudio/archive/refs/tags/v13.0.tar.gz (tag `v13.0`, sha256 `bd7980bc9bd44bd3b3363545dabd19476ebf4d6bb6d2527e7d179256394a6758`)
 - Bundled files: `assets/pulseaudio.tzst`
+
+## libsndfile and libltdl (PulseAudio dependencies)
+Prebuilt Android arm64 libraries linked by the PulseAudio core; bundled as `jniLibs/arm64-v8a/libsndfile.so` and `jniLibs/arm64-v8a/libltdl.so`.
+- libsndfile 1.0.31 (version from the binary's `sf_version_string`; sha256 of the bundled `.so` `ab999a10…`): license LGPL-2.1-or-later, full text in `licenses/LGPL-2.1.txt`; source https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 (tag `1.0.31`)
+- libltdl (GNU Libtool's dlopen wrapper; sha256 of the bundled `.so` `14d61602…`): license LGPL-2.1-or-later with the Libtool exception, full text in `licenses/LGPL-2.1.txt`; upstream https://www.gnu.org/software/libtool/. Version and exact source tarball pending: the binary carries no version string and the commit that added it records no build input
+- libtracefs: not bundled. `assets/linuxfs/usr/local/lib/mangoapp/libtracefs.so.1` is a DroidDeck no-op shim built from `tools/mangoapp/libtracefs-shim.c` (GPL-3.0, part of DroidDeck), contains no libtracefs code and only satisfies mangoapp's link-time symbols
