@@ -382,6 +382,8 @@
     <string name="mode_storage_note">SD 카드나 공유 저장 공간에서 리소스를 읽는 게임은 끊길 수 있습니다.</string>
     <string name="mode_storage_diagnostics">저장 공간 진단</string>
     <string name="mode_storage_diagnostics_hint">할당 결과와 샘플링한 저장 공간 응답 시간을 \"로그 공유\"에 기록합니다. 켜져 있는 동안 설치가 느려질 수 있습니다. 다음 세션에 적용됩니다.</string>
+    <string name="mode_thermal_guard">발열 보호</string>
+    <string name="mode_thermal_guard_hint">휴대폰이 뜨거워지면 프레임 제한을 한 단계 낮추고, 심한 발열 시 프레임 생성을 일시 중지하며, 식으면 둘 다 복원합니다.</string>
     <string name="mode_choose_folder">폴더 선택…</string>
     <string name="mode_custom_res_title">사용자 정의 해상도</string>
     <string name="mode_custom_res_text">해상도 상한과 화면 비율을 대체합니다. 화면과 일치하지 않는 크기는 검은색 여백으로 표시됩니다.</string>

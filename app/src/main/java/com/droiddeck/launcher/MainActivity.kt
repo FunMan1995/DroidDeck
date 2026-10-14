@@ -337,6 +337,7 @@ class MainActivity : ComponentActivity() {
     private var backActionsInverted by mutableStateOf(false)
     private var gameStorage by mutableStateOf("")
     private var storageDiagnostics by mutableStateOf(false)
+    private var thermalGuard by mutableStateOf(false)
     private var storageOptions by mutableStateOf<List<GameStorage.Option>>(emptyList())
     private val pickGameStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
         if (r.resultCode == RESULT_OK) InAppFilePicker.pickedPath(r.data)?.let { path -> setGameStorage(path, GameStorage.labelFor(this, path)) }
@@ -1251,6 +1252,7 @@ class MainActivity : ComponentActivity() {
                 gameStorage = if (mode == SessionService.MODE_STEAM) gameStorage else null,
                 storageOptions = storageOptions,
                 storageDiagnostics = mode == SessionService.MODE_STEAM && storageDiagnostics,
+                thermalGuard = thermalGuard,
                 fexPreset = if (mode == SessionService.MODE_STEAM) fexPreset else null,
                 forceSsbs = forceSsbs,
                 syncBackend = if (mode == SessionService.MODE_STEAM) SessionPrefs.syncBackendOf(fastSync, fsyncFirst, syncFallback) else null,
@@ -1321,6 +1323,10 @@ class MainActivity : ComponentActivity() {
                 onStorageDiagnostics = { on ->
                     SessionPrefs.setStorageDiagnosticsEnabled(this, on)
                     storageDiagnostics = on
+                },
+                onThermalGuard = { on ->
+                    SessionPrefs.setThermalGuardEnabled(this, on)
+                    thermalGuard = on
                 },
                 onFexPreset = { id -> SessionPrefs.setFexPreset(this, id); fexPreset = id },
                 onForceSsbs = { on -> SessionPrefs.setForceSsbs(this, on); forceSsbs = on },
@@ -1470,6 +1476,7 @@ class MainActivity : ComponentActivity() {
         refreshWifiDiscovery()
         gameStorage = SessionPrefs.gameStorage(this)
         storageDiagnostics = SessionPrefs.storageDiagnosticsEnabled(this)
+        thermalGuard = SessionPrefs.thermalGuardEnabled(this)
         settingsMode = mode
         Thread({
             val zram = com.droiddeck.launcher.core.ZramSupport.supported()

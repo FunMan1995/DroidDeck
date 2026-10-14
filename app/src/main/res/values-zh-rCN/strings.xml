@@ -382,6 +382,8 @@
     <string name="mode_storage_note">从 SD 卡或共享存储流式读取资源的游戏可能出现卡顿。</string>
     <string name="mode_storage_diagnostics">存储诊断</string>
     <string name="mode_storage_diagnostics_hint">在分享日志中记录分配结果和存储采样耗时。启用期间可能减慢安装。将在下次会话生效。</string>
+    <string name="mode_thermal_guard">温控保护</string>
+    <string name="mode_thermal_guard_hint">手机发热时将帧率上限降低一档，严重过热时暂停插帧，降温后恢复。</string>
     <string name="mode_choose_folder">选择文件夹…</string>
     <string name="mode_custom_res_title">自定义分辨率</string>
     <string name="mode_custom_res_text">取代上限与比例。与屏幕不匹配的尺寸会出现黑边。</string>

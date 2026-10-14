@@ -74,6 +74,7 @@ class ModeSettings(
     val gameStorage: String? = null,
     val storageOptions: List<com.droiddeck.launcher.session.GameStorage.Option> = emptyList(),
     val storageDiagnostics: Boolean = false,
+    val thermalGuard: Boolean = false,
     val fexPreset: String? = null,
     val forceSsbs: Boolean = false,
     val syncBackend: String? = null,
@@ -117,6 +118,7 @@ class ModeSettingsActions(
     val onGameStorage: (path: String, label: String) -> Unit = { _, _ -> },
     val onPickGameStorageFolder: () -> Unit = {},
     val onStorageDiagnostics: (Boolean) -> Unit = {},
+    val onThermalGuard: (Boolean) -> Unit = {},
     val onFexPreset: (String) -> Unit = {},
     val onForceSsbs: (Boolean) -> Unit = {},
     val onSyncBackend: (String) -> Unit = {},
@@ -190,6 +192,11 @@ fun ModeSheetRows(s: ModeSettings, a: ModeSettingsActions, tab: String, extras: 
         SettingsGroup(stringResource(R.string.display_frame_rate)) {
             ChoiceRow(host, "fps", stringResource(R.string.mode_fps), stringResource(R.string.common_applies_next_session),
                 SessionPrefs.fpsLimitChoices(LocalContext.current), s.fpsLimit, note = stringResource(R.string.mode_fps_note), onPick = a.onFpsLimit)
+            ToggleRow(
+                host, "thermalGuard", stringResource(R.string.mode_thermal_guard),
+                stringResource(R.string.mode_thermal_guard_hint), s.thermalGuard,
+                onChange = a.onThermalGuard,
+            )
         }
         SettingsGroup(stringResource(R.string.mode_hdr)) {
             ToggleRow(

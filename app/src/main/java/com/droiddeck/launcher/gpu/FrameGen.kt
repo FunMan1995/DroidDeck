@@ -51,6 +51,11 @@ object FrameGen {
 
     fun apply(context: Context, refreshHz: Float): String? {
         val mode = mode(context)
+        if (mode.engine != ENGINE_OFF && com.droiddeck.launcher.session.SessionState.thermalFrameGenSuppressed) {
+            WaylandCompositor.nativeSetFrameGenArmed(false, 0, 0)
+            Log.i(TAG, "frame generation: $mode held off by the thermal guard (status SEVERE or worse)")
+            return null
+        }
         when (mode.engine) {
             ENGINE_LSFG -> {
                 val status = Lossless.sync(context)

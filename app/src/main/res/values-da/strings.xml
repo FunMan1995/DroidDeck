@@ -383,6 +383,8 @@
     <string name="mode_storage_note">Spil, der streamer data fra SD-kort eller delt lager, kan stamme.</string>
     <string name="mode_storage_diagnostics">Lagerdiagnostik</string>
     <string name="mode_storage_diagnostics_hint">Registrerer allokeringsresultater og lagertider i Del logs. Kan gøre installationer langsommere, mens det er aktivt. Gælder fra næste session.</string>
+    <string name="mode_thermal_guard">Varmebeskyttelse</string>
+    <string name="mode_thermal_guard_hint">Sænker billedgrænsen et trin, når telefonen bliver varm, sætter billedgenerering på pause ved alvorlig varme og gendanner begge, når den er kølet af.</string>
     <string name="mode_choose_folder">Vælg en mappe…</string>
     <string name="mode_custom_res_title">Brugerdefineret opløsning</string>
     <string name="mode_custom_res_text">Erstatter grænsen og billedformatet. En størrelse, der ikke matcher skærmen, giver sorte bjælker.</string>

@@ -88,6 +88,17 @@ object SessionState {
     @Volatile
     var fpsLimit: Int = 0
 
+    /** PowerManager thermal status (-1 when no session is watching) and headroom (NaN = unknown); see ThermalComponent. */
+    @Volatile
+    var thermalStatus: Int = -1
+
+    @Volatile
+    var thermalHeadroom: Float = Float.NaN
+
+    /** Set by the Thermal guard at SEVERE; FrameGen.apply() keeps frame generation off while it is. */
+    @Volatile
+    var thermalFrameGenSuppressed = false
+
     @Volatile
     var firstFrameSeen = false
 

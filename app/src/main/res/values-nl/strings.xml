@@ -383,6 +383,8 @@
     <string name="mode_storage_note">Games die assets streamen vanaf SD of gedeelde opslag kunnen haperen.</string>
     <string name="mode_storage_diagnostics">Opslagdiagnose</string>
     <string name="mode_storage_diagnostics_hint">Legt toewijzingsresultaten en steekproeven van opslagtijden vast in Logs delen. Kan installaties vertragen zolang dit aan staat. Geldt vanaf de volgende sessie.</string>
+    <string name="mode_thermal_guard">Hittebeveiliging</string>
+    <string name="mode_thermal_guard_hint">Verlaagt de framelimiet één stap als de telefoon warm wordt, pauzeert framegeneratie bij ernstige hitte en herstelt beide zodra hij is afgekoeld.</string>
     <string name="mode_choose_folder">Kies een map…</string>
     <string name="mode_custom_res_title">Aangepaste resolutie</string>
     <string name="mode_custom_res_text">Vervangt de limiet en de beeldverhouding. Een formaat dat niet bij het scherm past, krijgt balken.</string>

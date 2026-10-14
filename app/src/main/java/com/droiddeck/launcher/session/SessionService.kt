@@ -44,6 +44,8 @@ import com.droiddeck.launcher.runtime.LinuxRuntime
 import com.droiddeck.launcher.runtime.ProotFastPath
 import com.droiddeck.launcher.runtime.UserApps
 import com.droiddeck.launcher.wayland.WaylandCompositor
+import com.droiddeck.launcher.gpu.FrameGen
+import com.droiddeck.launcher.wayland.CompositorHost
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -641,6 +643,27 @@ class SessionService : Service() {
         SessionState.fakeInputDir = fakeInputDir
     }
 
+    private fun thermalSink() = object : ThermalComponent.Sink {
+        override fun applyFpsLimit(limit: Int) {
+            SessionState.fpsLimit = limit
+            CompositorHost.applyFpsLimit(limit)
+        }
+
+        override fun suppressFrameGen(suppressed: Boolean) {
+            SessionState.thermalFrameGenSuppressed = suppressed
+            if (suppressed) WaylandCompositor.nativeSetFrameGenArmed(false, 0, 0)
+            else if (FrameGen.engine(this@SessionService) != FrameGen.ENGINE_OFF) {
+                val hz = SessionState.refreshHz
+                Thread({ FrameGen.apply(this@SessionService, hz) }, "thermal-framegen").start()
+            }
+        }
+
+        override fun log(message: String) {
+            Log.i(TAG, message)
+            if (CompositorHost.isStarted) WaylandCompositor.nativeLog("thermal", message)
+        }
+    }
+
     private fun sessionBinds(
         controllersOn: Boolean,
         fakeInputDir: File,
@@ -682,6 +705,13 @@ class SessionService : Service() {
             gpuMem.attach(this)
             components.add(gpuMem)
         }
+        val thermal = ThermalComponent(
+            this, File(LinuxRuntime.rootDir(this), ThermalComponent.HUD_FILE),
+            if (SessionPrefs.thermalGuardEnabled(this)) ThermalPolicy(SessionState.fpsLimit, SessionState.refreshHz) else null,
+            thermalSink(),
+        )
+        thermal.attach(this)
+        components.add(thermal)
         val gpuStats = GpuStatsComponent(File(filesDir, "session/sys/kgsl-3d0"))
         if (gpuStats.prepare()) {
             gpuStats.attach(this)

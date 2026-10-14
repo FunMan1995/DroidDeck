@@ -382,6 +382,8 @@
     <string name="mode_storage_note">เกมที่สตรีมข้อมูลจาก SD หรือพื้นที่จัดเก็บที่ใช้ร่วมกันอาจกระตุก</string>
     <string name="mode_storage_diagnostics">การวินิจฉัยพื้นที่จัดเก็บ</string>
     <string name="mode_storage_diagnostics_hint">บันทึกผลการจัดสรรและเวลาพื้นที่จัดเก็บที่สุ่มตรวจไว้ในล็อกที่แชร์ อาจทำให้การติดตั้งช้าลงขณะเปิดใช้งาน จะมีผลในเซสชันถัดไป</string>
+    <string name="mode_thermal_guard">ป้องกันความร้อน</string>
+    <string name="mode_thermal_guard_hint">ลดขีดจำกัดเฟรมเรตลงหนึ่งขั้นเมื่อโทรศัพท์ร้อน หยุดการสร้างเฟรมชั่วคราวเมื่อร้อนจัด และคืนค่าทั้งสองเมื่อเย็นลง</string>
     <string name="mode_choose_folder">เลือกโฟลเดอร์…</string>
     <string name="mode_custom_res_title">ความละเอียดกำหนดเอง</string>
     <string name="mode_custom_res_text">แทนที่ขีดจำกัดและอัตราส่วน ขนาดที่ไม่ตรงกับหน้าจอจะมีแถบดำ</string>

@@ -46,6 +46,12 @@ object CompositorHost {
         return true
     }
 
+    /** Runtime FPS cap change (Thermal guard); BL_FPS stays at the session's starting value. */
+    fun applyFpsLimit(fpsLimit: Int) {
+        if (!started) return
+        pace(SessionState.refreshHz, fpsLimit)
+    }
+
     private fun pace(refreshHz: Float, fpsLimit: Int) {
         WaylandCompositor.nativeSetFpsLimit(fpsLimit)
         WaylandCompositor.nativeSetLayerFrameRate(if (fpsLimit > 0) fpsLimit.toFloat() else refreshHz)

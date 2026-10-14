@@ -382,6 +382,8 @@
     <string name="mode_storage_note">Permainan yang menstrim aset daripada SD atau storan kongsi mungkin tersekat-sekat.</string>
     <string name="mode_storage_diagnostics">Diagnostik storan</string>
     <string name="mode_storage_diagnostics_hint">Rekod keputusan peruntukan dan masa storan yang disampel dalam Kongsi log. Boleh melambatkan pemasangan semasa dihidupkan. Berkuat kuasa pada sesi seterusnya.</string>
+    <string name="mode_thermal_guard">Pelindung terma</string>
+    <string name="mode_thermal_guard_hint">Menurunkan had kadar bingkai satu langkah apabila telefon panas, menjeda penjanaan bingkai pada suhu teruk dan memulihkan kedua-duanya selepas sejuk.</string>
     <string name="mode_choose_folder">Pilih folder…</string>
     <string name="mode_custom_res_title">Resolusi tersuai</string>
     <string name="mode_custom_res_text">Menggantikan had dan nisbah. Saiz yang tidak sepadan dengan skrin akan mendapat jalur.</string>
