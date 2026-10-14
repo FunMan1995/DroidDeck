@@ -265,6 +265,9 @@ class SessionService : Service() {
         return lines
     }
 
+    private fun linuxDriverForSession(): String =
+        VortekSelection.driverId(SessionPrefs.linuxDriver(this), DeviceSupport.mali(), SessionPrefs.maliForwarder(this))
+
     private fun tuDebug(linuxDriverId: String): String? {
         val override = File(Environment.getExternalStorageDirectory(), TU_DEBUG_SWITCH)
             .takeIf { it.isFile }?.let { FileUtils.readString(it)?.trim() }
@@ -521,10 +524,16 @@ class SessionService : Service() {
         guest.add("GALLIUM_DRIVER=zink")
         guest.add("LIBGL_KOPPER_DRI2=true")
         LinuxRuntime.vulkanIcd(this)?.let { guest.add("VK_ICD_FILENAMES=" + it.path) }
-        val linuxDriverId = SessionPrefs.linuxDriver(this)
+        val linuxDriverId = linuxDriverForSession()
+        val vortek = linuxDriverId == LinuxVulkanDriverManager.VORTEK_ID
+        if (vortek) {
+            runCatching { LinuxVulkanDriverManager(this).ensureVortek() }
+                .onFailure { Log.w(TAG, "vortek: bundled client unavailable", it) }
+        }
+        guest.addAll(VortekSelection.guestEnv(linuxDriverId))
         LinuxVulkanDriver.resolveIcdPath(this, linuxDriverId)
             ?.let { guest.add(LinuxVulkanDriver.ENV + "=" + it) }
-        tuDebug(linuxDriverId)?.let { guest.add("TU_DEBUG=$it") }
+        if (!vortek) tuDebug(linuxDriverId)?.let { guest.add("TU_DEBUG=$it") }
         if (SessionPrefs.zinkLazy(this)) {
             guest.add("ZINK_DESCRIPTORS=lazy")
             guest.add("ZINK_DEBUG=compact")
@@ -650,6 +659,12 @@ class SessionService : Service() {
         battery.attach(this)
         components.add(battery)
         binds.add(battery.dir.path + ":/sys/class/power_supply")
+        if (linuxDriverForSession() == LinuxVulkanDriverManager.VORTEK_ID) {
+            // Guest /run/droiddeck is runtimeDir (LinuxRuntime.binds), so the socket lives there.
+            val server = VortekServerComponent(File(runtimeDir, VortekSelection.SOCKET_SUBDIR))
+            server.attach(this)
+            components.add(server)
+        }
         val hwmon = HwmonComponent(File(filesDir, "session/sys/hwmon"), LinuxRuntime.rootDir(this))
         if (hwmon.prepare()) {
             hwmon.attach(this)
