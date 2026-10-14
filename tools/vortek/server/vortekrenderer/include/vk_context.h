@@ -46,6 +46,9 @@ typedef struct VkContext {
     char* engineName;
     uint32_t engineVersion;
     VkDriverId driverID;
+
+    /* DroidDeck batch-1 shims (tools/vortek/server/droiddeck/droiddeck_shims.c) */
+    bool emulateFillModeNonSolid;
 } VkContext;
 
 typedef struct ExtraDataRequest {

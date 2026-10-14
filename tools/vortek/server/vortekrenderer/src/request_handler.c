@@ -1,4 +1,5 @@
 #include "request_handler.h"
+#include "droiddeck_shims.h"
 #include "vk_context.h"
 #include "vulkan_helper.h"
 #include "sysvshared_memory.h"
@@ -156,6 +157,11 @@ void vt_handle_vkCreateDevice(VkContext* context) {
     VkDeviceCreateInfo createInfo = {0};
     vt_unserialize_vkCreateDevice((VkPhysicalDevice)&physicalDeviceId, &createInfo, NULL, NULL, context->inputBuffer, &context->memoryPool);
     VkPhysicalDevice physicalDevice = VkObject_fromId(physicalDeviceId);
+
+    /* DroidDeck: checkDeviceFeatures() advertises fillModeNonSolid; emulate it when the driver lacks it. */
+    VkPhysicalDeviceFeatures supportedFeatures = {0};
+    vulkanWrapper.vkGetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
+    context->emulateFillModeNonSolid = !supportedFeatures.fillModeNonSolid;
 
     disableUnsupportedDeviceFeatures(physicalDevice, &createInfo);
 
@@ -3080,6 +3086,7 @@ void vt_handle_vkCmdSetPolygonModeEXT(VkContext* context) {
 
     vt_unserialize_vkCmdSetPolygonModeEXT((VkCommandBuffer)&commandBufferId, &polygonMode, context->inputBuffer, &context->memoryPool);
     VkCommandBuffer commandBuffer = VkObject_fromId(commandBufferId);
+    if (context->emulateFillModeNonSolid) polygonMode = dd_clampPolygonMode(polygonMode); /* DroidDeck */
 
     vulkanWrapper.vkCmdSetPolygonMode(commandBuffer, polygonMode);
 }

@@ -1,4 +1,5 @@
 #include "async_pipeline_creator.h"
+#include "droiddeck_shims.h"
 #include "vortek_serializer.h"
 #include "vulkan_helper.h"
 
@@ -67,6 +68,7 @@ void AsyncPipelineCreator_create(VkContext* context, PipelineType type) {
 
         VkGraphicsPipelineCreateInfo* createInfos = calloc(pipelineCreateRequest->pipelineCount, sizeof(VkGraphicsPipelineCreateInfo));
         vt_unserialize_vkCreateGraphicsPipelines(VK_NULL_HANDLE, VK_NULL_HANDLE, NULL, createInfos, NULL, NULL, context->inputBuffer, &pipelineCreateRequest->memoryPool);
+        if (context->emulateFillModeNonSolid) dd_clampGraphicsPipelinePolygonModes(createInfos, pipelineCreateRequest->pipelineCount); /* DroidDeck */
         pipelineCreateRequest->pipelineInfos = createInfos;
     }
     else if (type == PIPELINE_TYPE_COMPUTE) {
