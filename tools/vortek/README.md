@@ -25,3 +25,14 @@ DroidDeck uses it as an opt-in forwarder on Mali (brief 003). Prototype only.
   `app/build/prepared-assets/graphics_driver/vortek-client.tzst` (lib, ICD json, LICENSE, SOURCE.txt).
   `VORTEK_HOST_CC=1` uses a host `aarch64-linux-gnu-gcc` instead.
 - `export-patches.sh` regenerates `patches/` from git history after editing vendored files.
+
+### Known deviation: VUID-vkBindBufferMemory-memory-02726 / vkBindImageMemory-memory-02728
+The renderer allocates **host-visible** memory with opaque-fd export, because the guest client maps
+it through that fd (vkMapMemory sends it). The app's own buffers and images don't declare
+`VkExternalMemory*CreateInfo`, so the validation layer reports these two VUIDs. Device-local memory
+is already a plain allocation, with no export. Since upstream shares every host-visible allocation
+with the client, DroidDeck Lead's decision is to ship this as a documented deviation rather than add
+external-memory info to every buffer and image.
+Follow-up (narrow fix): export only allocations the client actually maps, by deferring the export to
+the first vkMapMemory or using a separate exported staging allocation. That needs a protocol change
+and a device run.
