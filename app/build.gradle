@@ -181,6 +181,9 @@ def stageRuntimeAssets = tasks.register('stageRuntimeAssets', Sync) {
     dependsOn(stageSessionScripts)
     from(layout.projectDirectory.dir('src/main/assets')) { exclude 'pulseaudio.tzst' }
     from(layout.buildDirectory.dir('prepared-assets'))
+    // Ship the repo-root notices and license texts in the APK (single source of truth, no copies in git).
+    from(rootProject.file('THIRD_PARTY_NOTICES.md'))
+    from(rootProject.file('licenses')) { into('licenses') }
     into(runtimeAssetsDir)
 }
 android.sourceSets.main.assets.setSrcDirs([runtimeAssetsDir])
