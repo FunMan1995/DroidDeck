@@ -96,7 +96,8 @@ class SessionDisplayTest {
     @Test fun lowResPresetFallsBackToThreeQuartersAndPrefersAListedMode() {
         assertEquals(listOf("1496x672", "2244x1008"), SessionDisplay.presets(2992 to 1344, emptyList()))
         assertEquals(listOf("1496x672", "2400x1078"), SessionDisplay.presets(2992 to 1344, listOf(2400 to 1078)))
-        assertEquals(listOf("1200x540"), SessionDisplay.presets(2400 to 1080, emptyList()))
+        assertEquals(emptyList<String>(), SessionDisplay.presets(2400 to 1080, emptyList()))
+        assertEquals(listOf("1560x720", "2340x1080"), SessionDisplay.presets(3120 to 1440, emptyList()))
         assertEquals(emptyList<String>(), SessionDisplay.presets(1280 to 720, emptyList()))
         assertEquals(emptyList<String>(), SessionDisplay.presets(0 to 0, emptyList()))
     }

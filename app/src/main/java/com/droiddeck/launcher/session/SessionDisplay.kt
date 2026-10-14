@@ -34,7 +34,7 @@ object SessionDisplay {
     }
 
     /** Smallest short side for the "panel ÷2" preset. */
-    const val HALF_MIN_SIDE = 540
+    const val HALF_MIN_SIDE = 600
 
     /**
      * Panel-derived presets (brief 005 §1), as "WxH" choices in landscape order:
