@@ -13,3 +13,13 @@ DroidDeck uses it as an opt-in forwarder on Mali (brief 003). Prototype only.
 - The prebuilt `vortek-2.1.tzst` from winlator-app is NOT used.
 
 `verify-upstream.sh` re-fetches the pins and diffs them against this tree.
+
+## Build
+- Renderer: `server/droiddeck/CMakeLists.txt`, pulled in by `app/src/main/cpp/CMakeLists.txt`
+  (app `externalNativeBuild`, NDK, arm64-v8a). No adrenotools; system `libvulkan.so` via dlopen.
+  `VORTEK_NO_XWINDOW` (default ON) stubs presentation until brief 003 Q1 is decided.
+- Client: `build-client.sh` (called by `tools/build_local.sh`) cross-builds `libvulkan_vortek.so`
+  for glibc aarch64 in `droiddeck-local-cross:24.04-v3` and packs
+  `app/build/prepared-assets/graphics_driver/vortek-client.tzst` (lib, ICD json, LICENSE, SOURCE.txt).
+  `VORTEK_HOST_CC=1` uses a host `aarch64-linux-gnu-gcc` instead.
+- `export-patches.sh` regenerates `patches/` from git history after editing vendored files.

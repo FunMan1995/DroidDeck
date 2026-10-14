@@ -17,7 +17,7 @@ SOURCE_PATHS = ['app/build.gradle', 'app/src/main/cpp/fakeinput_steam.cpp', 'app
                 'tools/gamescope/release.env', 'tools/droiddeck-esync/release.env',
                 'tools/mangoapp', 'tools/msitools', 'tools/comet', 'tools/build_local.sh',
                 'tools/release/runtime_inputs.py', 'app/src/main/assets/desktop-removal',
-                'tools/quest', 'tools/vr/src', 'tools/vr/driver_droiddeck', 'tools/vr/layer', 'tools/vr/build.sh',
+                'tools/quest', 'tools/vortek', 'tools/vr/src', 'tools/vr/driver_droiddeck', 'tools/vr/layer', 'tools/vr/build.sh',
                 'app/src/main/cpp/adrenotools/src/hook/kgsl.h',
                 'app/src/main/assets/graphics_driver/adrenotools-turnip25.1.0.tzst']
 
@@ -56,6 +56,7 @@ def outputs(root):
     for name in ['turnip26.3.0-a6xx', 'turnip26.3.0-quest2']:
         result[f'assets/graphics_driver/adrenotools-{name}.tzst'] = \
             f'app/build/prepared-assets/graphics_driver/adrenotools-{name}.tzst'
+    result['assets/graphics_driver/vortek-client.tzst'] = 'app/build/prepared-assets/graphics_driver/vortek-client.tzst'
     return result
 
 
@@ -63,6 +64,7 @@ def required():
     paths = ['assets/graphics_driver/adrenotools-turnip25.1.0-quest1.tzst']
     paths += [f'assets/graphics_driver/adrenotools-{name}.tzst'
               for name in ['turnip26.3.0-a6xx', 'turnip26.3.0-quest2']]
+    paths += ['assets/graphics_driver/vortek-client.tzst']
     paths += ['assets/linuxfs/' + name for name in ['libfakeinput.so', 'libblsession.so',
              'libblfastpath.so', 'libssbs.so', 'usr/local/bin/droiddeck-clipboard',
              'usr/local/bin/gamescope', 'usr/local/lib/droiddeck/uruntime']]

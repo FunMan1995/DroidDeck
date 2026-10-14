@@ -30,6 +30,9 @@ string(SUBSTRING "${WINFG_CHAIN_HASH_FULL}" 0 12 WINFG_CHAIN_HASH)
 message(STATUS "win-fg chain: ${WINFG_UPSTREAM} (src ${WINFG_CHAIN_HASH})")
 
 add_subdirectory(waylandcomp)
+
+# Vortek renderer (LGPL-2.1, vendored under tools/vortek, brief 003). Opt-in Mali forwarder.
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../tools/vortek/server/droiddeck vortek)
 add_library(sdnative SHARED sdnative/sdnative.c)
 target_link_libraries(sdnative log)
 

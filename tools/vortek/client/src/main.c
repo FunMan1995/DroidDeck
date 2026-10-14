@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <errno.h>
@@ -19,7 +20,9 @@ static int vortekServerConnect() {
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sun_family = AF_LOCAL;
 
-    strncpy(server_addr.sun_path, VORTEK_SERVER_PATH, sizeof(server_addr.sun_path) - 1);
+    const char* serverPath = getenv("VORTEK_SERVER_PATH"); /* DroidDeck */
+    if (!serverPath || !*serverPath) serverPath = VORTEK_SERVER_PATH;
+    strncpy(server_addr.sun_path, serverPath, sizeof(server_addr.sun_path) - 1);
 
     int res;
     do {
@@ -89,4 +92,4 @@ bool vortekInitOnce() {
     }
     
     return serverFd > 0;
-}
+}
