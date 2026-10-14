@@ -17,7 +17,9 @@ DroidDeck uses it as an opt-in forwarder on Mali (brief 003). Prototype only.
 ## Build
 - Renderer: `server/droiddeck/CMakeLists.txt`, pulled in by `app/src/main/cpp/CMakeLists.txt`
   (app `externalNativeBuild`, NDK, arm64-v8a). No adrenotools; system `libvulkan.so` via dlopen.
-  `VORTEK_NO_XWINDOW` (default ON) stubs presentation until brief 003 Q1 is decided.
+  `VORTEK_NO_XWINDOW` (default ON) replaces the Java-window swapchain; with `VORTEK_PRESENT_SHM` (default ON)
+  that is presentation option (b), offscreen + memfd + client-side X11 SHM (brief 003b). Host harness:
+  `host-test/build.sh` then `host-test/runs.sh a..f` (lavapipe + Pixel 9a profile, not komodo).
 - Client: `build-client.sh` (called by `tools/build_local.sh`) cross-builds `libvulkan_vortek.so`
   for glibc aarch64 in `droiddeck-local-cross:24.04-v3` and packs
   `app/build/prepared-assets/graphics_driver/vortek-client.tzst` (lib, ICD json, LICENSE, SOURCE.txt).

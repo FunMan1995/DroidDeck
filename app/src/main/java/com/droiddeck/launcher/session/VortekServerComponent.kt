@@ -17,7 +17,9 @@ import java.nio.ByteOrder
 /**
  * Android side of the Vortek forwarder (brief 003): listens on [sockDir]/V0 and hands each guest
  * client to libvortekrenderer (LGPL-2.1, tools/vortek). Replaces Winlator's XConnectorEpoll with one
- * small reader thread per client. Presentation is not wired (VORTEK_NO_XWINDOW, brief 003 Q1).
+ * small reader thread per client. Presentation is option (b) (VORTEK_PRESENT_SHM, brief 003b): the server
+ * renders offscreen and hands each frame to the guest client through a memfd, and the client
+ * XShmPutImage()s it into its X11 window. Only reachable behind the opt-in maliForwarder flag (default off).
  */
 class VortekServerComponent(val sockDir: File, private val options: Options = Options()) : SessionPart() {
     /** Field names and types are read by vk_context.c createVkContext() via JNI; keep them. */
