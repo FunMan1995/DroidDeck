@@ -20,10 +20,21 @@ void vt_handle_vkCreateInstance(VkContext* context) {
 #else
     const char* extraExtensions[] = {"VK_KHR_get_physical_device_properties2", "VK_KHR_external_memory_capabilities", "VK_KHR_external_fence_capabilities"};
 #endif
+#ifdef DD_PRESENT_SHM
+    /* DroidDeck presentation (b): vkCreateDevice re-injects the driver's VK_KHR_swapchain for PRESENT_SRC_KHR
+     * layouts, which requires VK_KHR_surface on the instance whether or not the app asked for it. */
+    const char* ddSurfaceExtensions[ARRAY_SIZE(extraExtensions) + 1];
+    memcpy(ddSurfaceExtensions, extraExtensions, sizeof(extraExtensions));
+    ddSurfaceExtensions[ARRAY_SIZE(extraExtensions)] = "VK_KHR_surface";
+#define DD_EXTRA_INSTANCE_EXTENSIONS ddSurfaceExtensions
+#else
+#define DD_EXTRA_INSTANCE_EXTENSIONS extraExtensions
+#endif
 
     injectExtensions(context, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount,
-                     extraExtensions, ARRAY_SIZE(extraExtensions),
+                     (const char**)DD_EXTRA_INSTANCE_EXTENSIONS, ARRAY_SIZE(DD_EXTRA_INSTANCE_EXTENSIONS),
                      skipExtensions, ARRAY_SIZE(skipExtensions));
+#undef DD_EXTRA_INSTANCE_EXTENSIONS
 
     VkInstance instance;
     VkResult result = vulkanWrapper.vkCreateInstance(&createInfo, NULL, &instance);
@@ -176,6 +187,14 @@ void vt_handle_vkCreateDevice(VkContext* context) {
         dd_stripExtensions(context, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount,
                            ddImplementedDeviceExtensions, ddImplementedDeviceExtensionCount);
     dd_rewriteLoadStoreOpNone(context, physicalDevice, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount);
+#ifdef DD_PRESENT_SHM
+    /* Presentation (b) uses real images in PRESENT_SRC_KHR layout, which needs the driver's VK_KHR_swapchain
+     * (injectExtensions() above skips it because the renderer implements the swapchain itself). */
+    if (dd_deviceHasExtension(physicalDevice, "VK_KHR_swapchain")) {
+        static const char* const swapchainExt[] = {"VK_KHR_swapchain"};
+        injectExtensions(context, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount, swapchainExt, 1, NULL, 0);
+    }
+#endif
 
     VkDevice device;
     VkResult result = vulkanWrapper.vkCreateDevice(physicalDevice, &createInfo, NULL, &device);
