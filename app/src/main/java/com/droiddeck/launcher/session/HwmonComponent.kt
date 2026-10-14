@@ -3,6 +3,7 @@ package com.droiddeck.launcher.session
 import android.os.SystemClock
 import android.system.Os
 import android.util.Log
+import com.droiddeck.launcher.core.DeviceSupport
 import com.droiddeck.launcher.core.SessionPart
 import com.droiddeck.launcher.runtime.LinuxRuntime
 import java.io.File
@@ -25,7 +26,8 @@ class HwmonComponent(val dir: File, private val root: File) : SessionPart() {
         val gpu = LinuxRuntime.gpuTempSource()
         fanSource = FAN_SOURCES().firstOrNull { readNumber(it) != null }
         if (gpu != null || fanSource != null) {
-            val sensor = sensor("hwmon1", "gpuss0_thermal")
+            // Steam's HUD keys on Qualcomm's "gpuss0_thermal"; elsewhere use a neutral name (brief 004 §4).
+            val sensor = sensor("hwmon1", gpuSensorName(DeviceSupport.adreno()))
             if (gpu != null) link(gpu, File(sensor, "temp1_input"))
             if (fanSource != null) {
                 sensor("hwmon2", "slg4ax46073v")
@@ -93,6 +95,8 @@ class HwmonComponent(val dir: File, private val root: File) : SessionPart() {
     }
 
     companion object {
+        internal fun gpuSensorName(adreno: Boolean): String = if (adreno) "gpuss0_thermal" else "gpu_thermal"
+
         private const val TAG = "SessionService"
         private const val FAN_PERIOD_MS = 3_000L
         private const val FAN_HOLD_MS = 10_000L

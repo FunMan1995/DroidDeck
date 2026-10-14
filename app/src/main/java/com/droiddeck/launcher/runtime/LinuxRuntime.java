@@ -201,7 +201,8 @@ public final class LinuxRuntime {
             }
         }
         bindGpuNode(context, cmd);
-        bindAdrenoStats(cmd, extraBinds);
+        if (com.droiddeck.launcher.core.DeviceSupport.INSTANCE.adreno()) bindAdrenoStats(cmd, extraBinds);
+        else bindGenericStats(cmd, extraBinds, root);
         bindCpuTemps(cmd, root);
         if (extraBinds != null) {
             for (String spec : extraBinds) bind(cmd, spec);
@@ -309,6 +310,23 @@ public final class LinuxRuntime {
                 + orNone(stats[1][0]) + ", gpu temp " + orNone(gpuTemp) + ", ddr temp " + orNone(stats[4][0])
                 + ", thermal zones " + thermalZones().size()
                 + ", kgsl gpubusy " + (new File(kgsl + "gpubusy").canRead() ? "readable" : "refused"));
+    }
+
+    /**
+     * Non-Adreno (Tensor/Mali) HUD sources, brief 004 §4. There is no kgsl and no documented Mali
+     * load/clock sysfs, so the HUD shows GPU load as n/a; the thermal state comes from ThermalComponent
+     * (PowerManager status + headroom in the rootfs at run/droiddeck-hud/thermal). A CPU thermal zone
+     * is bound only if this app may read it (Pixel SELinux usually refuses; GrapheneOS is at least as strict).
+     */
+    private static void bindGenericStats(List<String> cmd, List<String> extraBinds, File root) {
+        String cpuTemp = firstReadable(thermalZone("cpu"));
+        String target = "/sys/class/thermal/thermal_zone0/temp";
+        boolean fed = false;
+        if (extraBinds != null) for (String spec : extraBinds) fed |= spec.endsWith(":" + target);
+        if (cpuTemp != null && !fed && !cpuTemp.equals(target)) bind(cmd, cpuTemp + ":" + target);
+        android.util.Log.i("LinuxRuntime", "hud sources (non-Adreno): gpu load n/a, gpu clock n/a, cpu temp "
+                + orNone(cpuTemp) + ", thermal status/headroom /" + com.droiddeck.launcher.session.ThermalComponent.HUD_FILE
+                + ", thermal zones " + thermalZones().size());
     }
 
     private static String orNone(String path) {
