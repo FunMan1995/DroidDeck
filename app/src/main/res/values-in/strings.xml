@@ -2213,4 +2213,6 @@
     <string name="perf_smooth_display_off">Tampilan halus nonaktif: dibatasi %1$d Hz</string>
     <string name="display_avoid_camera">Hindari kamera</string>
     <string name="display_avoid_camera_desc">Beri bingkai pada game agar tidak ada yang tergambar di bawah lubang kamera</string>
+    <string name="mode_pad_profiles">Tampilkan model kontroler asli</string>
+    <string name="mode_pad_profiles_hint">Eksperimental. DualSense, DualShock 4, dan Xbox Series tampil ke game dengan model dan nama tombolnya sendiri, bukan sebagai Xbox 360. Berlaku di sesi berikutnya.</string>
 </resources>

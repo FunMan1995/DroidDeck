@@ -2238,4 +2238,6 @@
     <string name="perf_smooth_display_off">Jævn skærm er slået fra: begrænset til %1$d Hz</string>
     <string name="display_avoid_camera">Undgå kamera</string>
     <string name="display_avoid_camera_desc">Sorte kanter, så intet tegnes under kamerahullet</string>
+    <string name="mode_pad_profiles">Vis den rigtige controllermodel</string>
+    <string name="mode_pad_profiles_hint">Eksperimentel. DualSense, DualShock 4 og Xbox Series vises for spil med deres egen model og knapnavne i stedet for en Xbox 360-controller. Gælder fra næste session.</string>
 </resources>

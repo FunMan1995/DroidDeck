@@ -2288,4 +2288,6 @@
     <string name="perf_smooth_display_off">Płynne wyświetlanie wyłączone: limit %1$d Hz</string>
     <string name="display_avoid_camera">Omijaj aparat</string>
     <string name="display_avoid_camera_desc">Dodaj ramki, aby nic nie było rysowane pod wycięciem aparatu</string>
+    <string name="mode_pad_profiles">Pokazuj prawdziwy model kontrolera</string>
+    <string name="mode_pad_profiles_hint">Eksperymentalne. DualSense, DualShock 4 i Xbox Series przedstawiają się grom własnym modelem i nazwami przycisków zamiast jako pad Xbox 360. Działa od następnej sesji.</string>
 </resources>

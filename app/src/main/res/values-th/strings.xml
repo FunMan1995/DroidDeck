@@ -2213,4 +2213,6 @@
     <string name="perf_smooth_display_off">ปิดการแสดงผลที่ลื่นไหลอยู่: จำกัดที่ %1$d Hz</string>
     <string name="display_avoid_camera">หลีกเลี่ยงกล้อง</string>
     <string name="display_avoid_camera_desc">เพิ่มขอบเพื่อไม่ให้มีสิ่งใดอยู่ใต้รอยตัดกล้อง</string>
+    <string name="mode_pad_profiles">แสดงรุ่นจอยจริง</string>
+    <string name="mode_pad_profiles_hint">ทดลอง DualSense, DualShock 4 และ Xbox Series จะแสดงต่อเกมด้วยรุ่นและชื่อปุ่มของตัวเองแทนจอย Xbox 360 มีผลในเซสชันถัดไป</string>
 </resources>

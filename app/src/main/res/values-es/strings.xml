@@ -2271,4 +2271,6 @@
     <string name="perf_smooth_display_off">Pantalla fluida desactivada: limitado a %1$d Hz</string>
     <string name="display_avoid_camera">Evitar la cámara</string>
     <string name="display_avoid_camera_desc">Añadir bordes para que nada se dibuje bajo el recorte de la cámara</string>
+    <string name="mode_pad_profiles">Mostrar el modelo real del mando</string>
+    <string name="mode_pad_profiles_hint">Experimental. DualSense, DualShock 4 y Xbox Series se presentan a los juegos con su propio modelo y nombres de botones en lugar de un mando de Xbox 360. Se aplica en la próxima sesión.</string>
 </resources>

@@ -2296,4 +2296,6 @@
     <string name="perf_smooth_display_off">Плавный экран выключен: ограничение %1$d Гц</string>
     <string name="display_avoid_camera">Обходить камеру</string>
     <string name="display_avoid_camera_desc">Добавить поля, чтобы ничего не рисовалось под вырезом камеры</string>
+    <string name="mode_pad_profiles">Показывать реальную модель геймпада</string>
+    <string name="mode_pad_profiles_hint">Экспериментально. DualSense, DualShock 4 и Xbox Series видны играм как своя модель с родными названиями кнопок, а не как Xbox 360. Применяется со следующего сеанса.</string>
 </resources>

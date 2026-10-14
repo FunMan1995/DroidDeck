@@ -2238,4 +2238,6 @@
     <string name="perf_smooth_display_off">Mjuk skärm är av: begränsad till %1$d Hz</string>
     <string name="display_avoid_camera">Undvik kameran</string>
     <string name="display_avoid_camera_desc">Svarta kanter så att inget ritas under kamerahålet</string>
+    <string name="mode_pad_profiles">Visa den riktiga handkontrollmodellen</string>
+    <string name="mode_pad_profiles_hint">Experimentellt. DualSense, DualShock 4 och Xbox Series visas för spel med egen modell och egna knappnamn i stället för en Xbox 360-kontroll. Gäller från nästa session.</string>
 </resources>

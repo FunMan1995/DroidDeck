@@ -2238,4 +2238,6 @@
     <string name="perf_smooth_display_off">Akıcı ekran kapalı: %1$d Hz ile sınırlı</string>
     <string name="display_avoid_camera">Kameradan kaçın</string>
     <string name="display_avoid_camera_desc">Kamera çentiğinin altına bir şey çizilmemesi için kenarlık ekle</string>
+    <string name="mode_pad_profiles">Gerçek kumanda modelini göster</string>
+    <string name="mode_pad_profiles_hint">Deneysel. DualSense, DualShock 4 ve Xbox Series oyunlara Xbox 360 kumandası yerine kendi modeli ve düğme adlarıyla görünür. Sonraki oturumda geçerli olur.</string>
 </resources>

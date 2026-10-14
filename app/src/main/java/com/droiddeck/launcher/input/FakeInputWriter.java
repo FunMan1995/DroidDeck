@@ -126,6 +126,13 @@ public class FakeInputWriter {
     private boolean prevQam;
     private int prevThumbLX, prevThumbLY, prevThumbRX, prevThumbRY;
     private int prevTriggerL, prevTriggerR;
+    /** ps4/ps5 identity (brief 007): hid-playstation also reports L2/R2 as BTN_TL2/BTN_TR2. */
+    private volatile boolean digitalTriggers;
+    private boolean prevL2, prevR2;
+    public static final short BTN_TL2 = 0x138;
+    public static final short BTN_TR2 = 0x139;
+    /** Trigger value (0..255) above which the L2/R2 digital button reads pressed. */
+    static final int DIGITAL_TRIGGER_THRESHOLD = 25;
     private int prevHatX, prevHatY;
     private boolean hasChanges = false;
     private boolean pendingFullResend = false;
@@ -706,6 +713,8 @@ public class FakeInputWriter {
             prevTriggerR = 0;
             writeEvent(EV_ABS, ABS_GAS, 0);
         }
+        if (prevL2) { prevL2 = false; writeEvent(EV_KEY, BTN_TL2, 0); }
+        if (prevR2) { prevR2 = false; writeEvent(EV_KEY, BTN_TR2, 0); }
         if (prevHatX != 0) {
             prevHatX = 0;
             writeEvent(EV_ABS, ABS_HAT0X, 0);
@@ -817,6 +826,11 @@ public class FakeInputWriter {
             prevTriggerR = tr;
             writeEvent(EV_ABS, ABS_GAS, tr);
         }
+        if (digitalTriggers) {
+            boolean l2 = tl > DIGITAL_TRIGGER_THRESHOLD, r2 = tr > DIGITAL_TRIGGER_THRESHOLD;
+            if (forceResend || l2 != prevL2) { prevL2 = l2; writeEvent(EV_KEY, BTN_TL2, l2 ? 1 : 0); }
+            if (forceResend || r2 != prevR2) { prevR2 = r2; writeEvent(EV_KEY, BTN_TR2, r2 ? 1 : 0); }
+        }
 
         int hatX = state.hatX();
         int hatY = state.hatY();
@@ -838,6 +852,27 @@ public class FakeInputWriter {
             }
         }
         forceResend = false;
+    }
+
+    /**
+     * Records the identity of the pad that owns this slot for the guest preload
+     * ($FAKE_EVDEV_DIR/identityN, read when FAKE_EVDEV_PAD_PROFILES=1) and enables the
+     * L2/R2 digital buttons for PlayStation identities.
+     */
+    public void setIdentity(String identity) {
+        digitalTriggers = PadProfiles.PS5.equals(identity) || PadProfiles.PS4.equals(identity);
+        writeIdentityFile(new File(eventFile.getParentFile(), "identity" + slot), identity);
+    }
+
+    static boolean writeIdentityFile(File target, String identity) {
+        File tmp = new File(target.getPath() + ".tmp");
+        try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) {
+            out.write((identity + "\n").getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+        } catch (java.io.IOException e) {
+            Log.w(TAG, "identity " + target.getName() + ": " + e);
+            return false;
+        }
+        return tmp.renameTo(target);
     }
 
     public boolean isOpen() {

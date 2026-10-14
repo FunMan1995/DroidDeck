@@ -2238,4 +2238,6 @@
     <string name="perf_smooth_display_off">Smooth Display ist aus: begrenzt auf %1$d Hz</string>
     <string name="display_avoid_camera">Kamera aussparen</string>
     <string name="display_avoid_camera_desc">Spiel mit Rändern versehen, damit nichts unter der Kameraaussparung liegt</string>
+    <string name="mode_pad_profiles">Echtes Controller-Modell zeigen</string>
+    <string name="mode_pad_profiles_hint">Experimentell. DualSense, DualShock 4 und Xbox Series melden sich bei Spielen mit eigenem Modell und Tastennamen statt als Xbox-360-Controller. Gilt ab der nächsten Sitzung.</string>
 </resources>

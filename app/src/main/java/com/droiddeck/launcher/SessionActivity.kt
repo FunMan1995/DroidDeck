@@ -380,6 +380,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
 
         val bridge = PadBridge(File(LinuxRuntime.sessionRoot(this), "dev/input"))
         bridge.setSelectSteam(ControllerPrefs.read(this).selectSteam)
+        PadBridge.setPadProfilesEnabled(SessionPrefs.padProfiles(this))
         padBridge = bridge
         SessionState.padBridge = bridge
         SteamControllerBle.listener = { uiHandler.post { updatePadMotion(); updateOnScreenControls() } }

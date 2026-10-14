@@ -85,6 +85,7 @@ class ModeSettings(
     val mangoapp: Boolean = true,
     val steamController: String? = null,
     val unfoldedControls: Boolean? = null,
+    val padProfiles: Boolean = false,
     val runSteamAtStartup: Boolean = false,
     val wifiDiscovery: Boolean? = null,
     val wifiDiscoveryPermission: Boolean = false,
@@ -125,6 +126,7 @@ class ModeSettingsActions(
     val onForceSsbs: (Boolean) -> Unit = {},
     val onSyncBackend: (String) -> Unit = {},
     val onStretch16x9: (Boolean) -> Unit = {},
+    val onPadProfiles: (Boolean) -> Unit = {},
     val onAvoidCamera: (Boolean) -> Unit = {},
     val onSteamRepair: () -> Unit = {},
     val onMangoapp: (Boolean) -> Unit = {},
@@ -247,6 +249,10 @@ fun ModeSheetRows(s: ModeSettings, a: ModeSettingsActions, tab: String, extras: 
                 ), s.steamController,
                 note = stringResource(R.string.mode_controller_note),
                 onPick = a.onSteamController,
+            )
+            ToggleRow(
+                host, "pad-profiles", stringResource(R.string.mode_pad_profiles),
+                stringResource(R.string.mode_pad_profiles_hint), s.padProfiles, onChange = a.onPadProfiles,
             )
             if (steam && s.unfoldedControls != null) ToggleRow(
                 host, "unfolded-controls", stringResource(R.string.unfolded_controls),

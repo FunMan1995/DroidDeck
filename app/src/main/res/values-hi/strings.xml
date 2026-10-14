@@ -2238,4 +2238,6 @@
     <string name="perf_smooth_display_off">स्मूद डिस्प्ले बंद है: %1$d Hz तक सीमित</string>
     <string name="display_avoid_camera">कैमरा से बचें</string>
     <string name="display_avoid_camera_desc">गेम को किनारों के साथ दिखाएँ ताकि कैमरा कटआउट के नीचे कुछ न बने</string>
+    <string name="mode_pad_profiles">असली कंट्रोलर मॉडल दिखाएँ</string>
+    <string name="mode_pad_profiles_hint">प्रायोगिक। DualSense, DualShock 4 और Xbox Series पैड गेम्स को Xbox 360 पैड की जगह अपना मॉडल और बटन नाम दिखाते हैं। अगले सेशन से लागू।</string>
 </resources>

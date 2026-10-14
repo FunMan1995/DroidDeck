@@ -204,6 +204,13 @@ object SessionPrefs {
         prefs(context).edit().putBoolean("avoidCamera", on).apply()
     }
 
+    /** Brief 007 §1 (experimental, default off): known pads present their own model to the guest. */
+    fun padProfiles(context: Context): Boolean = prefs(context).getBoolean("padProfiles", false)
+
+    fun setPadProfiles(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean("padProfiles", on).apply()
+    }
+
     fun setStretch16x9(context: Context, on: Boolean) {
         prefs(context).edit().putBoolean("stretch16x9", on).apply()
     }

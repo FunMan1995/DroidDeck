@@ -187,6 +187,7 @@ struct FakeConfig {
   bool vibration_enabled;
   bool xbox360_identity;
   bool uinput_enabled;
+  bool pad_profiles;
 };
 
 static FakeConfig &config() {
@@ -200,6 +201,7 @@ static FakeConfig &config() {
     const char *identity = getenv("FAKE_EVDEV_IDENTITY");
     c->xbox360_identity = identity && !strcmp(identity, "xbox360");
     c->uinput_enabled = getenv("FAKE_EVDEV_UINPUT") && atoi(getenv("FAKE_EVDEV_UINPUT"));
+    c->pad_profiles = getenv("FAKE_EVDEV_PAD_PROFILES") && atoi(getenv("FAKE_EVDEV_PAD_PROFILES"));
     pthread_atfork(controller_fork_prepare, controller_fork_parent,
                    controller_fork_child);
     Logger::init();
@@ -255,6 +257,41 @@ static const char *fake_udev_data_dir() { return config().udev_data_dir; }
 static bool fake_vibration_enabled() { return config().vibration_enabled; }
 static bool fake_xbox360_identity() { return config().xbox360_identity; }
 static bool fake_uinput_enabled() { return config().uinput_enabled; }
+
+/* Brief 007 §1 (opt-in, FAKE_EVDEV_PAD_PROFILES=1): the app writes the identity of the pad that owns
+ * slot N to $FAKE_EVDEV_DIR/identityN (xbox360, xboxone, ps4, ps5). Only the ids, name and the
+ * L2/R2 digital buttons change; the event layout stays xpad/hid-playstation compatible. */
+enum PadIdentity { PAD_ID_DEFAULT = 0, PAD_ID_XBOXONE, PAD_ID_PS4, PAD_ID_PS5 };
+struct PadIdentityInfo { uint16_t vendor, product; const char *name; bool digital_triggers; };
+static const PadIdentityInfo kPadIdentities[] = {
+    {0, 0, nullptr, false},
+    {0x045E, 0x0B12, "Microsoft Xbox Series S|X Controller", false},
+    {0x054C, 0x09CC, "Sony Interactive Entertainment Wireless Controller", true},
+    {0x054C, 0x0CE6, "Sony Interactive Entertainment DualSense Wireless Controller", true},
+};
+
+__attribute__((visibility("hidden"))) static PadIdentity parse_pad_identity(const char *text) {
+  if (!text) return PAD_ID_DEFAULT;
+  if (!strncmp(text, "ps5", 3)) return PAD_ID_PS5;
+  if (!strncmp(text, "ps4", 3)) return PAD_ID_PS4;
+  if (!strncmp(text, "xboxone", 7)) return PAD_ID_XBOXONE;
+  return PAD_ID_DEFAULT;
+}
+
+static PadIdentity slot_pad_identity(int slot) {
+  if (!config().pad_profiles || slot < 0) return PAD_ID_DEFAULT;
+  char path[PATH_MAX];
+  snprintf(path, sizeof(path), "%s/identity%d", fake_hook_dir(), slot);
+  static auto real_open = reinterpret_cast<int (*)(const char *, int, ...)>(dlsym(RTLD_NEXT, "open"));
+  static auto real_read = reinterpret_cast<ssize_t (*)(int, void *, size_t)>(dlsym(RTLD_NEXT, "read"));
+  static auto real_close = reinterpret_cast<int (*)(int)>(dlsym(RTLD_NEXT, "close"));
+  int fd = real_open(path, O_RDONLY | O_CLOEXEC);
+  if (fd < 0) return PAD_ID_DEFAULT;
+  char text[16] = {};
+  ssize_t n = real_read(fd, text, sizeof(text) - 1);
+  real_close(fd);
+  return n > 0 ? parse_pad_identity(text) : PAD_ID_DEFAULT;
+}
 
 static bool ring_paths_loaded = false;
 static int next_ff_id = 0;
@@ -3349,6 +3386,10 @@ EXPORT int ioctl(int fd, ioctl_request_t op, ...) {
     } else if (presents_steam_virtual()) {
       id.vendor = STEAM_VIRTUAL_VENDOR_ID;
       id.product = STEAM_VIRTUAL_PRODUCT_ID;
+    } else if (PadIdentity pid = slot_pad_identity(event_number)) {
+      id.vendor = kPadIdentities[pid].vendor;
+      id.product = kPadIdentities[pid].product;
+      id.bustype = 0x05; /* BUS_BLUETOOTH, as the real pads usually are on a phone */
     } else if (fake_xbox360_identity()) {
       id.vendor = X360_VENDOR_ID;
       id.product = X360_PRODUCT_ID;
@@ -3363,6 +3404,10 @@ EXPORT int ioctl(int fd, ioctl_request_t op, ...) {
     Logger::log("Hooking ioctl EVIOCGNAME for event %s\n", event);
     if (made) {
       if (argp && _IOC_SIZE(op)) snprintf(static_cast<char *>(argp), _IOC_SIZE(op), "%s", made->name);
+      return 0;
+    }
+    if (PadIdentity pid = presents_steam_virtual() ? PAD_ID_DEFAULT : slot_pad_identity(event_number)) {
+      if (argp && _IOC_SIZE(op)) snprintf(static_cast<char *>(argp), _IOC_SIZE(op), "%s", kPadIdentities[pid].name);
       return 0;
     }
     copy_slot_ioctl_string(op, argp,
@@ -3415,6 +3460,10 @@ EXPORT int ioctl(int fd, ioctl_request_t op, ...) {
                                 BTN_MODE, BTN_THUMBL, BTN_THUMBR};
     for (int button : xbox_buttons)
       bitmask[button / 8] |= (1 << (button % 8));
+    if (kPadIdentities[slot_pad_identity(event_number)].digital_triggers) {
+      bitmask[BTN_TL2 / 8] |= (1 << (BTN_TL2 % 8));
+      bitmask[BTN_TR2 / 8] |= (1 << (BTN_TR2 % 8));
+    }
     return copy_ioctl_bits(op, argp, bitmask);
   } else if (type == 0x45 && number == 0x22) {
     Logger::log("Hooking ioctl EVIOCGBIT(EV_REL, len) for event %s\n", event);

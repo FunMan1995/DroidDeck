@@ -1247,6 +1247,7 @@ class MainActivity : ComponentActivity() {
                 zramSupported = zramSupported,
                 pipSupported = com.droiddeck.launcher.session.SessionPipController.supported(this),
                 pipAutoEnter = pipAutoEnter,
+                padProfiles = padProfiles,
                 unfoldedControls = if (mode == SessionService.MODE_STEAM &&
                     com.droiddeck.launcher.session.SessionDisplay.foldable(this)) unfoldedControls else null,
                 oscMode = if (mode == SessionService.MODE_STEAM) oscMode else null,
@@ -1308,6 +1309,7 @@ class MainActivity : ComponentActivity() {
                 onZramCompression = { on -> SessionPrefs.setZramCompression(this, on); zramCompression = on },
                 onPipAutoEnter = { on -> SessionPrefs.setPipAutoEnter(this, on); pipAutoEnter = on },
                 onUnfoldedControls = { on -> SessionPrefs.setUnfoldedControls(this, on); unfoldedControls = on },
+                onPadProfiles = { on -> SessionPrefs.setPadProfiles(this, on); padProfiles = on },
                 onOsc = { o -> SessionPrefs.setOscMode(this, o); oscMode = o },
                 onBackActionsInverted = { inverted ->
                     SessionPrefs.setBackActionsInverted(this, inverted)
@@ -1453,10 +1455,12 @@ class MainActivity : ComponentActivity() {
 
     private var pipAutoEnter by mutableStateOf(false)
     private var unfoldedControls by mutableStateOf(false)
+    private var padProfiles by mutableStateOf(false)
 
     private fun loadModeSettings(mode: String) {
         pipAutoEnter = SessionPrefs.pipAutoEnter(this)
         unfoldedControls = SessionPrefs.unfoldedControls(this)
+        padProfiles = SessionPrefs.padProfiles(this)
         resolution = SessionPrefs.resolutionChoice(this, mode, com.droiddeck.launcher.session.SessionDisplay.panelSize(this))
         fexPreset = SessionPrefs.fexPreset(this)
         forceSsbs = SessionPrefs.forceSsbs(this)

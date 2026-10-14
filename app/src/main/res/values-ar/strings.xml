@@ -2338,4 +2338,6 @@
     <string name="perf_smooth_display_off">العرض السلس متوقف: الحد %1$d هرتز</string>
     <string name="display_avoid_camera">تجنّب الكاميرا</string>
     <string name="display_avoid_camera_desc">إضافة حواف للعبة حتى لا يُرسم شيء تحت فتحة الكاميرا</string>
+    <string name="mode_pad_profiles">إظهار طراز وحدة التحكم الحقيقي</string>
+    <string name="mode_pad_profiles_hint">تجريبي. تظهر DualSense وDualShock 4 وXbox Series للألعاب بطرازها وأسماء أزرارها بدلًا من وحدة Xbox 360. يُطبَّق في الجلسة التالية.</string>
 </resources>

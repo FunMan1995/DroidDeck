@@ -2238,4 +2238,6 @@
     <string name="perf_smooth_display_off">Η ομαλή προβολή είναι απενεργοποιημένη: όριο %1$d Hz</string>
     <string name="display_avoid_camera">Αποφυγή κάμερας</string>
     <string name="display_avoid_camera_desc">Περιθώρια ώστε τίποτα να μη σχεδιάζεται κάτω από την εγκοπή της κάμερας</string>
+    <string name="mode_pad_profiles">Εμφάνιση του πραγματικού μοντέλου χειριστηρίου</string>
+    <string name="mode_pad_profiles_hint">Πειραματικό. Τα DualSense, DualShock 4 και Xbox Series εμφανίζονται στα παιχνίδια με το δικό τους μοντέλο και ονόματα κουμπιών αντί για Xbox 360. Ισχύει από την επόμενη συνεδρία.</string>
 </resources>

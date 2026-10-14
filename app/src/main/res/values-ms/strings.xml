@@ -2213,4 +2213,6 @@
     <string name="perf_smooth_display_off">Paparan lancar dimatikan: dihadkan pada %1$d Hz</string>
     <string name="display_avoid_camera">Elakkan kamera</string>
     <string name="display_avoid_camera_desc">Tambah jalur supaya tiada apa dilukis di bawah potongan kamera</string>
+    <string name="mode_pad_profiles">Tunjukkan model pengawal sebenar</string>
+    <string name="mode_pad_profiles_hint">Percubaan. DualSense, DualShock 4 dan Xbox Series dipaparkan kepada permainan dengan model dan nama butang sendiri, bukan sebagai Xbox 360. Berkuat kuasa sesi seterusnya.</string>
 </resources>

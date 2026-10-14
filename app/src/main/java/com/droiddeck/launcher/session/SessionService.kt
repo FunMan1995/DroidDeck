@@ -608,6 +608,7 @@ class SessionService : Service() {
         val rings = FakeInputWriter.getRingEnv(fakeInputDir)
         if (!rings.isNullOrEmpty()) guest.add("FAKE_EVDEV_MEMFD_PATHS=$rings")
         guest.add("FAKE_EVDEV_IDENTITY=xbox360")
+        if (SessionPrefs.padProfiles(this)) guest.add("FAKE_EVDEV_PAD_PROFILES=1")
         guest.add("FAKE_EVDEV_VIBRATION=1")
         val uinput = !File(Environment.getExternalStorageDirectory(), NO_UINPUT_SWITCH).exists()
         val wantsDeck = uinput && SessionState.mode == MODE_STEAM &&

@@ -2221,4 +2221,6 @@
     <string name="perf_smooth_display_off">スムーズディスプレイがオフ: %1$d Hz に制限</string>
     <string name="display_avoid_camera">カメラを避ける</string>
     <string name="display_avoid_camera_desc">カメラの切り欠きの下に描画しないよう余白を付けます</string>
+    <string name="mode_pad_profiles">実際のコントローラー機種を通知</string>
+    <string name="mode_pad_profiles_hint">試験的。DualSense、DualShock 4、Xbox Series は Xbox 360 コントローラーではなく、自身の機種とボタン名でゲームに認識されます。次のセッションから適用。</string>
 </resources>

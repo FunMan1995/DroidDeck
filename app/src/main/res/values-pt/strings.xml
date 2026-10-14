@@ -2263,4 +2263,6 @@
     <string name="perf_smooth_display_off">Tela suave desativada: limitado a %1$d Hz</string>
     <string name="display_avoid_camera">Evitar câmera</string>
     <string name="display_avoid_camera_desc">Adicionar bordas para que nada seja desenhado sob o recorte da câmera</string>
+    <string name="mode_pad_profiles">Mostrar o modelo real do controle</string>
+    <string name="mode_pad_profiles_hint">Experimental. DualSense, DualShock 4 e Xbox Series aparecem para os jogos com o próprio modelo e nomes de botões, em vez de um controle de Xbox 360. Vale a partir da próxima sessão.</string>
 </resources>

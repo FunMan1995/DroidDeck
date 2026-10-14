@@ -424,10 +424,28 @@ public final class PadBridge {
             if (owners[slot] != NO_CONTROLLER) continue;
             owners[slot] = id;
             Log.i(TAG, "\"" + device.getName() + "\" (id " + id + ") is player " + (slot + 1));
+            applyIdentity(slot, device);
             return slot;
         }
         return 0;
     }
+
+    /** Brief 007 §1: opt-in per-slot guest identity (set from the session pref before the bridge starts). */
+    private static volatile boolean padProfiles;
+    public static void setPadProfilesEnabled(boolean on) { padProfiles = on; }
+
+    private void applyIdentity(int slot, InputDevice device) {
+        if (!padProfiles) return;
+        String identity = PadProfiles.INSTANCE.identityFor(device.getVendorId(), device.getProductId());
+        FakeInputWriter target = slot == 0 ? writer : playerWriters[slot];
+        if (target == null) {
+            pendingIdentity[slot] = identity;
+        } else {
+            target.setIdentity(identity);
+        }
+        Log.i(TAG, "player " + (slot + 1) + " presents as " + identity);
+    }
+    private final String[] pendingIdentity = new String[SLOTS];
 
     private PadState stateFor(int slot) {
         return slot == 0 ? state : playerStates[slot];
@@ -437,6 +455,11 @@ public final class PadBridge {
         Log.i(TAG, "player " + (slot + 1) + " (id " + owners[slot] + ") left");
         owners[slot] = NO_CONTROLLER;
         slotControllers.set(slot, NO_CONTROLLER);
+        pendingIdentity[slot] = null;
+        if (padProfiles) {
+            FakeInputWriter target = slot == 0 ? writer : playerWriters[slot];
+            if (target != null) target.setIdentity(PadProfiles.XBOX360);
+        }
         if (slot == 0) {
             state.clear();
             publish();
@@ -491,6 +514,7 @@ public final class PadBridge {
                 return;
             }
             playerWriters[slot] = player;
+            if (pendingIdentity[slot] != null) { player.setIdentity(pendingIdentity[slot]); pendingIdentity[slot] = null; }
         }
         player.writePad(playerStates[slot]);
     }

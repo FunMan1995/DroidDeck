@@ -2266,4 +2266,6 @@
     <string name="perf_smooth_display_off">Smooth display is off: capped at %1$d Hz</string>
     <string name="display_avoid_camera">Avoid camera</string>
     <string name="display_avoid_camera_desc">Letterbox the game so nothing is drawn under the camera cutout</string>
+    <string name="mode_pad_profiles">Show the real pad model</string>
+    <string name="mode_pad_profiles_hint">Experimental. DualSense, DualShock 4 and Xbox Series pads present their own model and button names to games instead of an Xbox 360 pad. Applies next session.</string>
 </resources>

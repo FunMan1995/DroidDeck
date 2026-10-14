@@ -2213,4 +2213,6 @@
     <string name="perf_smooth_display_off">Màn hình mượt đang tắt: giới hạn %1$d Hz</string>
     <string name="display_avoid_camera">Tránh camera</string>
     <string name="display_avoid_camera_desc">Thêm viền để không có gì hiển thị dưới phần khuyết camera</string>
+    <string name="mode_pad_profiles">Hiện đúng mẫu tay cầm</string>
+    <string name="mode_pad_profiles_hint">Thử nghiệm. DualSense, DualShock 4 và Xbox Series hiện với trò chơi bằng mẫu và tên nút của chính nó thay vì tay cầm Xbox 360. Áp dụng từ phiên sau.</string>
 </resources>
