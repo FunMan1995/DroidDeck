@@ -346,6 +346,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
             SessionEvents.record("agent.start_requested", mapOf("mode" to SessionState.mode))
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        applySustainedPerformance()
         if (!SessionState.running) {
             SessionState.fpsLimit = SessionPrefs.fpsLimit(
                 this, SessionPrefs.prefMode(intent.getStringExtra(SessionService.EXTRA_MODE) ?: SessionService.MODE_STEAM),
@@ -1367,6 +1368,18 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
             ?: display?.refreshRate ?: 60f
         val capped = minOf(hz, PerfMode.peakRefreshCap(this))
         return if (capped > 1f) capped else 60f
+    }
+
+    /** Brief 004 §5: only when the platform reports support (often not on recent Pixels); always logged. */
+    private fun applySustainedPerformance() {
+        val power = getSystemService(POWER_SERVICE) as android.os.PowerManager
+        val supported = runCatching { power.isSustainedPerformanceModeSupported }.getOrDefault(false)
+        if (supported) {
+            val ok = runCatching { window.setSustainedPerformanceMode(true) }
+            Log.i(TAG, "perf: sustained performance mode " + if (ok.isSuccess) "on" else "refused (${ok.exceptionOrNull()})")
+        } else {
+            Log.i(TAG, "perf: sustained performance mode not supported on this device; not used")
+        }
     }
 
     private fun applyFrameGen() {
