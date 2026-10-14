@@ -1364,10 +1364,9 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
     private fun refreshHz(): Float {
         val display = if (Build.VERSION.SDK_INT >= 30) display else windowManager.defaultDisplay
         val wanted = window.attributes.preferredDisplayModeId
-        val hz = display?.supportedModes?.firstOrNull { wanted != 0 && it.modeId == wanted }?.refreshRate
-            ?: display?.refreshRate ?: 60f
-        val capped = minOf(hz, PerfMode.peakRefreshCap(this))
-        return if (capped > 1f) capped else 60f
+        return PerfMode.refreshHz(
+            display?.supportedModes?.firstOrNull { wanted != 0 && it.modeId == wanted }?.refreshRate,
+            display?.refreshRate, PerfMode.peakRefreshCap(this))
     }
 
     /** Brief 004 §5: only when the platform reports support (often not on recent Pixels); always logged. */

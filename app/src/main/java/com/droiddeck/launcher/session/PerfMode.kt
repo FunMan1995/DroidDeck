@@ -59,6 +59,16 @@ object PerfMode {
         return if (peak >= 1f) peak else Float.POSITIVE_INFINITY
     }
 
+    /** Output refresh for the guest: the preferred mode's rate, else the display's, capped by "Smooth display". */
+    fun refreshHz(preferredModeHz: Float?, displayHz: Float?, peakCap: Float): Float {
+        val capped = minOf(preferredModeHz ?: displayHz ?: 60f, peakCap)
+        return if (capped > 1f) capped else 60f
+    }
+
+    /** True when the system "Smooth display" setting caps the panel below its fastest mode (shown in HUD/perf dialog). */
+    fun smoothDisplayOff(peakCap: Float, fastestModeHz: Float): Boolean =
+        peakCap.isFinite() && peakCap + 0.5f < fastestModeHz
+
     fun cadenceFits(hz: Float, fpsLimit: Int): Boolean {
         if (fpsLimit <= 0) return true
         val ratio = hz / fpsLimit

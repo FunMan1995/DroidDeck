@@ -1,4 +1,5 @@
 #define _GNU_SOURCE
+#include <android/api-level.h>
 #include "sc_layer.h"
 #include "ahb_swapchain.h"
 #include "droiddeck_color.h"
@@ -125,6 +126,8 @@ static int load_api(void) {
 
 
 #define ASC_FRAME_RATE_COMPAT_DEFAULT 0
+#define ASC_FRAME_RATE_COMPAT_FIXED_SOURCE 1   /* ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE */
+#define ASC_CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS 0 /* ANATIVEWINDOW_CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS */
 #define ASC_CHANGE_FRAME_RATE_ALWAYS  1
 
 static _Atomic float g_fps_want;
@@ -521,10 +524,21 @@ static void apply_frame_rate(ASurfaceTransaction *tx, struct layer *l) {
     float want = l->votes_rate ? atomic_load(&g_fps_want) : 0.0f;
     if (want == l->fps_applied) return;
     if (!api.setFrameRateStrategy && !api.setFrameRate) return;
-    if (api.setFrameRateStrategy) {
-        api.setFrameRateStrategy(tx, l->sc, want, ASC_FRAME_RATE_COMPAT_DEFAULT, ASC_CHANGE_FRAME_RATE_ALWAYS);
+    /* Brief 005 §2: the guest renders at a fixed cadence, so vote FIXED_SOURCE and let SurfaceFlinger
+     * switch only when seamless (no LTPO mode-switch stutter; it can still drop to the 1-10 Hz range
+     * when the compositor idles). setFrameRateWithChangeStrategy is API 31+; fall back to setFrameRate. */
+    static int strategy_logged;
+    int seamless = api.setFrameRateStrategy && android_get_device_api_level() >= 31;
+    if (seamless) {
+        api.setFrameRateStrategy(tx, l->sc, want, ASC_FRAME_RATE_COMPAT_FIXED_SOURCE, ASC_CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS);
     } else {
-        api.setFrameRate(tx, l->sc, want, ASC_FRAME_RATE_COMPAT_DEFAULT);
+        api.setFrameRate(tx, l->sc, want, ASC_FRAME_RATE_COMPAT_FIXED_SOURCE);
+    }
+    if (!strategy_logged) {
+        strategy_logged = 1;
+        droiddeck_log("layer", "frame-rate strategy: %s", seamless
+            ? "setFrameRateWithChangeStrategy(FIXED_SOURCE, ONLY_IF_SEAMLESS)"
+            : "setFrameRate(FIXED_SOURCE) (no change strategy before API 31)");
     }
     int first = l->fps_applied < 0.0f;
     l->fps_applied = want;
