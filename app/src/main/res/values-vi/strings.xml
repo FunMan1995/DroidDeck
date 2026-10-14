@@ -2209,4 +2209,8 @@
     <string name="stores_hltb_completionist">Hoàn thành 100%</string>
     <string name="stores_hltb_hours">%1$s giờ</string>
     <string name="stores_hltb_minutes">%1$d phút</string>
+    <string name="display_panel_half">%1$d×%2$d (màn hình ÷2)</string>
+    <string name="perf_smooth_display_off">Màn hình mượt đang tắt: giới hạn %1$d Hz</string>
+    <string name="display_avoid_camera">Tránh camera</string>
+    <string name="display_avoid_camera_desc">Thêm viền để không có gì hiển thị dưới phần khuyết camera</string>
 </resources>

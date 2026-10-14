@@ -2284,4 +2284,8 @@
     <string name="stores_hltb_completionist">100%</string>
     <string name="stores_hltb_hours">%1$s год</string>
     <string name="stores_hltb_minutes">%1$d хв</string>
+    <string name="display_panel_half">%1$d×%2$d (панель ÷2)</string>
+    <string name="perf_smooth_display_off">Плавний екран вимкнено: обмеження %1$d Гц</string>
+    <string name="display_avoid_camera">Оминати камеру</string>
+    <string name="display_avoid_camera_desc">Додати поля, щоб нічого не малювалося під вирізом камери</string>
 </resources>

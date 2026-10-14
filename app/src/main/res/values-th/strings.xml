@@ -2209,4 +2209,8 @@
     <string name="stores_hltb_completionist">เก็บครบ</string>
     <string name="stores_hltb_hours">%1$s ชม.</string>
     <string name="stores_hltb_minutes">%1$d นาที</string>
+    <string name="display_panel_half">%1$d×%2$d (จอ ÷2)</string>
+    <string name="perf_smooth_display_off">ปิดการแสดงผลที่ลื่นไหลอยู่: จำกัดที่ %1$d Hz</string>
+    <string name="display_avoid_camera">หลีกเลี่ยงกล้อง</string>
+    <string name="display_avoid_camera_desc">เพิ่มขอบเพื่อไม่ให้มีสิ่งใดอยู่ใต้รอยตัดกล้อง</string>
 </resources>

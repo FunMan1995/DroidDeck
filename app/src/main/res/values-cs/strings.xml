@@ -2284,4 +2284,8 @@
     <string name="stores_hltb_completionist">Kompletní</string>
     <string name="stores_hltb_hours">%1$s h</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Plynulé zobrazení je vypnuto: omezeno na %1$d Hz</string>
+    <string name="display_avoid_camera">Vyhnout se kameře</string>
+    <string name="display_avoid_camera_desc">Ohraničit hru, aby se nic nevykreslovalo pod výřezem kamery</string>
 </resources>

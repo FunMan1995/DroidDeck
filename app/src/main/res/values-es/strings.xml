@@ -2267,4 +2267,8 @@
     <string name="drawer_component_downloads">Descargar componentes</string>
     <string name="drawer_component_downloads_hint">Las descargas se comparten con la página Componentes. Elige arriba una versión descargada para usarla al iniciar el próximo juego.</string>
     <string name="drawer_component_choose_download">Elige una versión para descargar</string>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Pantalla fluida desactivada: limitado a %1$d Hz</string>
+    <string name="display_avoid_camera">Evitar la cámara</string>
+    <string name="display_avoid_camera_desc">Añadir bordes para que nada se dibuje bajo el recorte de la cámara</string>
 </resources>

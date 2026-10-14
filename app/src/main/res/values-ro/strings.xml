@@ -2259,4 +2259,8 @@
     <string name="stores_hltb_completionist">Completist</string>
     <string name="stores_hltb_hours">%1$s h</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (panou ÷2)</string>
+    <string name="perf_smooth_display_off">Afișarea fluidă este dezactivată: limitat la %1$d Hz</string>
+    <string name="display_avoid_camera">Evită camera</string>
+    <string name="display_avoid_camera_desc">Adaugă margini ca nimic să nu fie desenat sub decupajul camerei</string>
 </resources>

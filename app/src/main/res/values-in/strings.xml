@@ -2209,4 +2209,8 @@
     <string name="stores_hltb_completionist">Tuntas</string>
     <string name="stores_hltb_hours">%1$s j</string>
     <string name="stores_hltb_minutes">%1$d mnt</string>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Tampilan halus nonaktif: dibatasi %1$d Hz</string>
+    <string name="display_avoid_camera">Hindari kamera</string>
+    <string name="display_avoid_camera_desc">Beri bingkai pada game agar tidak ada yang tergambar di bawah lubang kamera</string>
 </resources>

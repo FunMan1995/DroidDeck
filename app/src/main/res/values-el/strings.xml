@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Ολοκλήρωση</string>
     <string name="stores_hltb_hours">%1$s ώ.</string>
     <string name="stores_hltb_minutes">%1$d λεπ.</string>
+    <string name="display_panel_half">%1$d×%2$d (οθόνη ÷2)</string>
+    <string name="perf_smooth_display_off">Η ομαλή προβολή είναι απενεργοποιημένη: όριο %1$d Hz</string>
+    <string name="display_avoid_camera">Αποφυγή κάμερας</string>
+    <string name="display_avoid_camera_desc">Περιθώρια ώστε τίποτα να μη σχεδιάζεται κάτω από την εγκοπή της κάμερας</string>
 </resources>

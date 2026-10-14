@@ -2217,4 +2217,8 @@
     <string name="drawer_component_downloads">下载组件</string>
     <string name="drawer_component_downloads_hint">下载内容与“组件”页面共享。在上方选择已下载的版本，即可在下次启动游戏时使用。</string>
     <string name="drawer_component_choose_download">选择要下载的版本</string>
+    <string name="display_panel_half">%1$d×%2$d (屏幕 ÷2)</string>
+    <string name="perf_smooth_display_off">流畅显示已关闭：限制为 %1$d Hz</string>
+    <string name="display_avoid_camera">避开摄像头</string>
+    <string name="display_avoid_camera_desc">加黑边，使画面不绘制在摄像头挖孔下方</string>
 </resources>

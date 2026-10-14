@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Kaikki</string>
     <string name="stores_hltb_hours">%1$s t</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (näyttö ÷2)</string>
+    <string name="perf_smooth_display_off">Sujuva näyttö on pois päältä: rajoitettu %1$d Hz:iin</string>
+    <string name="display_avoid_camera">Vältä kameraa</string>
+    <string name="display_avoid_camera_desc">Reunusta peli, jotta mitään ei piirretä kameran loven alle</string>
 </resources>

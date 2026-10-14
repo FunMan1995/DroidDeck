@@ -2262,4 +2262,8 @@
     <string name="stores_sync_gog_unreachable">Couldn\'t reach GOG</string>
     <string name="stores_sync_gog_unreadable">Could not read your GOG library</string>
     <string name="stores_registering">Registering with Steam…</string>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Smooth display is off: capped at %1$d Hz</string>
+    <string name="display_avoid_camera">Avoid camera</string>
+    <string name="display_avoid_camera_desc">Letterbox the game so nothing is drawn under the camera cutout</string>
 </resources>

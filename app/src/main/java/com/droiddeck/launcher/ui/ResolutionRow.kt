@@ -13,12 +13,12 @@ import com.droiddeck.launcher.session.SessionDisplay
 @Composable
 fun ResolutionRow(
     host: MenuHost, choice: String, panel: Pair<Int, Int>, onPick: (String) -> Unit,
-    chipModifier: Modifier = Modifier,
+    chipModifier: Modifier = Modifier, modes: List<Pair<Int, Int>> = emptyList(),
 ) {
     val custom = "custom"
     val size = SessionDisplay.resolveChoice(panel, choice)
     val screen = SessionDisplay.screenSize(panel)
-    val choices = SessionDisplay.resolutionOptions(panel)
+    val choices = SessionDisplay.resolutionOptions(panel, modes)
     val selected = if (choice == SessionDisplay.FOLLOW_SCREEN) choice
         else if (size == screen) SessionDisplay.MATCH_SCREEN else choice
     var editCustom by remember { mutableStateOf(false) }
@@ -27,6 +27,8 @@ fun ResolutionRow(
         value to if (value == SessionDisplay.MATCH_SCREEN) stringResource(R.string.display_match_screen, screen.first, screen.second)
         else if (value == SessionDisplay.FOLLOW_SCREEN) stringResource(R.string.display_follow_screen)
         else if (value == SessionDisplay.DEFAULT_RESOLUTION) stringResource(R.string.mode_res_default, "${dimensions.first}×${dimensions.second}")
+        else if (dimensions.first * 2 == screen.first && dimensions.second * 2 == screen.second)
+            stringResource(R.string.display_panel_half, dimensions.first, dimensions.second)
         else "${dimensions.first}×${dimensions.second}"
     } + (custom to if (selected in choices) stringResource(R.string.mode_res_custom)
         else stringResource(R.string.mode_res_custom_value, size.first, size.second))

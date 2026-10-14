@@ -2209,4 +2209,8 @@
     <string name="stores_hltb_completionist">Lengkap</string>
     <string name="stores_hltb_hours">%1$s j</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Paparan lancar dimatikan: dihadkan pada %1$d Hz</string>
+    <string name="display_avoid_camera">Elakkan kamera</string>
+    <string name="display_avoid_camera_desc">Tambah jalur supaya tiada apa dilukis di bawah potongan kamera</string>
 </resources>

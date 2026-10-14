@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Пълно</string>
     <string name="stores_hltb_hours">%1$s ч</string>
     <string name="stores_hltb_minutes">%1$d мин</string>
+    <string name="display_panel_half">%1$d×%2$d (панел ÷2)</string>
+    <string name="perf_smooth_display_off">Плавният дисплей е изключен: ограничение %1$d Hz</string>
+    <string name="display_avoid_camera">Избягване на камерата</string>
+    <string name="display_avoid_camera_desc">Черни ленти, така че нищо да не се рисува под изреза на камерата</string>
 </resources>

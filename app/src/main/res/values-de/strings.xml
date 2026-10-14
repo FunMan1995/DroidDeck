@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Komplettierer</string>
     <string name="stores_hltb_hours">%1$s Std.</string>
     <string name="stores_hltb_minutes">%1$d Min.</string>
+    <string name="display_panel_half">%1$d×%2$d (Panel ÷2)</string>
+    <string name="perf_smooth_display_off">Smooth Display ist aus: begrenzt auf %1$d Hz</string>
+    <string name="display_avoid_camera">Kamera aussparen</string>
+    <string name="display_avoid_camera_desc">Spiel mit Rändern versehen, damit nichts unter der Kameraaussparung liegt</string>
 </resources>

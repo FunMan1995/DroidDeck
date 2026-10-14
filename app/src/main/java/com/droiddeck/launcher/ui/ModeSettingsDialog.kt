@@ -54,6 +54,7 @@ class ModeSettings(
     val mode: String,
     val resolution: String,
     val panelSize: Pair<Int, Int> = 1280 to 720,
+    val panelModes: List<Pair<Int, Int>> = emptyList(),
     val hdr: Boolean,
     val hdrReason: String?,
     val gpuDrivers: String? = null,
@@ -168,7 +169,7 @@ fun ModeSheetRows(s: ModeSettings, a: ModeSettingsActions, tab: String, extras: 
     if (tab == SheetTab.DISPLAY) {
         val displaySize = com.droiddeck.launcher.session.SessionDisplay.resolveChoice(s.panelSize, s.resolution)
         SettingsGroup(stringResource(R.string.display_session)) {
-            ResolutionRow(host, s.resolution, s.panelSize, a.onResolution)
+            ResolutionRow(host, s.resolution, s.panelSize, a.onResolution, modes = s.panelModes)
             if (s.stretch16x9 != null && (com.droiddeck.launcher.session.SessionDisplay.canStretch16x9(s.panelSize) ||
                     com.droiddeck.launcher.session.SessionDisplay.canStretch16x9(displaySize))) {
                 val canStretch = com.droiddeck.launcher.session.SessionDisplay.canStretch16x9(displaySize)

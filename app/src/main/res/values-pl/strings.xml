@@ -2284,4 +2284,8 @@
     <string name="stores_hltb_completionist">100%</string>
     <string name="stores_hltb_hours">%1$s godz.</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Płynne wyświetlanie wyłączone: limit %1$d Hz</string>
+    <string name="display_avoid_camera">Omijaj aparat</string>
+    <string name="display_avoid_camera_desc">Dodaj ramki, aby nic nie było rysowane pod wycięciem aparatu</string>
 </resources>

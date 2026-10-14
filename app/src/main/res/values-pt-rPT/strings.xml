@@ -2259,4 +2259,8 @@
     <string name="stores_hltb_completionist">Completista</string>
     <string name="stores_hltb_hours">%1$s h</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (painel ÷2)</string>
+    <string name="perf_smooth_display_off">Ecrã suave desativado: limitado a %1$d Hz</string>
+    <string name="display_avoid_camera">Evitar câmara</string>
+    <string name="display_avoid_camera_desc">Adicionar margens para que nada seja desenhado sob o recorte da câmara</string>
 </resources>

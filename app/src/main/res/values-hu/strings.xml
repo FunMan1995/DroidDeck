@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Teljes</string>
     <string name="stores_hltb_hours">%1$s óra</string>
     <string name="stores_hltb_minutes">%1$d perc</string>
+    <string name="display_panel_half">%1$d×%2$d (kijelző ÷2)</string>
+    <string name="perf_smooth_display_off">A Simított megjelenítés ki van kapcsolva: %1$d Hz-re korlátozva</string>
+    <string name="display_avoid_camera">Kamera elkerülése</string>
+    <string name="display_avoid_camera_desc">Keret a játék körül, hogy semmi ne kerüljön a kamera kivágása alá</string>
 </resources>

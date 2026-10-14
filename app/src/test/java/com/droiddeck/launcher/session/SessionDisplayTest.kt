@@ -83,4 +83,29 @@ class SessionDisplayTest {
         assertFalse(SessionPrefs.upscalerHasSharpness(2))
         for (mode in 3..8) assertTrue(SessionPrefs.upscalerHasSharpness(mode))
     }
+
+    @Test fun komodoPresetsAreHalfPanelAndLowResModeInEitherOrientation() {
+        val modes = listOf(1344 to 2992, 1008 to 2244)
+        val expected = listOf("1496x672", "2244x1008")
+        assertEquals(expected, SessionDisplay.presets(2992 to 1344, modes))
+        assertEquals(expected, SessionDisplay.presets(1344 to 2992, modes))
+        assertEquals(expected, SessionDisplay.presets(1344 to 2992, modes.map { it.second to it.first }))
+        assertEquals(1496 to 672, SessionDisplay.resolveChoice(1344 to 2992, "1496x672"))
+    }
+
+    @Test fun lowResPresetFallsBackToThreeQuartersAndPrefersAListedMode() {
+        assertEquals(listOf("1496x672", "2244x1008"), SessionDisplay.presets(2992 to 1344, emptyList()))
+        assertEquals(listOf("1496x672", "2400x1078"), SessionDisplay.presets(2992 to 1344, listOf(2400 to 1078)))
+        assertEquals(listOf("1200x540"), SessionDisplay.presets(2400 to 1080, emptyList()))
+        assertEquals(emptyList<String>(), SessionDisplay.presets(1280 to 720, emptyList()))
+        assertEquals(emptyList<String>(), SessionDisplay.presets(0 to 0, emptyList()))
+    }
+
+    @Test fun resolutionOptionsKeepDefaultAndAddPanelPresets() {
+        val options = SessionDisplay.resolutionOptions(2992 to 1344, listOf(1008 to 2244))
+        assertEquals(SessionDisplay.DEFAULT_RESOLUTION, options.first())
+        assertTrue("1496x672" in options && "2244x1008" in options)
+        assertEquals(SessionDisplay.FOLLOW_SCREEN, options.last())
+        assertEquals(options.distinct(), options)
+    }
 }

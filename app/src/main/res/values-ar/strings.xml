@@ -2334,4 +2334,8 @@
     <string name="stores_hltb_completionist">الإكمال التام</string>
     <string name="stores_hltb_hours">%1$s س</string>
     <string name="stores_hltb_minutes">%1$d د</string>
+    <string name="display_panel_half">%1$d×%2$d (الشاشة ÷2)</string>
+    <string name="perf_smooth_display_off">العرض السلس متوقف: الحد %1$d هرتز</string>
+    <string name="display_avoid_camera">تجنّب الكاميرا</string>
+    <string name="display_avoid_camera_desc">إضافة حواف للعبة حتى لا يُرسم شيء تحت فتحة الكاميرا</string>
 </resources>

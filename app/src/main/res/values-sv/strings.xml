@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Komplettering</string>
     <string name="stores_hltb_hours">%1$s h</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (skärm ÷2)</string>
+    <string name="perf_smooth_display_off">Mjuk skärm är av: begränsad till %1$d Hz</string>
+    <string name="display_avoid_camera">Undvik kameran</string>
+    <string name="display_avoid_camera_desc">Svarta kanter så att inget ritas under kamerahålet</string>
 </resources>

@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">पूरा</string>
     <string name="stores_hltb_hours">%1$s घं</string>
     <string name="stores_hltb_minutes">%1$d मि</string>
+    <string name="display_panel_half">%1$d×%2$d (पैनल ÷2)</string>
+    <string name="perf_smooth_display_off">स्मूद डिस्प्ले बंद है: %1$d Hz तक सीमित</string>
+    <string name="display_avoid_camera">कैमरा से बचें</string>
+    <string name="display_avoid_camera_desc">गेम को किनारों के साथ दिखाएँ ताकि कैमरा कटआउट के नीचे कुछ न बने</string>
 </resources>

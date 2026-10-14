@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Tamamlayıcı</string>
     <string name="stores_hltb_hours">%1$s sa</string>
     <string name="stores_hltb_minutes">%1$d dk</string>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Akıcı ekran kapalı: %1$d Hz ile sınırlı</string>
+    <string name="display_avoid_camera">Kameradan kaçın</string>
+    <string name="display_avoid_camera_desc">Kamera çentiğinin altına bir şey çizilmemesi için kenarlık ekle</string>
 </resources>

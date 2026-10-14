@@ -90,4 +90,8 @@
         <item quantity="many">%1$d juegos agregados</item>
         <item quantity="other">%1$d juegos agregados</item>
     </plurals>
+    <string name="display_panel_half">%1$d×%2$d (panel ÷2)</string>
+    <string name="perf_smooth_display_off">Pantalla fluida desactivada: limitado a %1$d Hz</string>
+    <string name="display_avoid_camera">Evitar la cámara</string>
+    <string name="display_avoid_camera_desc">Agregar bordes para que nada se dibuje bajo el recorte de la cámara</string>
 </resources>

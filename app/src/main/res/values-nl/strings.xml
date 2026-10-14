@@ -2234,4 +2234,8 @@
     <string name="stores_hltb_completionist">Completionist</string>
     <string name="stores_hltb_hours">%1$s u</string>
     <string name="stores_hltb_minutes">%1$d min</string>
+    <string name="display_panel_half">%1$d×%2$d (scherm ÷2)</string>
+    <string name="perf_smooth_display_off">Vloeiend scherm staat uit: beperkt tot %1$d Hz</string>
+    <string name="display_avoid_camera">Camera vermijden</string>
+    <string name="display_avoid_camera_desc">Randen toevoegen zodat niets onder de camera-uitsparing wordt getekend</string>
 </resources>

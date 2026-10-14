@@ -2217,4 +2217,8 @@
     <string name="drawer_component_downloads">コンポーネントをダウンロード</string>
     <string name="drawer_component_downloads_hint">ダウンロードは「コンポーネント」ページと共有されます。上でダウンロード済みのバージョンを選ぶと、次回のゲーム起動時に使用されます。</string>
     <string name="drawer_component_choose_download">ダウンロードするバージョンを選択</string>
+    <string name="display_panel_half">%1$d×%2$d (パネル ÷2)</string>
+    <string name="perf_smooth_display_off">スムーズディスプレイがオフ: %1$d Hz に制限</string>
+    <string name="display_avoid_camera">カメラを避ける</string>
+    <string name="display_avoid_camera_desc">カメラの切り欠きの下に描画しないよう余白を付けます</string>
 </resources>

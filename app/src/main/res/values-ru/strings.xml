@@ -2292,4 +2292,8 @@
     <string name="drawer_component_downloads">Скачать компоненты</string>
     <string name="drawer_component_downloads_hint">Загрузки общие со страницей «Компоненты». Выберите выше скачанную версию, чтобы использовать её при следующем запуске игры.</string>
     <string name="drawer_component_choose_download">Выберите версию для скачивания</string>
+    <string name="display_panel_half">%1$d×%2$d (панель ÷2)</string>
+    <string name="perf_smooth_display_off">Плавный экран выключен: ограничение %1$d Гц</string>
+    <string name="display_avoid_camera">Обходить камеру</string>
+    <string name="display_avoid_camera_desc">Добавить поля, чтобы ничего не рисовалось под вырезом камеры</string>
 </resources>
