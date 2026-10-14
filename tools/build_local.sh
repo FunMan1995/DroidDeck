@@ -119,9 +119,9 @@ docker run --rm --platform linux/amd64 \
     '
 
 docker run --rm --platform linux/amd64 \
-    -v "${repo_root}:/src" -w /src public.ecr.aws/docker/library/debian:bullseye bash -c '
+    -v "${repo_root}:/src" -v /etc/ssl/certs:/etc/ssl/certs:ro -w /src public.ecr.aws/docker/library/debian:bullseye bash -c '
         set -euo pipefail
-        printf "deb http://archive.debian.org/debian bullseye main\ndeb http://archive.debian.org/debian-security bullseye-security main\n" > /etc/apt/sources.list
+        printf "deb https://archive.debian.org/debian bullseye main\ndeb https://archive.debian.org/debian-security bullseye-security main\n" > /etc/apt/sources.list
         apt-get -o Acquire::Check-Valid-Until=false update -qq
         DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends gcc g++ gcc-multilib g++-multilib binutils >/dev/null
         tools/linuxfs/build-x86-preloads.sh app/src/main/assets/linuxfs
