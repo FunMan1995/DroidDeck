@@ -49,6 +49,8 @@ typedef struct VkContext {
 
     /* DroidDeck batch-1 shims (tools/vortek/server/droiddeck/droiddeck_shims.c) */
     bool emulateFillModeNonSolid;
+    VkBuffer ddDummyIndexBuffer;
+    VkDeviceMemory ddDummyIndexMemory;
 } VkContext;
 
 typedef struct ExtraDataRequest {

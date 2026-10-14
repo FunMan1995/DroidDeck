@@ -14,7 +14,7 @@ rm -rf "$out"; mkdir -p "$out/pkg" "$(dirname "$asset")"
 hdrs="$out/include"; mkdir -p "$hdrs"
 cp -r "$here/server/vortekrenderer/include/vulkan" "$here/server/vortekrenderer/include/vk_video" "$hdrs/"
 cp "$here"/client-droiddeck/khronos/vulkan/*.h "$hdrs/vulkan/"
-srcs="src/main.c src/vulkan_calls.c src/vk_object.c src/vk_object_pool.c src/arrays.c src/descriptor_update_template.c src/ring_buffer.c"
+srcs="src/main.c src/vulkan_calls.c src/vk_object.c src/vk_object_pool.c src/arrays.c src/descriptor_update_template.c src/ring_buffer.c src/droiddeck_shims.c"
 flags="-shared -fPIC -O2 -Wall -Wno-discarded-qualifiers -DVK_USE_PLATFORM_XLIB_KHR -Iinclude -idirafter $hdrs -Wl,-soname,libvulkan_vortek.so -lpthread"
 if [[ "${VORTEK_HOST_CC:-0}" == 1 ]]; then
     (cd "$here/client" && aarch64-linux-gnu-gcc $flags -idirafter /usr/include $srcs -o "$out/pkg/libvulkan_vortek.so")

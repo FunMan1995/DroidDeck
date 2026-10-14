@@ -7,6 +7,7 @@
 #include "vk_object_pool.h"
 #include "vulkan/vk_icd.h"
 #include "vulkan/vk_layer.h"
+#include "droiddeck_shims.h"
 
 #define MSG_DEBUG_UNIMPLEMENTED_VKCALL "vortek: unimplemented call %s\n"
 
@@ -1915,6 +1916,7 @@ void vt_call_vkGetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice, VkPhy
     VT_RECV_CHECKED();
     
     vt_unserialize_VkPhysicalDeviceFeatures2(pFeatures, inputBuffer, &globalMemoryPool);
+    dd_fillMaintenance6Features(pFeatures->pNext); /* DroidDeck */
     VT_CALL_UNLOCK();
 }
 
@@ -1927,6 +1929,7 @@ void vt_call_vkGetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevice, VkP
     VT_RECV_CHECKED();
     
     vt_unserialize_VkPhysicalDeviceProperties2(pProperties, inputBuffer, &globalMemoryPool);
+    dd_fillMaintenance6Properties(pProperties->pNext); /* DroidDeck */
     VT_CALL_UNLOCK();
 }
 
@@ -2138,6 +2141,7 @@ VkResult vt_call_vkBindBufferMemory2(VkDevice device, uint32_t bindInfoCount, co
     VT_SERIALIZE_CMD(vkBindBufferMemory2, (VkDevice)&deviceObject->id, bindInfoCount, pBindInfos);
     VT_SEND_CHECKED(REQUEST_CODE_VK_BIND_BUFFER_MEMORY2, VT_RETURN);
     VT_RECV_CHECKED(VT_RETURN);
+    for (uint32_t i = 0; i < bindInfoCount; i++) dd_writeBindMemoryStatus(pBindInfos[i].pNext, (VkResult)result); /* DroidDeck */
     
     VT_CALL_UNLOCK();
     return (VkResult)result;
@@ -2150,6 +2154,7 @@ VkResult vt_call_vkBindImageMemory2(VkDevice device, uint32_t bindInfoCount, con
     VT_SERIALIZE_CMD(vkBindImageMemory2, (VkDevice)&deviceObject->id, bindInfoCount, pBindInfos);
     VT_SEND_CHECKED(REQUEST_CODE_VK_BIND_IMAGE_MEMORY2, VT_RETURN);
     VT_RECV_CHECKED(VT_RETURN);
+    for (uint32_t i = 0; i < bindInfoCount; i++) dd_writeBindMemoryStatus(pBindInfos[i].pNext, (VkResult)result); /* DroidDeck */
     
     VT_CALL_UNLOCK();
     return (VkResult)result;
@@ -3303,6 +3308,8 @@ static const struct VulkanFunc vkDispatchTable[] = {
     {"vkQueuePresentKHR", vt_call_vkQueuePresentKHR},
     {"vkCreateXlibSurfaceKHR", vt_call_vkCreateXlibSurfaceKHR},
     {"vkGetPhysicalDeviceXlibPresentationSupportKHR", vt_call_vkGetPhysicalDeviceXlibPresentationSupportKHR},
+    {"vkCmdBindDescriptorSets2KHR", vt_call_vkCmdBindDescriptorSets2KHR}, /* DroidDeck maintenance6 */
+    {"vkCmdPushConstants2KHR", vt_call_vkCmdPushConstants2KHR}, /* DroidDeck maintenance6 */
     {"vkGetPhysicalDeviceFeatures2", vt_call_vkGetPhysicalDeviceFeatures2},
     {"vkGetPhysicalDeviceFeatures2KHR", vt_call_vkGetPhysicalDeviceFeatures2},
     {"vkGetPhysicalDeviceProperties2", vt_call_vkGetPhysicalDeviceProperties2},

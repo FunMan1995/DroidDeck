@@ -2,6 +2,7 @@
 
 #include "vulkan_helper.h"
 #include "dma_utils.h"
+#include "droiddeck_shims.h"
 
 #define VK_MAKE_VERSION_STR(s, v) sprintf(s, "%d.%d.%d", VK_VERSION_MAJOR(v), VK_VERSION_MINOR(v), VK_VERSION_PATCH(v))
 
@@ -370,6 +371,9 @@ VkExtensionProperties* getExposedDeviceExtensionProperties(VkContext* context, V
 
     injectExtensions2(context, &dstProperties, propertyCount,
                       globalImplementedDeviceExtensions, ARRAY_SIZE(globalImplementedDeviceExtensions), NULL, 0);
+    /* DroidDeck batch-1 shims: extensions the client/renderer implement (droiddeck_shims.c). */
+    injectExtensions2(context, &dstProperties, propertyCount,
+                      ddImplementedDeviceExtensions, ddImplementedDeviceExtensionCount, NULL, 0);
     return dstProperties;
 }
 

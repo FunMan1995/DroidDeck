@@ -169,10 +169,15 @@ void vt_handle_vkCreateDevice(VkContext* context) {
     injectExtensions(context, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount,
                      extraExtensions, ARRAY_SIZE(extraExtensions),
                      globalImplementedDeviceExtensions, ARRAY_SIZE(globalImplementedDeviceExtensions));
+    /* DroidDeck: the client implements maintenance6 on top of core calls; the driver never sees it
+     * (its features struct is not in the serializer, so it never reaches pNext here). */
+    dd_stripExtensions(context, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount,
+                       ddImplementedDeviceExtensions, ddImplementedDeviceExtensionCount);
 
     VkDevice device;
     VkResult result = vulkanWrapper.vkCreateDevice(physicalDevice, &createInfo, NULL, &device);
     if (result == VK_SUCCESS) initVulkanDevice(context, physicalDevice, device);
+    if (result == VK_SUCCESS) dd_createDummyIndexBuffer(context, device); /* DroidDeck */
 
     VT_SERIALIZE_CMD(VkDevice, device);
     vt_send(context->clientRing, result, outputBuffer, bufferSize);
@@ -183,6 +188,7 @@ void vt_handle_vkDestroyDevice(VkContext* context) {
 
     vt_unserialize_vkDestroyDevice((VkDevice)&deviceId, NULL, context->inputBuffer, &context->memoryPool);
     VkDevice device = VkObject_fromId(deviceId);
+    dd_destroyDummyIndexBuffer(context, device); /* DroidDeck */
 
     vulkanWrapper.vkDestroyDevice(device, NULL);
 }
@@ -1444,6 +1450,11 @@ void vt_handle_vkCmdBindIndexBuffer(VkContext* context) {
     vt_unserialize_vkCmdBindIndexBuffer((VkCommandBuffer)&commandBufferId, (VkBuffer)&bufferId, &offset, &indexType, context->inputBuffer, &context->memoryPool);
     VkCommandBuffer commandBuffer = VkObject_fromId(commandBufferId);
     VkBuffer buffer = VkObject_fromId(bufferId);
+    /* DroidDeck maintenance6: a NULL index buffer reads zeros; use the zeroed dummy (offset 0). */
+    if (!buffer && context->ddDummyIndexBuffer) {
+        buffer = context->ddDummyIndexBuffer;
+        offset = 0;
+    }
 
     vulkanWrapper.vkCmdBindIndexBuffer(commandBuffer, buffer, offset, indexType);
 }
