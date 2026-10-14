@@ -73,12 +73,16 @@ trap 'exit 143' TERM
 
 python3 "${repo_root}/tools/docker_preflight.py" "${image_name}"
 
+# Debian bullseye image pinned to the point release that matches the apt snapshot used below
+# (snapshot.debian.org 20250601T000000Z); the floating tag ships newer libc6 than the snapshot has.
+debian_snapshot_image=public.ecr.aws/docker/library/debian:bullseye-20250428@sha256:2a7f95bcf104c8410bf4d3b13c52f6e0e4334bb2edf8d80c7f9881e49447effe
+
 # Ownership guard: a run killed during a root container step (kill skips the EXIT trap) leaves
 # root-owned files that make the next rm -rf / Gradle step fail. Hand them back to this user first.
 foreign=$(find "${repo_root}" -xdev \( -name .git -o -name .gradle \) -prune -o ! -uid "$(id -u)" -print -quit 2>/dev/null || true)
 if [[ -n "${foreign}" ]]; then
     echo "build_local: files not owned by $(id -un) (first: ${foreign#"${repo_root}/"}); restoring ownership via Docker" >&2
-    docker run --rm --platform linux/amd64 -v "${repo_root}:/src" public.ecr.aws/docker/library/debian:bullseye \
+    docker run --rm --platform linux/amd64 -v "${repo_root}:/src" "${debian_snapshot_image}" \
         find /src -xdev \( -name .git -o -name .gradle \) -prune -o ! -uid "$(id -u)" -exec chown -h "$(id -u):$(id -g)" {} +
     left=$(find "${repo_root}" -xdev \( -name .git -o -name .gradle \) -prune -o ! -uid "$(id -u)" -print -quit 2>/dev/null || true)
     if [[ -n "${left}" ]]; then
@@ -132,10 +136,13 @@ docker run --rm --platform linux/amd64 \
     '
 
 docker run --rm --platform linux/amd64 \
-    -v "${repo_root}:/src" -v /etc/ssl/certs:/etc/ssl/certs:ro -w /src public.ecr.aws/docker/library/debian:bullseye bash -c '
+    -v "${repo_root}:/src" -v /etc/ssl/certs:/etc/ssl/certs:ro -w /src "${debian_snapshot_image}" bash -c '
         set -euo pipefail
-        printf "deb https://archive.debian.org/debian bullseye main\ndeb https://archive.debian.org/debian-security bullseye-security main\n" > /etc/apt/sources.list
-        apt-get -o Acquire::Check-Valid-Until=false update -qq
+        # Pinned Debian snapshot (the old Debian archive mirror 404ed bullseye packages, gate d9613e1e).
+        printf "deb https://snapshot.debian.org/archive/debian/20250601T000000Z bullseye main\n" > /etc/apt/sources.list
+        rm -f /etc/apt/sources.list.d/*
+        printf "Acquire::Check-Valid-Until \"false\";\n" > /etc/apt/apt.conf.d/99snapshot
+        apt-get update -qq
         DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends gcc g++ gcc-multilib g++-multilib binutils >/dev/null
         tools/linuxfs/build-x86-preloads.sh app/src/main/assets/linuxfs
         chown -R '"$(id -u):$(id -g)"' app/src/main/assets/linuxfs
