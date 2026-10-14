@@ -90,7 +90,10 @@ ResourceMemory* ResourceMemory_allocate(VkContext* context, VkDevice device, VkM
             memoryDedicatedInfo.image = VK_NULL_HANDLE;
             memoryDedicatedInfo.buffer = resourceMemory->buffer;
 
-            memoryInfo->pNext = &memoryDedicatedInfo;
+            /* DroidDeck: a dedicated allocation may only back resourceMemory->buffer, but the app binds its own
+             * buffers/images to this memory (VUID-vkBind*Memory-01508/02726/02728/10926; lavapipe draws nothing and
+             * crashes in vkFreeMemory). Only tie it to the buffer when the driver requires dedicated export. */
+            memoryInfo->pNext = context->opaqueFdDedicatedOnly ? (void*)&memoryDedicatedInfo : (void*)&exportMemoryInfo;
             memoryInfo->allocationSize = memReqs.size;
             result = vulkanWrapper.vkAllocateMemory(device, memoryInfo, NULL, &resourceMemory->memory);
             if (result != VK_SUCCESS) goto error;

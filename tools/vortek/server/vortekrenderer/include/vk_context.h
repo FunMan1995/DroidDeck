@@ -19,6 +19,7 @@ typedef struct VkContext {
 
     bool hasExternalMemoryFd;
     bool hasExternalMemoryDMABuf;
+    bool opaqueFdDedicatedOnly; /* DroidDeck: driver requires dedicated allocations for exported opaque-fd memory */
 
 #if ENABLE_VALIDATION_LAYER
     VkDebugReportCallbackEXT debugReportCallback;

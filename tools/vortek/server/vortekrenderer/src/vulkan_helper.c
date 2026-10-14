@@ -15,16 +15,18 @@ static VkBool32 debugReportCallback(VkDebugReportFlagsEXT flags, VkDebugReportOb
 }
 #endif
 
-static bool isExternalMemoryHandleTypeSupported(VkPhysicalDevice physicalDevice, VkExternalMemoryHandleTypeFlagBits handleType) {
+static bool isExternalMemoryHandleTypeSupported(VkPhysicalDevice physicalDevice, VkExternalMemoryHandleTypeFlagBits handleType, bool* dedicatedOnly) {
     VkPhysicalDeviceExternalBufferInfo bufferInfo = {0};
     bufferInfo.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_BUFFER_INFO;
     bufferInfo.handleType = handleType;
+    bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT; /* DroidDeck: usage must not be 0 (VUID-09500) */
 
     VkExternalBufferProperties bufferProperties = {0};
     bufferProperties.sType = VK_STRUCTURE_TYPE_EXTERNAL_BUFFER_PROPERTIES;
     vulkanWrapper.vkGetPhysicalDeviceExternalBufferProperties(physicalDevice, &bufferInfo, &bufferProperties);
     VkExternalMemoryProperties* memoryProperties = &bufferProperties.externalMemoryProperties;
 
+    if (dedicatedOnly) *dedicatedOnly = (memoryProperties->externalMemoryFeatures & VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT) != 0;
     return (memoryProperties->externalMemoryFeatures & (VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT | VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT)) != 0 &&
            (memoryProperties->compatibleHandleTypes & handleType) != 0;
 }
@@ -95,8 +97,8 @@ void initVulkanInstance(VkContext* context, VkInstance instance, const VkApplica
     vulkanWrapper.vkGetPhysicalDeviceProperties2(physicalDevices[0], &properties2);
     context->driverID = driverProperties.driverID;
 
-    context->hasExternalMemoryFd = isExternalMemoryHandleTypeSupported(physicalDevices[0], VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT);
-    context->hasExternalMemoryDMABuf = isExternalMemoryHandleTypeSupported(physicalDevices[0], VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT);
+    context->hasExternalMemoryFd = isExternalMemoryHandleTypeSupported(physicalDevices[0], VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT, &context->opaqueFdDedicatedOnly);
+    context->hasExternalMemoryDMABuf = isExternalMemoryHandleTypeSupported(physicalDevices[0], VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT, NULL);
 
     MEMFREE(context->engineName);
     context->engineVersion = 0;

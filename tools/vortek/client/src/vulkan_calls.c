@@ -249,7 +249,22 @@ VkResult vt_call_vkEnumerateDeviceExtensionProperties(VkPhysicalDevice physicalD
     VT_SEND_CHECKED(REQUEST_CODE_VK_ENUMERATE_DEVICE_EXTENSION_PROPERTIES, VT_RETURN);
     VT_RECV_CHECKED(VT_RETURN);
 
-    vt_unserialize_vkEnumerateDeviceExtensionProperties(NULL, NULL, pPropertyCount, pProperties, inputBuffer, &globalMemoryPool);
+    /* DroidDeck: the renderer ignores the caller's capacity, so unserialize into a scratch array
+     * and copy at most *pPropertyCount entries (VK_INCOMPLETE when truncated). */
+    uint32_t capacity = pProperties ? *pPropertyCount : 0;
+    uint32_t serverCount = 0;
+    vt_unserialize_vkEnumerateDeviceExtensionProperties(NULL, NULL, &serverCount, NULL, inputBuffer, &globalMemoryPool);
+    if (pProperties && serverCount > 0) {
+        VkExtensionProperties* all = calloc(serverCount, sizeof(VkExtensionProperties));
+        uint32_t n = serverCount;
+        vt_unserialize_vkEnumerateDeviceExtensionProperties(NULL, NULL, &n, all, inputBuffer, &globalMemoryPool);
+        uint32_t copy = n < capacity ? n : capacity;
+        memcpy(pProperties, all, copy * sizeof(VkExtensionProperties));
+        free(all);
+        *pPropertyCount = copy;
+        if (result == VK_SUCCESS && copy < n) result = VK_INCOMPLETE;
+    }
+    else *pPropertyCount = serverCount;
     VT_CALL_UNLOCK();
     return (VkResult)result;
 }
