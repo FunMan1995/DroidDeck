@@ -81,4 +81,24 @@ class GamepadGeometryTest {
             assertTrue(panel.name, before(Slot.STEAM, Slot.QAM))
         }
     }
+
+    @Test fun komodoDefaultLayoutAvoidsTheCentredCameraHole() {
+        // 2992x1344 at density ~3.0; the centred punch hole sits mid-edge in landscape, top-centre in portrait.
+        val cases = listOf(
+            Triple(2992f, 1344f, intArrayOf(20, 620, 120, 724)),
+            Triple(2992f, 1344f, intArrayOf(2872, 620, 2972, 724)),
+            Triple(1344f, 2992f, intArrayOf(620, 20, 724, 120)),
+        )
+        for ((w, h, hole) in cases) {
+            val boxes = GamepadGeometry.layout(w, h, 3f, listOf(hole))
+            assertEquals(GamepadGeometry.layout(w, h, 3f).keys, boxes.keys)
+            val rect = GamepadGeometry.Box((hole[0] + hole[2]) / 2f, (hole[1] + hole[3]) / 2f,
+                (hole[2] - hole[0]).toFloat(), (hole[3] - hole[1]).toFloat())
+            for ((slot, box) in boxes) {
+                assertFalse("$slot overlaps the hole at ${w}x$h", box.overlaps(rect))
+                assertTrue("$slot off screen", box.left >= -0.5f && box.top >= -0.5f && box.right <= w + 0.5f && box.bottom <= h + 0.5f)
+            }
+        }
+        assertEquals(GamepadGeometry.layout(2992f, 1344f, 3f), GamepadGeometry.layout(2992f, 1344f, 3f, emptyList()))
+    }
 }

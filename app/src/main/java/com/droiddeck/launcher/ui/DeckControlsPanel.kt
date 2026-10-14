@@ -612,7 +612,21 @@ class DeckControlsPanel(
             addView(view)
         }
 
-        private fun boxes(w: Int, h: Int) = GamepadGeometry.layout(w.toFloat(), h.toFloat(), resources.displayMetrics.density)
+        private fun boxes(w: Int, h: Int) =
+            GamepadGeometry.layout(w.toFloat(), h.toFloat(), resources.displayMetrics.density, holes())
+
+        /** Camera-hole rects in this view's coordinates (brief 007 §2). */
+        private fun holes(): List<IntArray> {
+            val window = com.droiddeck.launcher.input.CutoutAvoid.holes(rootWindowInsets)
+            if (window.isEmpty()) return window
+            val at = IntArray(2).also { getLocationInWindow(it) }
+            return window.map { intArrayOf(it[0] - at[0], it[1] - at[1], it[2] - at[0], it[3] - at[1]) }
+        }
+
+        override fun onApplyWindowInsets(insets: android.view.WindowInsets): android.view.WindowInsets {
+            requestLayout()
+            return super.onApplyWindowInsets(insets)
+        }
 
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
             val w = MeasureSpec.getSize(widthMeasureSpec)

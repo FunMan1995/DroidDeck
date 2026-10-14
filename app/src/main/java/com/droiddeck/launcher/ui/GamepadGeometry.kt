@@ -25,6 +25,21 @@ object GamepadGeometry {
 
     fun tall(w: Float, h: Float): Boolean = h >= w * 0.45f
 
+    /**
+     * Brief 007 §2: [holes] are camera-cutout rects ([l, t, r, b], view pixels); any default slot that
+     * would overlap one is moved the shortest on-screen way off it. Saved layouts are not touched here.
+     */
+    fun layout(w: Float, h: Float, density: Float, holes: List<IntArray>): Map<Slot, Box> {
+        val boxes = layout(w, h, density)
+        if (holes.isEmpty()) return boxes
+        val margin = 4 * density
+        return boxes.mapValues { (_, box) ->
+            val (x, y) = com.droiddeck.launcher.input.CutoutAvoid.nudge(box.cx, box.cy, box.width / 2f, box.height / 2f,
+                holes, w.toInt(), h.toInt(), margin)
+            if (x == box.cx && y == box.cy) box else box.copy(cx = x, cy = y)
+        }
+    }
+
     fun layout(w: Float, h: Float, density: Float): Map<Slot, Box> {
         if (w <= 0f || h <= 0f) return emptyMap()
         val pad = 8 * density

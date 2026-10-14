@@ -562,7 +562,15 @@ class OnScreenControls(
                     val x = event.getX(index)
                     val y = event.getY(index)
                     val stick = controls.firstOrNull { it.stick >= 0 && it.pressedBy == pointer }
-                    if (stick != null) { stick.drag(x, y); changed = true; continue }
+                    if (stick != null) {
+                        // Brief 007 §2: replay batched touch samples (the panel samples faster than it
+                        // delivers events) so the guest sees the stick's path, not just its end point.
+                        for (h in 0 until event.historySize) {
+                            stick.drag(event.getHistoricalX(index, h), event.getHistoricalY(index, h))
+                            apply()
+                        }
+                        stick.drag(x, y); changed = true; continue
+                    }
                     val over = controlAt(x, y)?.takeIf { it.stick < 0 }
                     for (control in controls) {
                         if (control.stick < 0 && control.pressedBy == pointer && control !== over) {
