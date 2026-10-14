@@ -21,4 +21,24 @@ extern void vt_call_vkCmdPushConstants(VkCommandBuffer commandBuffer, VkPipeline
 extern void vt_call_vkCmdBindDescriptorSets2KHR(VkCommandBuffer commandBuffer, const VkBindDescriptorSetsInfoKHR* pInfo);
 extern void vt_call_vkCmdPushConstants2KHR(VkCommandBuffer commandBuffer, const VkPushConstantsInfoKHR* pInfo);
 
+/* Presentation (b), src/dd_present.c. Layout must match tools/vortek/server/droiddeck/droiddeck_shims.h. */
+typedef struct DDShmFrameHeader {
+    uint32_t sequence;
+    uint32_t width;
+    uint32_t height;
+    uint32_t stride;
+    uint32_t rgba;
+    uint32_t reserved[3];
+} DDShmFrameHeader;
+#define DD_SHM_EXTENT_FROM_CLIENT 0xFFFFFFFFu
+
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+#include <sys/stat.h>
+typedef struct DDPresent DDPresent;
+extern bool dd_windowExtent(Display* dpy, Window window, VkExtent2D* extent);
+extern DDPresent* dd_presentCreate(Display* dpy, Window window, int fd);
+extern VkResult dd_presentFrame(DDPresent* present);
+extern void dd_presentDestroy(DDPresent* present);
+#endif
+
 #endif

@@ -33,4 +33,17 @@ extern void dd_rewriteLoadStoreOpNone(struct VkContext* context, VkPhysicalDevic
 extern void dd_advertiseRobustBufferAccess2(void* pNext);
 extern bool dd_relaxRobustBufferAccess2(VkPhysicalDevice physicalDevice, VkDeviceCreateInfo* createInfo);
 
+/* Presentation (b): layout of the shared memory fd the renderer passes at vkCreateSwapchainKHR.
+ * Must match tools/vortek/client/include/droiddeck_shims.h. Pixels follow the header,
+ * width*height 32-bit texels, BGRA unless rgba != 0. */
+typedef struct DDShmFrameHeader {
+    uint32_t sequence;
+    uint32_t width;
+    uint32_t height;
+    uint32_t stride;
+    uint32_t rgba;
+    uint32_t reserved[3];
+} DDShmFrameHeader;
+#define DD_SHM_EXTENT_FROM_CLIENT 0xFFFFFFFFu
+
 #endif

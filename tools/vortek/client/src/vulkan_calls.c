@@ -1780,6 +1780,13 @@ VkResult vt_call_vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VkPhysicalDevice phys
     VT_RECV_CHECKED(VT_RETURN);
     
     vt_unserialize_VkSurfaceCapabilitiesKHR(pSurfaceCapabilities, inputBuffer, &globalMemoryPool);
+    VkExtent2D windowExtent; /* DroidDeck presentation (b): the renderer has no window; ask X. */
+    if (pSurfaceCapabilities->currentExtent.width == DD_SHM_EXTENT_FROM_CLIENT &&
+        dd_windowExtent((Display*)surfaceObject->tag, (Window)surfaceObject->id, &windowExtent)) {
+        pSurfaceCapabilities->currentExtent = windowExtent;
+        pSurfaceCapabilities->minImageExtent = windowExtent;
+        pSurfaceCapabilities->maxImageExtent = windowExtent;
+    }
     VT_CALL_UNLOCK();
     return (VkResult)result;
 }
@@ -1829,6 +1836,12 @@ VkResult vt_call_vkCreateSwapchainKHR(VkDevice device, const VkSwapchainCreateIn
     vt_unserialize_VkSwapchainKHR((VkSwapchainKHR)&swapchainId, inputBuffer, &globalMemoryPool);
     VkObject* swapchainObject = VkObject_create(VK_OBJECT_TYPE_SWAPCHAIN_KHR, swapchainId);
     *pSwapchain = VkObject_toHandle(swapchainObject);
+    if (result == VK_SUCCESS && swapchainId) { /* DroidDeck presentation (b): frame fd follows the reply */
+        int fd = -1, numFds = 0;
+        recv_fds(serverFd, &fd, &numFds, NULL, 0);
+        if (numFds == 1) swapchainObject->tag = dd_presentCreate((Display*)surfaceObject->tag, (Window)surfaceObject->id, fd);
+        if (!swapchainObject->tag) result = VK_ERROR_INITIALIZATION_FAILED;
+    }
     
     VT_CALL_UNLOCK();
     return (VkResult)result;     
@@ -1842,6 +1855,8 @@ void vt_call_vkDestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain, co
     VT_SERIALIZE_CMD(vkDestroySwapchainKHR, (VkDevice)&deviceObject->id, (VkSwapchainKHR)&swapchainObject->id, NULL);
     vt_send(serverRing, REQUEST_CODE_VK_DESTROY_SWAPCHAIN_KHR, outputBuffer, bufferSize);
 
+    dd_presentDestroy((DDPresent*)swapchainObject->tag); /* DroidDeck */
+    swapchainObject->tag = NULL;
     VkObject_free(swapchainObject);
     VT_CALL_UNLOCK();
 }
@@ -1887,18 +1902,24 @@ VkResult vt_call_vkQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPrese
     VT_SERIALIZE_CMD(VkPresentInfoKHR, pPresentInfo);
     VT_SEND_CHECKED(REQUEST_CODE_VK_QUEUE_PRESENT_KHR, VT_RETURN);
     
-    if (pPresentInfo->pResults) {
-        for (int i = 0; i < pPresentInfo->swapchainCount; i++) {
-            pPresentInfo->pResults[i] = VK_SUCCESS;
-        }
+    /* DroidDeck presentation (b): one result per swapchain once the frame is in shared memory. */
+    VkResult overall = VK_SUCCESS;
+    for (int i = 0; i < pPresentInfo->swapchainCount; i++) {
+        VkResult r = VK_ERROR_DEVICE_LOST;
+        int numFds = 0;
+        if (recv_fds(serverFd, NULL, &numFds, &r, sizeof(r)) <= 0) r = VK_ERROR_DEVICE_LOST;
+        if (r == VK_SUCCESS) r = dd_presentFrame((DDPresent*)VkObject_fromHandle(pPresentInfo->pSwapchains[i])->tag);
+        if (pPresentInfo->pResults) pPresentInfo->pResults[i] = r;
+        if (r < 0 && overall >= 0) overall = r;
     }
     
     VT_CALL_UNLOCK();
-    return VK_SUCCESS;
+    return overall;
 }
 
 VkResult vt_call_vkCreateXlibSurfaceKHR(VkInstance instance, const VkXlibSurfaceCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface) {
     VkObject* surfaceObject = VkObject_create(VK_OBJECT_TYPE_SURFACE_KHR, (uint64_t)pCreateInfo->window);
+    surfaceObject->tag = pCreateInfo->dpy; /* DroidDeck presentation (b) */
     *pSurface = VkObject_toHandle(surfaceObject);
     return VK_SUCCESS;
 }

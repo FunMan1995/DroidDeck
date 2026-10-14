@@ -2040,14 +2040,25 @@ void vt_handle_vkCreateSwapchainKHR(VkContext* context) {
     getWindowExtent(&context->jmethods, windowId, &windowSize);
 
     XWindowSwapchain* swapchain = NULL;
+#ifdef DD_PRESENT_SHM
+    /* DroidDeck presentation (b): the client sizes the swapchain from its X window and receives the
+     * frame fd right after this reply. */
+    (void)windowSize;
+    swapchain = XWindowSwapchain_create(device, context->graphicsQueueIndex, &createInfo, &context->jmethods, windowId);
+    if (!swapchain) result = VK_ERROR_INITIALIZATION_FAILED;
+#else
     if (createInfo.imageExtent.width == windowSize.width && createInfo.imageExtent.height == windowSize.height) {
         swapchain = XWindowSwapchain_create(device, context->graphicsQueueIndex, &createInfo, &context->jmethods, windowId);
         if (!swapchain) result = VK_ERROR_INITIALIZATION_FAILED;
     }
     else result = VK_ERROR_SURFACE_LOST_KHR;
+#endif
 
     VT_SERIALIZE_CMD(VkSwapchainKHR, (VkSwapchainKHR)swapchain);
     vt_send(context->clientRing, result, outputBuffer, bufferSize);
+#ifdef DD_PRESENT_SHM
+    if (swapchain) send_fds(context->clientFd, &swapchain->shmFd, 1, NULL, 0);
+#endif
 }
 
 void vt_handle_vkDestroySwapchainKHR(VkContext* context) {
@@ -2108,6 +2119,16 @@ void vt_handle_vkQueuePresentKHR(VkContext* context) {
     VkPresentInfoKHR presentInfo = {0};
     vt_unserialize_VkPresentInfoKHR(&presentInfo, context->inputBuffer, &context->memoryPool);
 
+#ifdef DD_PRESENT_SHM
+    /* DroidDeck presentation (b): copy each image out, then tell the client (one result per swapchain). */
+    for (int i = 0; i < presentInfo.swapchainCount; i++) {
+        VkResult r = dd_ShmSwapchain_present((XWindowSwapchain*)presentInfo.pSwapchains[i], presentInfo.pImageIndices ? presentInfo.pImageIndices[i] : 0,
+                                             i == 0 ? presentInfo.pWaitSemaphores : NULL, i == 0 ? presentInfo.waitSemaphoreCount : 0);
+        if (r == VK_ERROR_DEVICE_LOST) context->status = r;
+        send_fds(context->clientFd, NULL, 0, &r, sizeof(r));
+    }
+    return;
+#endif
     for (int i = 0; i < presentInfo.swapchainCount; i++) {
         XWindowSwapchain_presentImage((XWindowSwapchain*)presentInfo.pSwapchains[i]);
     }

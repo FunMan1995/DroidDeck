@@ -17,4 +17,5 @@ add_library(vulkan_vortek SHARED
             src/arrays.c
             src/descriptor_update_template.c
             src/ring_buffer.c
-            src/droiddeck_shims.c)
+            src/droiddeck_shims.c
+            src/dd_present.c)

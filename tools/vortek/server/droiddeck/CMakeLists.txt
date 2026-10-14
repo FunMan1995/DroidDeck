@@ -1,7 +1,8 @@
 # DroidDeck build of the Vortek renderer (LGPL-2.1, see tools/vortek/README.md).
 # No adrenotools, no winlator lib: only the helper sources it needs. Links log/android.
 set(VT_ROOT ${CMAKE_CURRENT_LIST_DIR}/..)
-option(VORTEK_NO_XWINDOW "Stub Winlator's X window swapchain (brief 003 Q1 open)" ON)
+option(VORTEK_NO_XWINDOW "Replace Winlator's Java-window swapchain" ON)
+option(VORTEK_PRESENT_SHM "Presentation (b): offscreen images copied to the client through shared memory (brief 003b)" ON)
 
 set(VT_SRC
         ${VT_ROOT}/vortekrenderer/src/main.c
@@ -19,7 +20,9 @@ set(VT_SRC
         ${VT_ROOT}/winlator/src/sysvshared_memory.c
         ${CMAKE_CURRENT_LIST_DIR}/ahb_compat.c
         ${CMAKE_CURRENT_LIST_DIR}/droiddeck_shims.c)
-if(VORTEK_NO_XWINDOW)
+if(VORTEK_NO_XWINDOW AND VORTEK_PRESENT_SHM)
+    list(APPEND VT_SRC ${CMAKE_CURRENT_LIST_DIR}/shm_swapchain.c)
+elseif(VORTEK_NO_XWINDOW)
     list(APPEND VT_SRC ${CMAKE_CURRENT_LIST_DIR}/xwindow_swapchain_stub.c)
 else()
     list(APPEND VT_SRC ${VT_ROOT}/vortekrenderer/src/xwindow_swapchain.c)
@@ -29,4 +32,7 @@ add_library(vortekrenderer SHARED ${VT_SRC})
 target_include_directories(vortekrenderer PRIVATE ${VT_ROOT}/vortekrenderer/include ${VT_ROOT}/winlator/include ${CMAKE_CURRENT_LIST_DIR})
 target_compile_options(vortekrenderer PRIVATE -O2 -Wno-unused-function -Wimplicit-function-declaration -w)
 target_compile_definitions(vortekrenderer PRIVATE VK_USE_PLATFORM_ANDROID_KHR)
+if(VORTEK_NO_XWINDOW AND VORTEK_PRESENT_SHM)
+    target_compile_definitions(vortekrenderer PRIVATE DD_PRESENT_SHM)
+endif()
 target_link_libraries(vortekrenderer log android nativewindow)
