@@ -1769,7 +1769,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
 
     private fun refreshSecondScreenDisplays() {
         if (!::displayManager.isInitialized) return
-        val primaryId = display?.displayId ?: windowManager.defaultDisplay.displayId
+        val primaryId = (if (Build.VERSION.SDK_INT >= 30) display?.displayId else null) ?: windowManager.defaultDisplay.displayId
         val candidates = SecondScreenDisplays.available(displayManager, primaryId)
         val oldIds = secondScreenDisplays.map { it.id }.toSet()
         secondScreenDisplays = candidates

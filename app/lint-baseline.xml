@@ -364,82 +364,12 @@
             column="60"/>
     </issue>
 
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `android.content.pm.PackageInfo#getLongVersionCode`"
-        errorLine1="            k(&quot;Version&quot;, &quot;${info.versionName} (${info.longVersionCode})&quot;)"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/droiddeck/launcher/core/DeviceReport.kt"
-            line="52"
-            column="55"/>
-    </issue>
 
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `android.net.LinkProperties#getMtu`"
-        errorLine1="            put(&quot;mtu&quot;, properties?.mtu?.takeIf { it > 0 } ?: DEFAULT_MTU)"
-        errorLine2="                                   ~~~">
-        <location
-            file="src/main/java/com/droiddeck/launcher/runtime/LinuxNetworkLinkComponent.kt"
-            line="181"
-            column="36"/>
-    </issue>
 
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `android.view.DisplayCutout#getSafeInsetBottom`"
-        errorLine1="        val fresh = Rect(cutout?.safeInsetLeft ?: 0, cutout?.safeInsetTop ?: 0, cutout?.safeInsetRight ?: 0, cutout?.safeInsetBottom ?: 0)"
-        errorLine2="                                                                                                                     ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/droiddeck/launcher/input/OnScreenControls.kt"
-            line="205"
-            column="118"/>
-    </issue>
 
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `android.view.DisplayCutout#getSafeInsetLeft`"
-        errorLine1="        val fresh = Rect(cutout?.safeInsetLeft ?: 0, cutout?.safeInsetTop ?: 0, cutout?.safeInsetRight ?: 0, cutout?.safeInsetBottom ?: 0)"
-        errorLine2="                                 ~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/droiddeck/launcher/input/OnScreenControls.kt"
-            line="205"
-            column="34"/>
-    </issue>
 
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `android.view.DisplayCutout#getSafeInsetRight`"
-        errorLine1="        val fresh = Rect(cutout?.safeInsetLeft ?: 0, cutout?.safeInsetTop ?: 0, cutout?.safeInsetRight ?: 0, cutout?.safeInsetBottom ?: 0)"
-        errorLine2="                                                                                        ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/droiddeck/launcher/input/OnScreenControls.kt"
-            line="205"
-            column="89"/>
-    </issue>
 
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `android.view.DisplayCutout#getSafeInsetTop`"
-        errorLine1="        val fresh = Rect(cutout?.safeInsetLeft ?: 0, cutout?.safeInsetTop ?: 0, cutout?.safeInsetRight ?: 0, cutout?.safeInsetBottom ?: 0)"
-        errorLine2="                                                             ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/droiddeck/launcher/input/OnScreenControls.kt"
-            line="205"
-            column="62"/>
-    </issue>
 
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 26): `android.content.ContextWrapper#getDisplay`"
-        errorLine1="        val primaryId = display?.displayId ?: windowManager.defaultDisplay.displayId"
-        errorLine2="                        ~~~~~~~">
-        <location
-            file="src/main/java/com/droiddeck/launcher/SessionActivity.kt"
-            line="1772"
-            column="25"/>
-    </issue>
 
     <issue
         id="PrivateApi"

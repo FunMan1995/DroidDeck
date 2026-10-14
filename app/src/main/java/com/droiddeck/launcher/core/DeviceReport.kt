@@ -1,5 +1,6 @@
 package com.droiddeck.launcher.core
 
+import androidx.core.content.pm.PackageInfoCompat
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
@@ -49,7 +50,7 @@ object DeviceReport {
         h("App")
         runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            k("Version", "${info.versionName} (${info.longVersionCode})")
+            k("Version", "${info.versionName} (${PackageInfoCompat.getLongVersionCode(info)})")
         }
         k("Package", context.packageName)
         k("targetSdk", context.applicationInfo.targetSdkVersion)
