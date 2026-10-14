@@ -57,4 +57,16 @@ object PadProfiles {
     /** Maps a trigger axis to 0..1: -1..1 ranges (some Generic.kl Z/RZ) are rescaled. */
     fun trigger(value: Float, min: Float): Float =
         (if (min < -0.5f) (value + 1f) / 2f else value).coerceIn(0f, 1f)
+
+    /** Writes $FAKE_EVDEV_DIR/identityN for the guest preload, replacing it atomically. */
+    fun writeIdentityFile(target: java.io.File, identity: String): Boolean {
+        val tmp = java.io.File(target.path + ".tmp")
+        return try {
+            tmp.writeText(identity + "\n", Charsets.US_ASCII)
+            tmp.renameTo(target)
+        } catch (e: java.io.IOException) {
+            android.util.Log.w("PadProfiles", "identity ${target.name}: $e")
+            false
+        }
+    }
 }

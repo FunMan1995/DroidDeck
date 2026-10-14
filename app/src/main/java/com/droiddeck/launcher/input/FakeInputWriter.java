@@ -861,18 +861,7 @@ public class FakeInputWriter {
      */
     public void setIdentity(String identity) {
         digitalTriggers = PadProfiles.PS5.equals(identity) || PadProfiles.PS4.equals(identity);
-        writeIdentityFile(new File(eventFile.getParentFile(), "identity" + slot), identity);
-    }
-
-    static boolean writeIdentityFile(File target, String identity) {
-        File tmp = new File(target.getPath() + ".tmp");
-        try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) {
-            out.write((identity + "\n").getBytes(java.nio.charset.StandardCharsets.US_ASCII));
-        } catch (java.io.IOException e) {
-            Log.w(TAG, "identity " + target.getName() + ": " + e);
-            return false;
-        }
-        return tmp.renameTo(target);
+        PadProfiles.INSTANCE.writeIdentityFile(new File(eventFile.getParentFile(), "identity" + slot), identity);
     }
 
     public boolean isOpen() {
