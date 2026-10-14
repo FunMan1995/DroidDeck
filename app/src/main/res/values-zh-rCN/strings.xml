@@ -2223,4 +2223,5 @@
     <string name="display_avoid_camera_desc">加黑边，使画面不绘制在摄像头挖孔下方</string>
     <string name="mode_pad_profiles">显示真实手柄型号</string>
     <string name="mode_pad_profiles_hint">实验性。DualSense、DualShock 4 和 Xbox Series 手柄会以自身型号和按键名称呈现给游戏，而非 Xbox 360 手柄。下次会话生效。</string>
+    <string name="ctrl_rumble_phone_fallback">手柄不支持振动时让手机振动</string>
 </resources>

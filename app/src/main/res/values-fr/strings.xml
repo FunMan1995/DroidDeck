@@ -2273,4 +2273,5 @@
     <string name="display_avoid_camera_desc">Ajouter des bandes pour que rien ne soit dessiné sous l’encoche de la caméra</string>
     <string name="mode_pad_profiles">Afficher le vrai modèle de manette</string>
     <string name="mode_pad_profiles_hint">Expérimental. Les manettes DualSense, DualShock 4 et Xbox Series se présentent aux jeux avec leur propre modèle et noms de boutons au lieu d’une manette Xbox 360. S’applique à la prochaine session.</string>
+    <string name="ctrl_rumble_phone_fallback">Faire vibrer le téléphone si la manette n’a pas de vibration</string>
 </resources>

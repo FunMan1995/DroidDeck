@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">Randen toevoegen zodat niets onder de camera-uitsparing wordt getekend</string>
     <string name="mode_pad_profiles">Echt controllermodel tonen</string>
     <string name="mode_pad_profiles_hint">Experimenteel. DualSense, DualShock 4 en Xbox Series melden zich bij games met hun eigen model en knopnamen in plaats van als Xbox 360-controller. Geldt vanaf de volgende sessie.</string>
+    <string name="ctrl_rumble_phone_fallback">Telefoon laten trillen als de controller geen trilfunctie heeft</string>
 </resources>

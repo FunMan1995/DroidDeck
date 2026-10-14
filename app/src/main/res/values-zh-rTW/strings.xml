@@ -2223,4 +2223,5 @@
     <string name="display_avoid_camera_desc">加黑邊，使畫面不繪製在鏡頭挖孔下方</string>
     <string name="mode_pad_profiles">顯示真實控制器型號</string>
     <string name="mode_pad_profiles_hint">實驗性。DualSense、DualShock 4 和 Xbox Series 控制器會以自身型號和按鍵名稱呈現給遊戲，而非 Xbox 360 控制器。下次工作階段生效。</string>
+    <string name="ctrl_rumble_phone_fallback">控制器不支援震動時讓手機震動</string>
 </resources>

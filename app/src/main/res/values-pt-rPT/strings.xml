@@ -2265,4 +2265,5 @@
     <string name="display_avoid_camera_desc">Adicionar margens para que nada seja desenhado sob o recorte da câmara</string>
     <string name="mode_pad_profiles">Mostrar o modelo real do comando</string>
     <string name="mode_pad_profiles_hint">Experimental. DualSense, DualShock 4 e Xbox Series apresentam-se aos jogos com o próprio modelo e nomes de botões, em vez de um comando Xbox 360. Aplica-se na próxima sessão.</string>
+    <string name="ctrl_rumble_phone_fallback">Vibrar o telemóvel se o comando não tiver vibração</string>
 </resources>

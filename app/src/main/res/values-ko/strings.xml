@@ -2223,4 +2223,5 @@
     <string name="display_avoid_camera_desc">카메라 컷아웃 아래에 그려지지 않도록 여백을 둡니다</string>
     <string name="mode_pad_profiles">실제 컨트롤러 모델 표시</string>
     <string name="mode_pad_profiles_hint">실험적. DualSense, DualShock 4, Xbox Series 패드가 Xbox 360 패드 대신 자체 모델과 버튼 이름으로 게임에 표시됩니다. 다음 세션부터 적용됩니다.</string>
+    <string name="ctrl_rumble_phone_fallback">패드에 진동이 없으면 휴대전화 진동</string>
 </resources>

@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">Svarta kanter så att inget ritas under kamerahålet</string>
     <string name="mode_pad_profiles">Visa den riktiga handkontrollmodellen</string>
     <string name="mode_pad_profiles_hint">Experimentellt. DualSense, DualShock 4 och Xbox Series visas för spel med egen modell och egna knappnamn i stället för en Xbox 360-kontroll. Gäller från nästa session.</string>
+    <string name="ctrl_rumble_phone_fallback">Vibrera telefonen när handkontrollen saknar vibration</string>
 </resources>

@@ -2215,4 +2215,5 @@
     <string name="display_avoid_camera_desc">Thêm viền để không có gì hiển thị dưới phần khuyết camera</string>
     <string name="mode_pad_profiles">Hiện đúng mẫu tay cầm</string>
     <string name="mode_pad_profiles_hint">Thử nghiệm. DualSense, DualShock 4 và Xbox Series hiện với trò chơi bằng mẫu và tên nút của chính nó thay vì tay cầm Xbox 360. Áp dụng từ phiên sau.</string>
+    <string name="ctrl_rumble_phone_fallback">Rung điện thoại khi tay cầm không có rung</string>
 </resources>

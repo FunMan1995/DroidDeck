@@ -2265,4 +2265,5 @@
     <string name="display_avoid_camera_desc">Adaugă margini ca nimic să nu fie desenat sub decupajul camerei</string>
     <string name="mode_pad_profiles">Arată modelul real al controlerului</string>
     <string name="mode_pad_profiles_hint">Experimental. DualSense, DualShock 4 și Xbox Series apar în jocuri cu propriul model și numele butoanelor, nu ca un controler Xbox 360. Se aplică din sesiunea următoare.</string>
+    <string name="ctrl_rumble_phone_fallback">Vibrează telefonul dacă controlerul nu are vibrații</string>
 </resources>

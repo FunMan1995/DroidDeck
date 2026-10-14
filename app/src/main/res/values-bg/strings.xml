@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">Черни ленти, така че нищо да не се рисува под изреза на камерата</string>
     <string name="mode_pad_profiles">Показване на истинския модел контролер</string>
     <string name="mode_pad_profiles_hint">Експериментално. DualSense, DualShock 4 и Xbox Series се показват на игрите със своя модел и имена на бутони вместо Xbox 360. В сила от следващата сесия.</string>
+    <string name="ctrl_rumble_phone_fallback">Вибрация на телефона, ако контролерът няма вибрация</string>
 </resources>

@@ -2298,4 +2298,5 @@
     <string name="display_avoid_camera_desc">Добавить поля, чтобы ничего не рисовалось под вырезом камеры</string>
     <string name="mode_pad_profiles">Показывать реальную модель геймпада</string>
     <string name="mode_pad_profiles_hint">Экспериментально. DualSense, DualShock 4 и Xbox Series видны играм как своя модель с родными названиями кнопок, а не как Xbox 360. Применяется со следующего сеанса.</string>
+    <string name="ctrl_rumble_phone_fallback">Вибрировать телефоном, если у геймпада нет вибрации</string>
 </resources>

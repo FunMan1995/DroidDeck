@@ -25,14 +25,16 @@ class RumbleComponent : SessionPart() {
     private val controllers = HashMap<Int, Motors?>()
     private var preferences: SharedPreferences? = null
     private var enabled = false
+    private var phoneFallback = false
     private val preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == null || key == "rumble") refreshEnabled()
+        if (key == null || key == "rumble" || key == "rumblePhoneFallback") refreshEnabled()
     }
 
     internal var controllerMotors: (Int) -> Motors? = ::lookupController
 
     @Synchronized private fun refreshEnabled() {
         enabled = app()?.let { ControllerPrefs.rumbleEnabled(it) } == true
+        phoneFallback = app()?.let { ControllerPrefs.rumblePhoneFallback(it) } == true
         if (!enabled) cancelAll()
     }
 
@@ -103,7 +105,8 @@ class RumbleComponent : SessionPart() {
         val id = PadBridge.controllerForSlot(slot)
         if (id == PadBridge.NO_CONTROLLER) return phone
         if (!controllers.containsKey(id)) controllers[id] = try { controllerMotors(id) } catch (e: Exception) { null }
-        return controllers[id] ?: phone
+        // Brief 007 §4: a pad without motors only falls back to the phone when the user asked for it.
+        return controllers[id] ?: if (phoneFallback) phone else null
     }
 
     private fun cancelAll() {

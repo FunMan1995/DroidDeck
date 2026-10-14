@@ -2223,4 +2223,5 @@
     <string name="display_avoid_camera_desc">カメラの切り欠きの下に描画しないよう余白を付けます</string>
     <string name="mode_pad_profiles">実際のコントローラー機種を通知</string>
     <string name="mode_pad_profiles_hint">試験的。DualSense、DualShock 4、Xbox Series は Xbox 360 コントローラーではなく、自身の機種とボタン名でゲームに認識されます。次のセッションから適用。</string>
+    <string name="ctrl_rumble_phone_fallback">コントローラーに振動がない場合は端末を振動</string>
 </resources>

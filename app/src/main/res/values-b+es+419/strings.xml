@@ -96,4 +96,5 @@
     <string name="display_avoid_camera_desc">Agregar bordes para que nada se dibuje bajo el recorte de la cámara</string>
     <string name="mode_pad_profiles">Mostrar el modelo real del control</string>
     <string name="mode_pad_profiles_hint">Experimental. DualSense, DualShock 4 y Xbox Series se presentan a los juegos con su propio modelo y nombres de botones en lugar de un control de Xbox 360. Se aplica en la próxima sesión.</string>
+    <string name="ctrl_rumble_phone_fallback">Vibrar el teléfono si el control no tiene vibración</string>
 </resources>

@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">Keret a játék körül, hogy semmi ne kerüljön a kamera kivágása alá</string>
     <string name="mode_pad_profiles">Valódi kontrollermodell mutatása</string>
     <string name="mode_pad_profiles_hint">Kísérleti. A DualSense, DualShock 4 és Xbox Series kontrollerek a saját modelljükkel és gombneveikkel jelennek meg a játékokban Xbox 360 helyett. A következő munkamenettől érvényes.</string>
+    <string name="ctrl_rumble_phone_fallback">Telefon rezegjen, ha a kontrollerben nincs rezgés</string>
 </resources>

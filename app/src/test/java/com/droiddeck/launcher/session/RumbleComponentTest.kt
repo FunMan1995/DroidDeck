@@ -97,10 +97,23 @@ class RumbleComponentTest {
     }
 
     @Test fun aControllerWithoutMotorsFallsBackToThePhone() {
+        // Default (setting off): a pad without motors gets no rumble; the phone stays still.
+        assertFalse(ControllerPrefs.rumblePhoneFallback(context))
         rumble.controllerMotors = { null }
         activeController(PAD_ID)
         effect()
+        assertFalse("the phone buzzed for a pad without motors", shadowOf(vibrator).isVibrating)
+        // "Vibrate phone when pad has no rumble" on: the old fallback.
+        ControllerPrefs.setRumblePhoneFallback(context, true)
+        shadowOf(Looper.getMainLooper()).idle()
+        effect()
         assertTrue(shadowOf(vibrator).isVibrating)
+        // Off again: no phone fallback.
+        ControllerPrefs.setRumblePhoneFallback(context, false)
+        shadowOf(Looper.getMainLooper()).idle()
+        effect(strong = 0, weak = 0)
+        effect()
+        assertFalse(shadowOf(vibrator).isVibrating)
     }
 
     @Test fun theOnScreenPadTakingOverMovesTheEffectBackToThePhone() {

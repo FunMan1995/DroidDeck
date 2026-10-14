@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">Sorte kanter, så intet tegnes under kamerahullet</string>
     <string name="mode_pad_profiles">Vis den rigtige controllermodel</string>
     <string name="mode_pad_profiles_hint">Eksperimentel. DualSense, DualShock 4 og Xbox Series vises for spil med deres egen model og knapnavne i stedet for en Xbox 360-controller. Gælder fra næste session.</string>
+    <string name="ctrl_rumble_phone_fallback">Vibrér telefonen, når controlleren ikke har rumble</string>
 </resources>

@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">Kamera çentiğinin altına bir şey çizilmemesi için kenarlık ekle</string>
     <string name="mode_pad_profiles">Gerçek kumanda modelini göster</string>
     <string name="mode_pad_profiles_hint">Deneysel. DualSense, DualShock 4 ve Xbox Series oyunlara Xbox 360 kumandası yerine kendi modeli ve düğme adlarıyla görünür. Sonraki oturumda geçerli olur.</string>
+    <string name="ctrl_rumble_phone_fallback">Kumandada titreşim yoksa telefonu titret</string>
 </resources>

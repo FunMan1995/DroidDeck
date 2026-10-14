@@ -2290,4 +2290,5 @@
     <string name="display_avoid_camera_desc">Ohraničit hru, aby se nic nevykreslovalo pod výřezem kamery</string>
     <string name="mode_pad_profiles">Zobrazit skutečný model ovladače</string>
     <string name="mode_pad_profiles_hint">Experimentální. DualSense, DualShock 4 a Xbox Series se hrám představí vlastním modelem a názvy tlačítek místo Xbox 360. Platí od příští relace.</string>
+    <string name="ctrl_rumble_phone_fallback">Vibrovat telefonem, když ovladač nemá vibrace</string>
 </resources>

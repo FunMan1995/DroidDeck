@@ -2215,4 +2215,5 @@
     <string name="display_avoid_camera_desc">เพิ่มขอบเพื่อไม่ให้มีสิ่งใดอยู่ใต้รอยตัดกล้อง</string>
     <string name="mode_pad_profiles">แสดงรุ่นจอยจริง</string>
     <string name="mode_pad_profiles_hint">ทดลอง DualSense, DualShock 4 และ Xbox Series จะแสดงต่อเกมด้วยรุ่นและชื่อปุ่มของตัวเองแทนจอย Xbox 360 มีผลในเซสชันถัดไป</string>
+    <string name="ctrl_rumble_phone_fallback">สั่นโทรศัพท์เมื่อจอยไม่มีระบบสั่น</string>
 </resources>

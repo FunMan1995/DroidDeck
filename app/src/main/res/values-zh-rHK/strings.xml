@@ -2223,4 +2223,5 @@
     <string name="display_avoid_camera_desc">加黑邊，使畫面不繪製在鏡頭挖孔下方</string>
     <string name="mode_pad_profiles">顯示真實手掣型號</string>
     <string name="mode_pad_profiles_hint">實驗性。DualSense、DualShock 4 及 Xbox Series 手掣會以自身型號及按鍵名稱呈現給遊戲，而非 Xbox 360 手掣。下次工作階段生效。</string>
+    <string name="ctrl_rumble_phone_fallback">手掣不支援震動時讓手機震動</string>
 </resources>

@@ -2215,4 +2215,5 @@
     <string name="display_avoid_camera_desc">Beri bingkai pada game agar tidak ada yang tergambar di bawah lubang kamera</string>
     <string name="mode_pad_profiles">Tampilkan model kontroler asli</string>
     <string name="mode_pad_profiles_hint">Eksperimental. DualSense, DualShock 4, dan Xbox Series tampil ke game dengan model dan nama tombolnya sendiri, bukan sebagai Xbox 360. Berlaku di sesi berikutnya.</string>
+    <string name="ctrl_rumble_phone_fallback">Getarkan ponsel jika kontroler tidak punya getar</string>
 </resources>

@@ -2340,4 +2340,5 @@
     <string name="display_avoid_camera_desc">إضافة حواف للعبة حتى لا يُرسم شيء تحت فتحة الكاميرا</string>
     <string name="mode_pad_profiles">إظهار طراز وحدة التحكم الحقيقي</string>
     <string name="mode_pad_profiles_hint">تجريبي. تظهر DualSense وDualShock 4 وXbox Series للألعاب بطرازها وأسماء أزرارها بدلًا من وحدة Xbox 360. يُطبَّق في الجلسة التالية.</string>
+    <string name="ctrl_rumble_phone_fallback">اهتزاز الهاتف إذا لم تدعم وحدة التحكم الاهتزاز</string>
 </resources>

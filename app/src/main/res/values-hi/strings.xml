@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">गेम को किनारों के साथ दिखाएँ ताकि कैमरा कटआउट के नीचे कुछ न बने</string>
     <string name="mode_pad_profiles">असली कंट्रोलर मॉडल दिखाएँ</string>
     <string name="mode_pad_profiles_hint">प्रायोगिक। DualSense, DualShock 4 और Xbox Series पैड गेम्स को Xbox 360 पैड की जगह अपना मॉडल और बटन नाम दिखाते हैं। अगले सेशन से लागू।</string>
+    <string name="ctrl_rumble_phone_fallback">पैड में रंबल न हो तो फ़ोन वाइब्रेट करें</string>
 </resources>

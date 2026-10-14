@@ -2240,4 +2240,5 @@
     <string name="display_avoid_camera_desc">Reunusta peli, jotta mitään ei piirretä kameran loven alle</string>
     <string name="mode_pad_profiles">Näytä ohjaimen oikea malli</string>
     <string name="mode_pad_profiles_hint">Kokeellinen. DualSense, DualShock 4 ja Xbox Series näkyvät peleille omana mallinaan ja omin painikenimin Xbox 360 -ohjaimen sijaan. Tulee voimaan seuraavassa istunnossa.</string>
+    <string name="ctrl_rumble_phone_fallback">Värisytä puhelinta, jos ohjaimessa ei ole tärinää</string>
 </resources>

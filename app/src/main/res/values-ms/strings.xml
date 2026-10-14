@@ -2215,4 +2215,5 @@
     <string name="display_avoid_camera_desc">Tambah jalur supaya tiada apa dilukis di bawah potongan kamera</string>
     <string name="mode_pad_profiles">Tunjukkan model pengawal sebenar</string>
     <string name="mode_pad_profiles_hint">Percubaan. DualSense, DualShock 4 dan Xbox Series dipaparkan kepada permainan dengan model dan nama butang sendiri, bukan sebagai Xbox 360. Berkuat kuasa sesi seterusnya.</string>
+    <string name="ctrl_rumble_phone_fallback">Getarkan telefon jika pengawal tiada getaran</string>
 </resources>

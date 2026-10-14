@@ -2265,4 +2265,5 @@
     <string name="display_avoid_camera_desc">Aggiungi bordi perché nulla venga disegnato sotto il foro della fotocamera</string>
     <string name="mode_pad_profiles">Mostra il modello reale del controller</string>
     <string name="mode_pad_profiles_hint">Sperimentale. DualSense, DualShock 4 e Xbox Series si presentano ai giochi con il proprio modello e i nomi dei tasti invece che come controller Xbox 360. Si applica dalla prossima sessione.</string>
+    <string name="ctrl_rumble_phone_fallback">Fai vibrare il telefono se il controller non ha vibrazione</string>
 </resources>

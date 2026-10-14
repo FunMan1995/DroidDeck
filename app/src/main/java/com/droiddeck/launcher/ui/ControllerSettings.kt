@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.droiddeck.launcher.input.ControllerPrefs
 import com.droiddeck.launcher.session.SessionPrefs
 
@@ -68,6 +70,14 @@ fun ColumnScope.ControllerRows(host: MenuHost, oscMode: String, c: ControllerPre
     ToggleRow(host, "controller-stick-click", stringResource(R.string.ctrl_stick_click), stringResource(R.string.ctrl_stick_click_hint), c.stickClick, onChange = a.onStickClick)
     ToggleRow(host, "controller-adaptive", stringResource(R.string.ctrl_adaptive), stringResource(R.string.ctrl_adaptive_hint), c.adaptiveSticks, onChange = a.onAdaptiveSticks)
     ToggleRow(host, "controller-rumble", stringResource(R.string.ctrl_rumble), null, c.rumble, onChange = a.onRumble)
+    if (c.rumble) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        var phoneFallback by androidx.compose.runtime.remember {
+            androidx.compose.runtime.mutableStateOf(ControllerPrefs.rumblePhoneFallback(context))
+        }
+        ToggleRow(host, "controller-rumble-phone", stringResource(R.string.ctrl_rumble_phone_fallback), null, phoneFallback,
+            onChange = { on -> ControllerPrefs.setRumblePhoneFallback(context, on); phoneFallback = on })
+    }
     ToggleRow(host, "controller-steam", stringResource(R.string.ctrl_steam_button), null, c.steamButton, onChange = a.onSteamButton)
     ToggleRow(host, "controller-qam", stringResource(R.string.ctrl_qam_button), null, c.qamButton, onChange = a.onQamButton)
     ToggleRow(host, "controller-keyboard", stringResource(R.string.ctrl_keyboard_button), null, c.keyboardButton, onChange = a.onKeyboardButton)

@@ -107,6 +107,13 @@ object ControllerPrefs {
 
     fun rumbleEnabled(context: Context): Boolean = prefs(context).getBoolean("rumble", true)
 
+    /** Off (default): the phone vibrates only for on-screen controls; on: also for a pad without motors. */
+    fun rumblePhoneFallback(context: Context): Boolean = prefs(context).getBoolean("rumblePhoneFallback", false)
+
+    fun setRumblePhoneFallback(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean("rumblePhoneFallback", on).apply()
+    }
+
     fun setRumble(context: Context, on: Boolean) {
         prefs(context).edit().putBoolean("rumble", on).apply()
     }
