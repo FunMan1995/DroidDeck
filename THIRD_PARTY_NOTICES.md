@@ -88,4 +88,4 @@ Built from source; the prebuilt `vortek-2.1.tzst` is not used. Sources vendored 
 - Vortek renderer (`libvortekrenderer.so`): https://github.com/brunodev85/winlator-app @ `3981d86efa4f333b2a34a7da8b6521476cd8c8b9`, `app/src/main/cpp/vortekrenderer`, plus helper sources from `app/src/main/cpp/winlator` at the same commit
 - Copyright (c) brunodev85 and contributors. License: LGPL-2.1, full text in `licenses/LGPL-2.1.txt` and `tools/vortek/LICENSE`
 - Modified by DroidDeck; changes in `tools/vortek/patches` (dated). Corresponding source: the URLs above plus those patches
-- Bundled Vulkan headers (`include/vulkan`, `include/vk_video`): Khronos, Apache-2.0 / MIT
+- Bundled Vulkan headers (`include/vulkan`, `include/vk_video`, and `tools/vortek/client-droiddeck/khronos` from KhronosGroup/Vulkan-Headers `v1.3.302`, build-time only): Khronos, Apache-2.0 / MIT

@@ -8,29 +8,19 @@
 #include "vulkan_helper.h"
 #include "jni_utils.h"
 
-#include "adrenotools/driver.h"
 
 VulkanWrapper vulkanWrapper = {0};
 bool vortekSerializerCastVkObject = true;
 
+/* DroidDeck: no adrenotools. A custom driver path is dlopen'ed directly; otherwise the
+ * system loader (/system/lib64/libvulkan.so) is used, which reaches the vendor driver
+ * at runtime. Nothing from /vendor is opened or read here. */
 static void* openVulkanLibrary(JNIEnv* env, jstring nativeLibraryDir, jstring libvulkanPath) {
     void* libvulkan;
+    (void)nativeLibraryDir;
     if (libvulkanPath) {
-        const char* nativeLibraryDirC = (*env)->GetStringUTFChars(env, nativeLibraryDir, NULL);
         const char* libvulkanPathC = (*env)->GetStringUTFChars(env, libvulkanPath, NULL);
-        const char* libvulkanName = basename(libvulkanPathC);
-
-        char libvulkanDir[PATH_MAX] = {0};
-        strcpy(libvulkanDir, dirname(libvulkanPathC));
-        strcat(libvulkanDir, "/");
-
-        char* tmpDir;
-        asprintf(&tmpDir, "%s%s", libvulkanDir, "tmp");
-        mkdir(tmpDir, S_IRWXU | S_IRWXG);
-
-        libvulkan = adrenotools_open_libvulkan(RTLD_NOW | RTLD_LOCAL, ADRENOTOOLS_DRIVER_CUSTOM, tmpDir, nativeLibraryDirC, libvulkanDir, libvulkanName, NULL, NULL);
-
-        (*env)->ReleaseStringUTFChars(env, nativeLibraryDir, nativeLibraryDirC);
+        libvulkan = dlopen(libvulkanPathC, RTLD_NOW | RTLD_LOCAL);
         (*env)->ReleaseStringUTFChars(env, libvulkanPath, libvulkanPathC);
     }
     else libvulkan = dlopen(LIBVULKAN_PATH, RTLD_NOW | RTLD_LOCAL);
@@ -40,7 +30,7 @@ static void* openVulkanLibrary(JNIEnv* env, jstring nativeLibraryDir, jstring li
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_winlator_xenvironment_components_VortekRendererComponent_createVkContext(JNIEnv *env,
+Java_com_droiddeck_launcher_session_VortekServerComponent_createVkContext(JNIEnv *env,
                                                                                   jobject obj,
                                                                                   jint clientFd,
                                                                                   jobject options) {
@@ -49,14 +39,14 @@ Java_com_winlator_xenvironment_components_VortekRendererComponent_createVkContex
 }
 
 JNIEXPORT void JNICALL
-Java_com_winlator_xenvironment_components_VortekRendererComponent_destroyVkContext(JNIEnv *env,
+Java_com_droiddeck_launcher_session_VortekServerComponent_destroyVkContext(JNIEnv *env,
                                                                                    jobject obj,
                                                                                    jlong contextPtr) {
     destroyVkContext(env, (VkContext*)contextPtr);
 }
 
 JNIEXPORT void JNICALL
-Java_com_winlator_xenvironment_components_VortekRendererComponent_initVulkanWrapper(JNIEnv *env,
+Java_com_droiddeck_launcher_session_VortekServerComponent_initVulkanWrapper(JNIEnv *env,
                                                                                     jobject obj,
                                                                                     jstring nativeLibraryDir,
                                                                                     jstring libvulkanPath) {
@@ -65,7 +55,7 @@ Java_com_winlator_xenvironment_components_VortekRendererComponent_initVulkanWrap
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_winlator_xenvironment_components_VortekRendererComponent_handleExtraDataRequest(JNIEnv *env,
+Java_com_droiddeck_launcher_session_VortekServerComponent_handleExtraDataRequest(JNIEnv *env,
                                                                                          jobject obj,
                                                                                          jlong contextPtr,
                                                                                          int requestId,

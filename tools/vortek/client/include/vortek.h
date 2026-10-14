@@ -5,7 +5,10 @@
 #define MEMORY_POOL_MAX_SIZE 65536
 #define SERVER_RING_BUFFER_SIZE 4194304
 #define CLIENT_RING_BUFFER_SIZE 262144
-#define VORTEK_SERVER_PATH "/data/data/com.winlator/files/rootfs/tmp/.vortek/V0"
+/* DroidDeck: default socket inside the DroidDeck guest; VORTEK_SERVER_PATH env overrides (main.c). */
+#ifndef VORTEK_SERVER_PATH
+#define VORTEK_SERVER_PATH "/run/droiddeck/vortek/V0"
+#endif
 #define VK_HANDLE_BYTE_COUNT 8
 #define THREAD_POOL_NUM_THREADS 8
 
@@ -264,4 +267,4 @@ static inline int vt_recv(RingBuffer* ring, char** inputBuffer, int* bufferSize,
     return requestCode;
 }
 
-#endif
+#endif
