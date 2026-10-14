@@ -374,6 +374,7 @@ VkExtensionProperties* getExposedDeviceExtensionProperties(VkContext* context, V
     /* DroidDeck batch-1 shims: extensions the client/renderer implement (droiddeck_shims.c). */
     injectExtensions2(context, &dstProperties, propertyCount,
                       ddImplementedDeviceExtensions, ddImplementedDeviceExtensionCount, NULL, 0);
+    dd_aliasLoadStoreOpNone(context, &dstProperties, propertyCount);
     return dstProperties;
 }
 

@@ -93,3 +93,39 @@ void dd_destroyDummyIndexBuffer(VkContext* context, VkDevice device) {
     context->ddDummyIndexBuffer = VK_NULL_HANDLE;
     context->ddDummyIndexMemory = VK_NULL_HANDLE;
 }
+
+/* 3.3 VK_KHR_load_store_op_none: same enum values as the EXT (VK_ATTACHMENT_LOAD_OP_NONE_KHR ==
+ * VK_ATTACHMENT_LOAD_OP_NONE_EXT, STORE_OP_NONE is core 1.3), so only the name is translated. */
+#define DD_LSON_KHR "VK_KHR_load_store_op_none"
+#define DD_LSON_EXT "VK_EXT_load_store_op_none"
+
+static bool dd_listHas(const VkExtensionProperties* props, uint32_t count, const char* name) {
+    for (uint32_t i = 0; i < count; i++) if (strcmp(props[i].extensionName, name) == 0) return true;
+    return false;
+}
+
+void dd_aliasLoadStoreOpNone(struct VkContext* context, VkExtensionProperties** props, uint32_t* count) {
+    if (!*props || !dd_listHas(*props, *count, DD_LSON_EXT) || dd_listHas(*props, *count, DD_LSON_KHR)) return;
+    static const char* const alias[] = {DD_LSON_KHR};
+    injectExtensions2(context, props, count, alias, 1, NULL, 0);
+}
+
+void dd_rewriteLoadStoreOpNone(struct VkContext* context, VkPhysicalDevice physicalDevice, char*** names, uint32_t* count) {
+    if (!*names || *count == 0) return;
+    int khr = -1;
+    bool ext = false;
+    for (uint32_t i = 0; i < *count; i++) {
+        if (strcmp((*names)[i], DD_LSON_KHR) == 0) khr = (int)i;
+        else if (strcmp((*names)[i], DD_LSON_EXT) == 0) ext = true;
+    }
+    if (khr < 0 || (physicalDevice && dd_deviceHasExtension(physicalDevice, DD_LSON_KHR))) return;
+    if (ext) {
+        static const char* const skip[] = {DD_LSON_KHR};
+        dd_stripExtensions(context, names, count, skip, 1);
+        return;
+    }
+    char** out = vt_alloc(&context->memoryPool, *count * sizeof(char*));
+    memcpy(out, *names, *count * sizeof(char*));
+    out[khr] = (char*)DD_LSON_EXT;
+    *names = out;
+}

@@ -24,4 +24,8 @@ extern void dd_createDummyIndexBuffer(struct VkContext* context, VkDevice device
 extern void dd_destroyDummyIndexBuffer(struct VkContext* context, VkDevice device);
 #define DD_DUMMY_INDEX_BUFFER_SIZE 65536
 
+/* 3.3 Advertise VK_KHR_load_store_op_none when only the EXT exists; enable it as the EXT. */
+extern void dd_aliasLoadStoreOpNone(struct VkContext* context, VkExtensionProperties** props, uint32_t* count);
+extern void dd_rewriteLoadStoreOpNone(struct VkContext* context, VkPhysicalDevice physicalDevice, char*** names, uint32_t* count);
+
 #endif

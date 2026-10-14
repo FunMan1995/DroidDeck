@@ -174,6 +174,7 @@ void vt_handle_vkCreateDevice(VkContext* context) {
     if (!dd_deviceHasExtension(physicalDevice, "VK_KHR_maintenance6"))
         dd_stripExtensions(context, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount,
                            ddImplementedDeviceExtensions, ddImplementedDeviceExtensionCount);
+    dd_rewriteLoadStoreOpNone(context, physicalDevice, (char***)&createInfo.ppEnabledExtensionNames, &createInfo.enabledExtensionCount);
 
     VkDevice device;
     VkResult result = vulkanWrapper.vkCreateDevice(physicalDevice, &createInfo, NULL, &device);
