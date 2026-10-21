@@ -37,6 +37,7 @@ class SettingsResetTest {
         SessionPrefs.setHudShowGraph(app, false)
         SessionPrefs.setHudColor(app, "amber")
         SessionPrefs.setHudOpacity(app, 40)
+        SessionPrefs.setGameDebugLogsEnabled(app, true)
         ControllerPrefs.setOpacity(app, 40)
         AppUiPrefs.setScale(app, 150)
         FrameGen.set(app, FrameGen.Mode(FrameGen.ENGINE_DDFG, 3))
@@ -57,6 +58,10 @@ class SettingsResetTest {
         assertEquals(SessionPrefs.HUD_OPACITY_DEFAULT, SessionPrefs.hudOpacity(app))
         assertEquals("32.4°C", PerfHud.batteryCelsius(324))
         assertNull(PerfHud.batteryCelsius(0))
+        assertFalse(SessionPrefs.gameDebugLogsEnabled(app))
+        val guest = java.io.File(com.droiddeck.launcher.runtime.LinuxRuntime.rootDir(app),
+            "root/.config/droiddeck/game-environment.json")
+        assertFalse(org.json.JSONObject(guest.readText()).getBoolean(GameEnvironmentStore.GAME_DEBUG_LOGS))
         assertEquals(100, ControllerPrefs.read(app).opacity)
         assertEquals(AppUiPrefs.DEFAULT_SCALE, AppUiPrefs.scale(app))
         assertEquals(FrameGen.Mode.OFF.engine, FrameGen.engine(app))
