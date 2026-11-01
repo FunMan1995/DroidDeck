@@ -2,58 +2,64 @@
   "schema": 1,
   "sourceRepo": "wallentx/DroidDeck",
   "ciRepo": "wallentx/DroidDeck",
-  "generatedAt": 1793151307373,
+  "generatedAt": 1793529638672,
   "stable": null,
   "preview": {
-    "tag": "main-eb3668aa03ef422b72c3ddd09605fdb6dc136d08",
-    "title": "Preview 7: native graphics buffers and upstream updates",
-    "summary": "Native Android output buffers with automatic fallback, refreshed Gamescope capability fallbacks and pacing, upstream updates, and Xbox launch compatibility fixes.",
-    "commit": "eb3668aa03ef422b72c3ddd09605fdb6dc136d08",
+    "tag": "main-3b6a83c8696d2a03327e9a9c87236ab6d461cd74",
+    "title": "Preview 8: DroidDeck 0.6.9 and System Vulkan updates",
+    "summary": "DroidDeck 0.6.9 updates, refreshed PowerVR, Xclipse and Mali components, and updated Gamescope synchronization.",
+    "commit": "3b6a83c8696d2a03327e9a9c87236ab6d461cd74",
     "pr": 0,
     "version": null,
-    "versionCode": 20,
-    "publishedAt": 1793151231000,
-    "url": "https://github.com/wallentx/DroidDeck/releases/tag/main-eb3668aa03ef422b72c3ddd09605fdb6dc136d08",
+    "versionCode": 21,
+    "publishedAt": 1793529549000,
+    "url": "https://github.com/wallentx/DroidDeck/releases/tag/main-3b6a83c8696d2a03327e9a9c87236ab6d461cd74",
     "apks": {
-      "com.droiddeck.launcher": {
-        "name": "DroidDeck-0.6.0-wallentx.7.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-eb3668aa03ef422b72c3ddd09605fdb6dc136d08/DroidDeck-0.6.0-wallentx.7.apk",
-        "size": 75354025,
-        "sha256": "aad12053624c48ec1a82cf2336c7dd60f9e9affd7a8e5c48bb79df44517a9b73",
-        "packageName": "com.droiddeck.launcher",
-        "versionCode": 20,
-        "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
-      },
-      "com.tencent.ig": {
-        "name": "DroidDeck-0.6.0-wallentx.7-pubg.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-eb3668aa03ef422b72c3ddd09605fdb6dc136d08/DroidDeck-0.6.0-wallentx.7-pubg.apk",
-        "size": 75354025,
-        "sha256": "972a40d297249e1e5728f2f7bcd98c0fe1491d8d41c870fc5bd66db5c3450ee1",
-        "packageName": "com.tencent.ig",
-        "versionCode": 20,
-        "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
-      },
       "com.antutu.benchmark.full": {
-        "name": "DroidDeck-0.6.0-wallentx.7-antutu.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-eb3668aa03ef422b72c3ddd09605fdb6dc136d08/DroidDeck-0.6.0-wallentx.7-antutu.apk",
-        "size": 75354025,
-        "sha256": "ac53140d0ec73fa1867c4465dcdc00378a57eb6c6d631d942287d907d22537b3",
+        "name": "DroidDeck-0.6.9-wallentx.8-antutu.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-3b6a83c8696d2a03327e9a9c87236ab6d461cd74/DroidDeck-0.6.9-wallentx.8-antutu.apk",
+        "size": 77280624,
+        "sha256": "517f8a7044af34d2d17308ed3dd7de25aeecb84ffbce37e54c89c73c165dd78f",
         "packageName": "com.antutu.benchmark.full",
-        "versionCode": 20,
+        "versionCode": 21,
         "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
       },
       "com.ludashi.benchmark": {
-        "name": "DroidDeck-0.6.0-wallentx.7-ludashi.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-eb3668aa03ef422b72c3ddd09605fdb6dc136d08/DroidDeck-0.6.0-wallentx.7-ludashi.apk",
-        "size": 75354025,
-        "sha256": "e0e31bd441ebd913b4746534e541ef667ca96e5af11e5c8fd5a53a462672f8bb",
+        "name": "DroidDeck-0.6.9-wallentx.8-ludashi.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-3b6a83c8696d2a03327e9a9c87236ab6d461cd74/DroidDeck-0.6.9-wallentx.8-ludashi.apk",
+        "size": 77280624,
+        "sha256": "63ac3dda94eaf1902db968c9603cf971eac359a2fdef20e8c93fa2cf68bfe652",
         "packageName": "com.ludashi.benchmark",
-        "versionCode": 20,
+        "versionCode": 21,
+        "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
+      },
+      "com.tencent.ig": {
+        "name": "DroidDeck-0.6.9-wallentx.8-pubg.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-3b6a83c8696d2a03327e9a9c87236ab6d461cd74/DroidDeck-0.6.9-wallentx.8-pubg.apk",
+        "size": 77280624,
+        "sha256": "85d351cd487078565b841ea91c16961a0752c92caae650cf5c20b219ddd5bbfd",
+        "packageName": "com.tencent.ig",
+        "versionCode": 21,
+        "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
+      },
+      "com.droiddeck.launcher": {
+        "name": "DroidDeck-0.6.9-wallentx.8.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-3b6a83c8696d2a03327e9a9c87236ab6d461cd74/DroidDeck-0.6.9-wallentx.8.apk",
+        "size": 77280624,
+        "sha256": "dbcb5a7e178a21c542af458166f1c308ae60b97ac90118f067cc9faf5b87c568",
+        "packageName": "com.droiddeck.launcher",
+        "versionCode": 21,
         "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
       }
     }
   },
   "recentPreviews": [
+    {
+      "commit": "3b6a83c8696d2a03327e9a9c87236ab6d461cd74",
+      "title": "Preview 8: DroidDeck 0.6.9 and System Vulkan updates",
+      "summary": "DroidDeck 0.6.9 updates, refreshed PowerVR, Xclipse and Mali components, and updated Gamescope synchronization.",
+      "publishedAt": 1793529549000
+    },
     {
       "commit": "eb3668aa03ef422b72c3ddd09605fdb6dc136d08",
       "title": "Preview 7: native graphics buffers and upstream updates",
@@ -75,7 +81,7 @@
     {
       "commit": "f7ef95f5eaf050019c06bcfe47edc0f5aa3c6651",
       "title": "Preview 3: System Vulkan installation and component management",
-      "summary": "Fixes runtime-component downloads failing with \u201cUnsafe System Vulkan archive path\u201d and makes installed and available builds visible for Mali, PowerVR, and Xclipse.",
+      "summary": "Fixes runtime-component downloads failing with “Unsafe System Vulkan archive path” and makes installed and available builds visible for Mali, PowerVR, and Xclipse.",
       "publishedAt": 1792353805000
     },
     {
