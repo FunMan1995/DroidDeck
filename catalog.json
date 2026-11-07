@@ -2,58 +2,64 @@
   "schema": 1,
   "sourceRepo": "wallentx/DroidDeck",
   "ciRepo": "wallentx/DroidDeck",
-  "generatedAt": 1794002156000,
+  "generatedAt": 1794046433814,
   "stable": null,
   "preview": {
-    "tag": "main-f91a81b070039d7656593c1efaa75af77ac41cac",
-    "title": "Preview 11: save to device, component sources, and PowerVR updates",
-    "summary": "Direct Save to device for diagnostic bundles, cutout-safe fullscreen sessions, Library launch options, refreshed Gamescope and System Vulkan components, and current component-source compatibility work.",
-    "commit": "f91a81b070039d7656593c1efaa75af77ac41cac",
+    "tag": "main-c7d5e9ea1e2738c603aec29589bd92dfe4b228da",
+    "title": "Preview 12: safe fullscreen, upstream sync, and component updates",
+    "summary": "Fullscreen layout fixes for DroidDeck, Steam, and games; current upstream runtime improvements; safer source-aware component updates and PowerVR compatibility work.",
+    "commit": "c7d5e9ea1e2738c603aec29589bd92dfe4b228da",
     "pr": 0,
     "version": null,
-    "versionCode": 24,
-    "publishedAt": 1794002156000,
-    "url": "https://github.com/wallentx/DroidDeck/releases/tag/main-f91a81b070039d7656593c1efaa75af77ac41cac",
+    "versionCode": 25,
+    "publishedAt": 1794046312000,
+    "url": "https://github.com/wallentx/DroidDeck/releases/tag/main-c7d5e9ea1e2738c603aec29589bd92dfe4b228da",
     "apks": {
-      "com.antutu.benchmark.full": {
-        "name": "DroidDeck-0.6.9-wallentx.11-antutu.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-f91a81b070039d7656593c1efaa75af77ac41cac/DroidDeck-0.6.9-wallentx.11-antutu.apk",
-        "size": 97271865,
-        "sha256": "975ed4d1b4ee9ec86f31d2bc559f3c03715955540a53408d5d8f27a72ad558d1",
-        "packageName": "com.antutu.benchmark.full",
-        "versionCode": 24,
-        "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
-      },
-      "com.ludashi.benchmark": {
-        "name": "DroidDeck-0.6.9-wallentx.11-ludashi.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-f91a81b070039d7656593c1efaa75af77ac41cac/DroidDeck-0.6.9-wallentx.11-ludashi.apk",
-        "size": 97271865,
-        "sha256": "cd304fc2538ba628de189c644270c3c0328326abfdab3f143b682009f83a22a3",
-        "packageName": "com.ludashi.benchmark",
-        "versionCode": 24,
+      "com.droiddeck.launcher": {
+        "name": "DroidDeck-0.6.9-wallentx.12.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-c7d5e9ea1e2738c603aec29589bd92dfe4b228da/DroidDeck-0.6.9-wallentx.12.apk",
+        "size": 97292345,
+        "sha256": "2822afb35184bbfc30af6703857ec3723eb8d7d0a7cca7fddb33d698fee3b144",
+        "packageName": "com.droiddeck.launcher",
+        "versionCode": 25,
         "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
       },
       "com.tencent.ig": {
-        "name": "DroidDeck-0.6.9-wallentx.11-pubg.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-f91a81b070039d7656593c1efaa75af77ac41cac/DroidDeck-0.6.9-wallentx.11-pubg.apk",
-        "size": 97271865,
-        "sha256": "52c749b9b47a9d5dd6c27f3aa4b871d2eea46bdc209f99d1404785d100c3555d",
+        "name": "DroidDeck-0.6.9-wallentx.12-pubg.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-c7d5e9ea1e2738c603aec29589bd92dfe4b228da/DroidDeck-0.6.9-wallentx.12-pubg.apk",
+        "size": 97292345,
+        "sha256": "3b73cb09dbf9957d7a8e0e995b56fade937d4b361247ac23ed7e2d089e6abeff",
         "packageName": "com.tencent.ig",
-        "versionCode": 24,
+        "versionCode": 25,
         "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
       },
-      "com.droiddeck.launcher": {
-        "name": "DroidDeck-0.6.9-wallentx.11.apk",
-        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-f91a81b070039d7656593c1efaa75af77ac41cac/DroidDeck-0.6.9-wallentx.11.apk",
-        "size": 97271865,
-        "sha256": "57a5cab74bc8234299782991817162bf0bd5ba7a925fb9822104d539da81e34b",
-        "packageName": "com.droiddeck.launcher",
-        "versionCode": 24,
+      "com.antutu.benchmark.full": {
+        "name": "DroidDeck-0.6.9-wallentx.12-antutu.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-c7d5e9ea1e2738c603aec29589bd92dfe4b228da/DroidDeck-0.6.9-wallentx.12-antutu.apk",
+        "size": 97292345,
+        "sha256": "576e41c8a86f39fcef1d12cb46227c9246c6429bea6815d427f85593754c20dc",
+        "packageName": "com.antutu.benchmark.full",
+        "versionCode": 25,
+        "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
+      },
+      "com.ludashi.benchmark": {
+        "name": "DroidDeck-0.6.9-wallentx.12-ludashi.apk",
+        "url": "https://github.com/wallentx/DroidDeck/releases/download/main-c7d5e9ea1e2738c603aec29589bd92dfe4b228da/DroidDeck-0.6.9-wallentx.12-ludashi.apk",
+        "size": 97292345,
+        "sha256": "ace86acea4be4d79bf285a5cb6059fbafbf18e2e97c0bb14278a4db75a20aea0",
+        "packageName": "com.ludashi.benchmark",
+        "versionCode": 25,
         "signerSha256": "80465aadce5c34a1d4f71ee4bd8cf7bcce64b5e7836e599f98d0b4f110e210c8"
       }
     }
   },
   "recentPreviews": [
+    {
+      "commit": "c7d5e9ea1e2738c603aec29589bd92dfe4b228da",
+      "title": "Preview 12: safe fullscreen, upstream sync, and component updates",
+      "summary": "Fullscreen layout fixes for DroidDeck, Steam, and games; current upstream runtime improvements; safer source-aware component updates and PowerVR compatibility work.",
+      "publishedAt": 1794046312000
+    },
     {
       "commit": "f91a81b070039d7656593c1efaa75af77ac41cac",
       "title": "Preview 11: save to device, component sources, and PowerVR updates",
