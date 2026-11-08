@@ -21,8 +21,26 @@ This fork tracks [wallentx/DroidDeck](https://github.com/wallentx/DroidDeck) Pre
 |-------|---------|-----|
 | Empty `/etc/machine-id` in linuxfs | dbus “Invalid machine ID”, Steam IPC stalls | Write a real 32-hex machine-id (+ `/var/lib/dbus/machine-id`) |
 | Preview 11 | Missing fullscreen / component fixes | Upgrade to Preview 12 |
-| Steam GPU drawing on Mali | `steamwebhelper` connects then disconnects; black UI | `steamGpuDrawing=false` / Software Steam UI |
+| Steam GPU drawing on Mali | `steamwebhelper` connects then disconnects; black / aborted CEF | `steamGpuDrawing=false` and `steamUiSoftware=true` (Preview 12 → `-cef-disable-gpu`) |
+| Steam menu flicker on 120 Hz | Menu strobes / tears on Venus | `fpsLimit.steam=60` + `peak_refresh_rate=60` (panel at 60 Hz) |
 | LMKD empty/cached kills | `[TOO MANY EMPTY PROCS]` in device report | Raise `max_phantom_processes` / `max_cached_processes` |
+
+## Steam menu flicker (120 Hz)
+
+Uncapped GPU CEF (`-cef-force-gpu`) on Mali Venus flickers and can abort. Use Software Steam UI and cap the panel:
+
+1. Prefs (`shared_prefs/session.xml`):
+   - `steamUiSoftware=true` → session sets `BL_STEAM_CEF_SOFTWARE=1` → `-cef-disable-gpu`
+   - `steamGpuDrawing=false`
+   - `fpsLimit.steam=60` (also: Setup → mode settings → **Frame rate limit → 60**)
+2. System: `settings put system peak_refresh_rate 60.0`
+3. After a blank / aborted CEF session, clear Steam `Singleton*` locks under linuxfs and relaunch.
+
+Confirm in the next Steam session log:
+
+- `== steam: CEF software rendering selected (-cef-disable-gpu)`
+- `perf: display 60 Hz`
+- `Session refresh` / `peak_refresh_rate` at 60
 
 ## Expected graphics path (without PanVK import)
 
